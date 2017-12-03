@@ -1,99 +1,106 @@
 package org.usfirst.frc.team1197.robot;
 
-import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SampleRobot;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-/**
- * This is a demo program showing the use of the RobotDrive class. The
- * SampleRobot class is the base of a robot application that will automatically
- * call your Autonomous and OperatorControl methods at the right time as
- * controlled by the switches on the driver station or the field controls.
- *
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to each mode, as described in the SampleRobot
- * documentation. If you change the name of this class or the package after
- * creating this project, you must also update the manifest file in the resource
- * directory.
- *
- * WARNING: While it may look like a good choice to use for your code if you're
- * inexperienced, don't. Unless you know what you are doing, complex code will
- * be much more difficult under this system. Use IterativeRobot or Command-Based
- * instead if you're new.
- */
 public class Robot extends SampleRobot {
-	RobotDrive myRobot = new RobotDrive(0, 1);
-	Joystick stick = new Joystick(0);
-	final String defaultAuto = "Default";
-	final String customAuto = "My Auto";
-	SendableChooser<String> chooser = new SendableChooser<>();
+	private Compressor compressor;
+	
+	private Joystick player1;
+	private Joystick player2;
+	private Joystick autoBox;
+	
+	private TorDrive drive;
+	protected static RobotMode mode;
+	
+    public Robot() {
+    	mode = RobotMode.DISABLED;
+    	
+    	compressor = new Compressor();
+    	
+    	player1 = new Joystick(0);
+    	player2 = new Joystick(1);
+    	autoBox = new Joystick(2);
+   
+    	drive = new TorDrive(player1, autoBox);
+    }
 
-	public Robot() {
-		myRobot.setExpiration(0.1);
+    public void autonomous() {
+    	
+    }
+
+    public void operatorControl() {
+    	mode = RobotMode.TELEOP;
+    	drive.controller.setClosedLoopConstants(mode);
+    	drive.enable();
+    	while(isEnabled()){
+    		drive.driving(getLeftY(), getLeftX(), getRightX(), getShiftButton(), getRightBumper(), 
+					getButtonA(), getButtonB(), getButtonX(), getButtonY());
+    	}
+    	drive.disable();
+    }
+
+    public void test() {
+    	while(isEnabled()) {
+    		
+    	}
 	}
 
-	@Override
-	public void robotInit() {
-		chooser.addDefault("Default Auto", defaultAuto);
-		chooser.addObject("My Auto", customAuto);
-		SmartDashboard.putData("Auto modes", chooser);
+	//Low-gear software wise, High-gear mechanically
+	public void disabled() {
+		mode = RobotMode.DISABLED;
+		drive.disable();
 	}
 
-	/**
-	 * This autonomous (along with the chooser code above) shows how to select
-	 * between different autonomous modes using the dashboard. The sendable
-	 * chooser code works with the Java SmartDashboard. If you prefer the
-	 * LabVIEW Dashboard, remove all of the chooser code and uncomment the
-	 * getString line to get the auto name from the text box below the Gyro
-	 *
-	 * You can add additional auto modes by adding additional comparisons to the
-	 * if-else structure below with additional strings. If using the
-	 * SendableChooser make sure to add them to the chooser code above as well.
-	 */
-	@Override
-	public void autonomous() {
-		String autoSelected = chooser.getSelected();
-		// String autoSelected = SmartDashboard.getString("Auto Selector",
-		// defaultAuto);
-		System.out.println("Auto selected: " + autoSelected);
-
-		switch (autoSelected) {
-		case customAuto:
-			myRobot.setSafetyEnabled(false);
-			myRobot.drive(-0.5, 1.0); // spin at half speed
-			Timer.delay(2.0); // for 2 seconds
-			myRobot.drive(0.0, 0.0); // stop robot
-			break;
-		case defaultAuto:
-		default:
-			myRobot.setSafetyEnabled(false);
-			myRobot.drive(-0.5, 0.0); // drive forwards half speed
-			Timer.delay(2.0); // for 2 seconds
-			myRobot.drive(0.0, 0.0); // stop robot
-			break;
-		}
+	// Getting the left analog stick X-axis value from the xbox controller. 
+	public double getLeftX(){
+		return player1.getRawAxis(0);
 	}
 
-	/**
-	 * Runs the motors with arcade steering.
-	 */
-	@Override
-	public void operatorControl() {
-		myRobot.setSafetyEnabled(true);
-		while (isOperatorControl() && isEnabled()) {
-			myRobot.arcadeDrive(stick); // drive with arcade style (use right
-										// stick)
-			Timer.delay(0.005); // wait for a motor update time
-		}
+	
+	// Getting the left analog stick Y-axis value from the xbox controller. 
+	public double getLeftY(){
+		return player1.getRawAxis(1);
 	}
 
-	/**
-	 * Runs during test mode
-	 */
-	@Override
-	public void test() {
+	// Getting the right analog stick X-axis value from the xbox controller. 
+	public double getRightX(){
+		return player1.getRawAxis(4);
 	}
+
+	// Getting the right trigger value from the xbox controller.
+	public double getRightTrigger(){
+		return player1.getRawAxis(3);
+	}
+
+	// Getting the left bumper button value from the xbox controller. 
+	public boolean getShiftButton(){
+		return player1.getRawButton(5);
+	}
+
+	public boolean getRightBumper(){
+		return player1.getRawButton(6);
+	}
+
+	public boolean getButtonA(){
+		return player1.getRawButton(1);
+	}
+
+	public boolean getButtonB(){
+		return player1.getRawButton(2);
+	}
+
+	public boolean getButtonX(){
+		return player1.getRawButton(3);
+	}
+
+	public boolean getButtonY(){
+		return player1.getRawButton(4);
+	}
+	
+	public boolean isRed(){
+		return autoBox.getRawButton(4);
+	}
+
 }
