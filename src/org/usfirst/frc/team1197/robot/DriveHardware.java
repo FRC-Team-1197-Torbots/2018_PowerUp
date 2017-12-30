@@ -3,16 +3,21 @@ package org.usfirst.frc.team1197.robot;
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.StatusFrameRate;
+
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class DriveHardware {
+	
+	private ADXRS450_Gyro gyro;
 
 	private final CANTalon rightMaster;
 	private final CANTalon rightSlave1;
-	private final CANTalon rightSlave2;
+//	private final CANTalon rightSlave2;
 	private final CANTalon leftMaster;
 	private final CANTalon leftSlave1;
-	private final CANTalon leftSlave2;
+//	private final CANTalon leftSlave2;
 	private final Solenoid solenoid;
 	
 	private static final double encoderTicksPerMeter = 7110.6; // (units: ticks per meter)
@@ -32,18 +37,20 @@ public class DriveHardware {
 	private final double kI = 0.0; 
 	private final double kD = 50.0; 
 	
-	private boolean leftOutputReversed = true;
-	private boolean rightOutputReversed = false;
+	private boolean leftOutputReversed = false;
+	private boolean rightOutputReversed = true;
 	private double heading = 0.0;
 
 	public DriveHardware() {
+		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
+		
 		solenoid = new Solenoid(0);
-		leftSlave1 = new CANTalon(1); 
-		leftMaster = new CANTalon(2); 
-		leftSlave2 = new CANTalon(3); 
-		rightSlave1 = new CANTalon(7); 
-		rightMaster = new CANTalon(8); 
-		rightSlave2 = new CANTalon(9); 
+		leftMaster = new CANTalon(5);
+		leftSlave1 = new CANTalon(6);  
+//		leftSlave2 = new CANTalon(3); 
+		rightMaster = new CANTalon(3);
+		rightSlave1 = new CANTalon(4);  
+//		rightSlave2 = new CANTalon(9); 
 
 		// use only when testing to get approximate sensor speed
 		// rightSlave2.configEncoderCodesPerRev(128);
@@ -62,8 +69,8 @@ public class DriveHardware {
 
 		rightSlave1.changeControlMode(CANTalon.TalonControlMode.Follower);
 		rightSlave1.set(rightMaster.getDeviceID());
-		rightSlave2.changeControlMode(CANTalon.TalonControlMode.Follower);
-		rightSlave2.set(rightMaster.getDeviceID());
+//		rightSlave2.changeControlMode(CANTalon.TalonControlMode.Follower);
+//		rightSlave2.set(rightMaster.getDeviceID());
 
 		leftMaster.setFeedbackDevice(FeedbackDevice.QuadEncoder);
 		leftMaster.reverseSensor(true); 
@@ -78,8 +85,8 @@ public class DriveHardware {
 
 		leftSlave1.changeControlMode(CANTalon.TalonControlMode.Follower);
 		leftSlave1.set(leftMaster.getDeviceID());
-		leftSlave2.changeControlMode(CANTalon.TalonControlMode.Follower);
-		leftSlave2.set(leftMaster.getDeviceID());
+//		leftSlave2.changeControlMode(CANTalon.TalonControlMode.Follower);
+//		leftSlave2.set(leftMaster.getDeviceID());
 
 		rightMaster.setStatusFrameRateMs(StatusFrameRate.QuadEncoder, 2);
 		leftMaster.setStatusFrameRateMs(StatusFrameRate.QuadEncoder, 2);
@@ -169,14 +176,12 @@ public class DriveHardware {
 	}
 
 	public double getHeading() {
-		// heading = (gyro.getFusedHeading() * (Math.PI / 180)); **commented until we get the Spartan Board
-		heading = 0;
+		heading = (gyro.getAngle() * (Math.PI / 180));
 		return heading; // [radians]
 	}
 
 	public double getOmega() {
-		// return (gyro.getRate()); // [radians/second] (contrary to navX documentation) **commented until we get the Spartan Board
-		return 0;
+		return (gyro.getRate() * (Math.PI / 180)); // [radians/second] 
 	}
 
 	public void setTargets(double v, double omega) {
@@ -190,12 +195,7 @@ public class DriveHardware {
 	}
 
 	public void resetGyro() {
-//		do {
-//		gyro.reset(); **commented until we get the Spartan Board
-//		gyro.zeroYaw(); **commented until we get the Spartan Board
-//		Timer.delay(0.005);
-//		} while(!(Math.abs(getHeading()) < 0.1 || Math.abs(getHeading() - (2*Math.PI)) < 0.1));
-		
+		gyro.reset(); 
 	}
 
 	public double getBacklash() {
@@ -219,8 +219,9 @@ public class DriveHardware {
 	}
 	
 	public void init(){
-//		if(gyro == null){ **commented until we get the Spartan Board
-//			gyro = new AHRS(SerialPort.Port.kMXP);
-//		}
+		if(gyro == null){ 
+			gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
+		}
+		gyro.calibrate();
 	}
 }

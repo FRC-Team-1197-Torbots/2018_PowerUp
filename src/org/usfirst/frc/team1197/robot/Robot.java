@@ -1,6 +1,11 @@
 package org.usfirst.frc.team1197.robot;
 
 import edu.wpi.first.wpilibj.SampleRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import org.usfirst.frc.team1197.robot.test.DriveHardwareTest;
+import org.usfirst.frc.team1197.robot.test.Test;
+
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
 
@@ -14,6 +19,8 @@ public class Robot extends SampleRobot {
 	private TorDrive drive;
 	protected static RobotMode mode;
 	
+	private DriveHardwareTest hardwareTest;
+	
     public Robot() {
     	mode = RobotMode.DISABLED;
     	
@@ -24,6 +31,12 @@ public class Robot extends SampleRobot {
     	autoBox = new Joystick(2);
    
     	drive = new TorDrive(player1, autoBox);
+    	
+    	hardwareTest = new DriveHardwareTest(drive.controller.hardware);
+    }
+    
+    public void robotInit() {
+    	drive.controller.hardware.init();
     }
 
     public void autonomous() {
@@ -37,13 +50,21 @@ public class Robot extends SampleRobot {
     	while(isEnabled()){
     		drive.driving(getLeftY(), getLeftX(), getRightX(), getShiftButton(), getRightBumper(), 
 					getButtonA(), getButtonB(), getButtonX(), getButtonY());
+//    		SmartDashboard.putNumber("Gyro Value", drive.controller.hardware.getHeading());
+    		SmartDashboard.putNumber("Average Encoder Position", drive.controller.hardware.getAverageEncoderPosition());
     	}
     	drive.disable();
     }
 
     public void test() {
+    	mode = RobotMode.TELEOP;
+    	drive.controller.setClosedLoopConstants(mode);
+    	drive.enable();
     	while(isEnabled()) {
-    		
+//    		System.out.println("HELLO");
+//    		SmartDashboard.putNumber("Gyro Value", drive.controller.hardware.getHeading());
+    		Test.setButtons(getButtonA(), getButtonB());
+			hardwareTest.run();
     	}
 	}
 
