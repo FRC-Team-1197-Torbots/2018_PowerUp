@@ -20,7 +20,7 @@ public class DriveHardware {
 //	private final CANTalon leftSlave2;
 	private final Solenoid solenoid;
 	
-	private static final double encoderTicksPerMeter = 7110.6; // (units: ticks per meter)
+	private static final double encoderTicksPerMeter = 1689.2; // (units: ticks per meter)
 	private static final double approximateSensorSpeed = 4357; // measured maximum (units: RPM)
 	private static final double quadEncNativeUnits = 512.0; // (units: ticks per revolution)
 	

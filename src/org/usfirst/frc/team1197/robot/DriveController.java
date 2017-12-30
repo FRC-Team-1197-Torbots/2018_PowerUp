@@ -328,7 +328,6 @@ public class DriveController {
 			disable(); //Guarantee safe transition between AUTO/TELEOP/TEST.
 		}
 		resetWaypoints(); //TODO: Uncomment
-		hardware.init();
 		enabled  = true;
 		isHighGear = false;
 		shiftToHighGear();

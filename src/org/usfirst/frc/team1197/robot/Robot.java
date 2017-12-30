@@ -51,7 +51,8 @@ public class Robot extends SampleRobot {
     		drive.driving(getLeftY(), getLeftX(), getRightX(), getShiftButton(), getRightBumper(), 
 					getButtonA(), getButtonB(), getButtonX(), getButtonY());
 //    		SmartDashboard.putNumber("Gyro Value", drive.controller.hardware.getHeading());
-    		SmartDashboard.putNumber("Average Encoder Position", drive.controller.hardware.getAverageEncoderPosition());
+    		SmartDashboard.putNumber("Controller", getLeftY());
+    		SmartDashboard.putNumber("Average Raw Velocity Position", drive.controller.hardware.getAverageRawVelocity());
     	}
     	drive.disable();
     }
