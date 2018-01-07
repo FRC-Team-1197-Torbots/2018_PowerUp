@@ -1,23 +1,20 @@
 package org.usfirst.frc.team1197.robot;
 
-import com.ctre.CANTalon;
-import com.ctre.CANTalon.FeedbackDevice;
-import com.ctre.CANTalon.StatusFrameRate;
+import com.ctre.phoenix.motorcontrol.*;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Solenoid;
-
+//Currently configured for the red sensor bot.
 public class DriveHardware {
 	
 	private ADXRS450_Gyro gyro;
 
-	private final CANTalon rightMaster;
-	private final CANTalon rightSlave1;
-//	private final CANTalon rightSlave2;
-	private final CANTalon leftMaster;
-	private final CANTalon leftSlave1;
-//	private final CANTalon leftSlave2;
+	private final TalonSRX rightMaster;
+	private final TalonSRX rightSlave1;
+	private final TalonSRX leftMaster;
+	private final TalonSRX leftSlave1;
 	private final Solenoid solenoid;
 	
 	private static final double encoderTicksPerMeter = 1689.2; // (units: ticks per meter)
@@ -45,51 +42,45 @@ public class DriveHardware {
 		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 		
 		solenoid = new Solenoid(0);
-		leftMaster = new CANTalon(5);
-		leftSlave1 = new CANTalon(6);  
-//		leftSlave2 = new CANTalon(3); 
-		rightMaster = new CANTalon(3);
-		rightSlave1 = new CANTalon(4);  
-//		rightSlave2 = new CANTalon(9); 
+		
+		// TalonSRX, temporary fix
+		leftMaster = new TalonSRX(5);
+		leftSlave1 = new TalonSRX(6);  
+		rightMaster = new TalonSRX(3);
+		rightSlave1 = new TalonSRX(4);  
 
 		// use only when testing to get approximate sensor speed
 		// rightSlave2.configEncoderCodesPerRev(128);
 		// leftMaster.configEncoderCodesPerRev(128);
 
-		rightMaster.setFeedbackDevice(FeedbackDevice.QuadEncoder);
-		rightMaster.reverseSensor(false);
-		rightMaster.reverseOutput(rightOutputReversed); 
-		rightMaster.configNominalOutputVoltage(+0.0f, -0.0f);
-		rightMaster.configPeakOutputVoltage(+12.0f, -12.0f);
-		rightMaster.setProfile(0);
-		rightMaster.setF(kF);
-		rightMaster.setP(kP);
-		rightMaster.setI(kI);
-		rightMaster.setD(kD);
+		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
+		rightMaster.setSensorPhase(false);
+		rightMaster.setInverted(rightOutputReversed); 
+		// rightMaster.configNominalOutputVoltage(+0.0f, -0.0f);
+		// rightMaster.configPeakOutputVoltage(+12.0f, -12.0f);
+		rightMaster.selectProfileSlot(0, 0);
+		rightMaster.config_kF(0, kF, 0);
+		rightMaster.config_kP(0, kP, 0);
+		rightMaster.config_kI(0, kI, 0);
+		rightMaster.config_kD(0, kD, 0);
 
-		rightSlave1.changeControlMode(CANTalon.TalonControlMode.Follower);
-		rightSlave1.set(rightMaster.getDeviceID());
-//		rightSlave2.changeControlMode(CANTalon.TalonControlMode.Follower);
-//		rightSlave2.set(rightMaster.getDeviceID());
+		rightSlave1.follow(rightMaster);
 
-		leftMaster.setFeedbackDevice(FeedbackDevice.QuadEncoder);
-		leftMaster.reverseSensor(true); 
-		leftMaster.reverseOutput(leftOutputReversed); 
-		leftMaster.configNominalOutputVoltage(+0.0f, -0.0f);
-		leftMaster.configPeakOutputVoltage(+12.0f, -12.0f);
-		leftMaster.setProfile(0);
-		leftMaster.setF(kF);
-		leftMaster.setP(kP);
-		leftMaster.setI(kI);
-		leftMaster.setD(kD);
+		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
+		leftMaster.setSensorPhase(true); 
+		leftMaster.setInverted(leftOutputReversed); 
+		// leftMaster.configNominalOutputVoltage(+0.0f, -0.0f);
+		// leftMaster.configPeakOutputVoltage(+12.0f, -12.0f);
+		leftMaster.selectProfileSlot(0, 0);
+		leftMaster.config_kF(0, kF, 0);
+		leftMaster.config_kP(0, kP, 0);
+		leftMaster.config_kI(0, kI, 0);
+		leftMaster.config_kD(0, kD, 0);
 
-		leftSlave1.changeControlMode(CANTalon.TalonControlMode.Follower);
-		leftSlave1.set(leftMaster.getDeviceID());
-//		leftSlave2.changeControlMode(CANTalon.TalonControlMode.Follower);
-//		leftSlave2.set(leftMaster.getDeviceID());
+		leftSlave1.follow(leftMaster);
 
-		rightMaster.setStatusFrameRateMs(StatusFrameRate.QuadEncoder, 2);
-		leftMaster.setStatusFrameRateMs(StatusFrameRate.QuadEncoder, 2);
+//		rightMaster.setStatusFrameRateMs(StatusFrameRate.QuadEncoder, 2);
+//		leftMaster.setStatusFrameRateMs(StatusFrameRate.QuadEncoder, 2);
 		
 		resetEncoder();
 		resetGyro();
@@ -112,12 +103,12 @@ public class DriveHardware {
 
 	// Setting the left master Talon's speed to the given parameter
 	public void SetLeft(double speed) {
-		leftMaster.set(speed);
+		leftMaster.set(ControlMode.PercentOutput, speed);
 	}
 
 	// Setting the right master Talon's speed to the given parameter
 	public void SetRight(double speed) {
-		rightMaster.set(speed);
+		rightMaster.set(ControlMode.PercentOutput, speed);
 	}
 
 	/*
@@ -125,8 +116,8 @@ public class DriveHardware {
 	 * percentVbus, so we can use it when the robot is in low gear.
 	 */
 	public void choosePercentVbus() {
-		rightMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
-		leftMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+//		rightMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+//		leftMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
 	}
 
 	/*
@@ -134,45 +125,45 @@ public class DriveHardware {
 	 * speed, so we can use it when the robot is in high gear.
 	 */
 	public void chooseVelocityControl() {
-		rightMaster.changeControlMode(CANTalon.TalonControlMode.Speed);
-		leftMaster.changeControlMode(CANTalon.TalonControlMode.Speed);
+//		rightMaster.changeControlMode(CANTalon.TalonControlMode.Speed);
+//		leftMaster.changeControlMode(CANTalon.TalonControlMode.Speed);
 	}
 
 	public void chooseMotionProfileControl() {
-		rightMaster.changeControlMode(CANTalon.TalonControlMode.MotionProfile);
-		leftMaster.changeControlMode(CANTalon.TalonControlMode.MotionProfile);
+//		rightMaster.changeControlMode(CANTalon.TalonControlMode.MotionProfile);
+//		leftMaster.changeControlMode(CANTalon.TalonControlMode.MotionProfile);
 	}
 
 	public double getRightEncoder() {
-		return rightMaster.getPosition();
+		return rightMaster.getSelectedSensorPosition(0);
 	}
 
 	public double getLeftEncoder() {
-		return leftMaster.getPosition();
+		return leftMaster.getSelectedSensorPosition(0);
 	}
 
 	public double getAverageRawVelocity() {
-		return (rightMaster.getSpeed() + leftMaster.getSpeed()) * 0.5;
+		return (rightMaster.getSelectedSensorVelocity(0) + leftMaster.getSelectedSensorVelocity(0)) * 0.5;
 	}
 	
 	public double getRightVelocity(){
-		return rightMaster.getSpeed();
+		return rightMaster.getSelectedSensorVelocity(0);
 	}
 	
 	public double getLeftVelocity(){
-		return leftMaster.getSpeed();
+		return leftMaster.getSelectedSensorVelocity(0);
 	}
 
 	public double getAverageEncoderPosition() {
-		return (rightMaster.getPosition() + leftMaster.getPosition()) * 0.5;
+		return (rightMaster.getSelectedSensorPosition(0) + leftMaster.getSelectedSensorPosition(0)) * 0.5;
 	}
 
 	public double getPosition() {
-		return (rightMaster.getPosition() + leftMaster.getPosition()) * 0.5 / encoderTicksPerMeter; // [meters]
+		return (rightMaster.getSelectedSensorPosition(0) + leftMaster.getSelectedSensorPosition(0)) * 0.5 / encoderTicksPerMeter; // [meters]
 	}
 
 	public double getVelocity() {
-		return (rightMaster.getSpeed() + leftMaster.getSpeed()) * 0.5 * 10 / encoderTicksPerMeter; // [meters/second]
+		return (rightMaster.getSelectedSensorVelocity(0) + leftMaster.getSelectedSensorVelocity(0)) * 0.5 * 10 / encoderTicksPerMeter; // [meters/second]
 	}
 
 	public double getHeading() {
@@ -185,13 +176,13 @@ public class DriveHardware {
 	}
 
 	public void setTargets(double v, double omega) {
-		rightMaster.set((v - omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter);
-		leftMaster.set((v + omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter);
+		rightMaster.set(ControlMode.MotionProfile, (v - omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter);
+		leftMaster.set(ControlMode.MotionProfile, (v + omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter);
 	}
 
 	public void resetEncoder() {
-		rightMaster.setPosition(0);
-		leftMaster.setPosition(0);
+		rightMaster.setSelectedSensorPosition(0, 0, 0);
+		leftMaster.setSelectedSensorPosition(0, 0, 0);
 	}
 
 	public void resetGyro() {
