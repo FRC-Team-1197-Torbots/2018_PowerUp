@@ -129,11 +129,6 @@ public class DriveHardware {
 //		leftMaster.changeControlMode(CANTalon.TalonControlMode.Speed);
 	}
 
-	public void chooseMotionProfileControl() {
-//		rightMaster.changeControlMode(CANTalon.TalonControlMode.MotionProfile);
-//		leftMaster.changeControlMode(CANTalon.TalonControlMode.MotionProfile);
-	}
-
 	public double getRightEncoder() {
 		return rightMaster.getSelectedSensorPosition(0);
 	}
