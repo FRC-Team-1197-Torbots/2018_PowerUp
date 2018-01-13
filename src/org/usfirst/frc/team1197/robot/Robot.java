@@ -2,10 +2,8 @@ package org.usfirst.frc.team1197.robot;
 
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import org.usfirst.frc.team1197.robot.test.DriveHardwareTest;
 import org.usfirst.frc.team1197.robot.test.Test;
-
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
 
@@ -51,8 +49,8 @@ public class Robot extends SampleRobot {
     		drive.driving(getLeftY(), getLeftX(), getRightX(), getShiftButton(), getRightBumper(), 
 					getButtonA(), getButtonB(), getButtonX(), getButtonY());
 //    		SmartDashboard.putNumber("Gyro Value", drive.controller.hardware.getHeading());
-    		SmartDashboard.putNumber("Controller", getLeftY());
-    		SmartDashboard.putNumber("Average Raw Velocity Position", drive.controller.hardware.getAverageRawVelocity());
+//    		SmartDashboard.putNumber("Controller", getLeftY());
+//    		SmartDashboard.putNumber("Average Raw Velocity Position", drive.controller.hardware.getAverageRawVelocity());
     	}
     	drive.disable();
     }
@@ -62,10 +60,9 @@ public class Robot extends SampleRobot {
     	drive.controller.setClosedLoopConstants(mode);
     	drive.enable();
     	while(isEnabled()) {
-//    		System.out.println("HELLO");
-//    		SmartDashboard.putNumber("Gyro Value", drive.controller.hardware.getHeading());
     		Test.setButtons(getButtonA(), getButtonB());
 			hardwareTest.run();
+			
     	}
 	}
 

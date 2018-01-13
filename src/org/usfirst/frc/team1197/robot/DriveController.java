@@ -77,11 +77,9 @@ public class DriveController {
 		rotationPID.updateDt(dt);
 		joystickTraj.updateDt(dt);
 
-		// Translation
 		translationPID.updatePosition(hardware.getPosition());
 //		translationPID.updateVelocity(hardware.getVelocity());
 
-		// Rotation
 		rotationPID.updatePosition(hardware.getHeading());
 		rotationPID.updateVelocity(hardware.getOmega());
 
@@ -137,37 +135,14 @@ public class DriveController {
 				headingWaypoint = targetHeading;
 				activeTrajectory.setComplete(true);
 				nextTrajectory.setComplete(false);
-//				System.out.println("Active (Before): " + activeTrajectory);
-//				System.out.println("Next (Before): " + nextTrajectory);
 				activeTrajectory = nextTrajectory;
 				nextTrajectory = defaultTrajectory;
-//				System.out.println("Active (After): " + activeTrajectory);
-//				System.out.println("Next (After): " + nextTrajectory);
-//				System.out.println("=========================================================");
 			}
 		}
 	}
 	
 	public void setClosedLoopConstants(RobotMode state){
 		if(state == RobotMode.AUTO){
-//			rotationPID.setMinimumOutput(0.0);
-//			rotationPID.setkP(22.0);
-//			rotationPID.setkI(10.0);
-//			rotationPID.setkD(0.5);
-//			rotationPID.setkPv(0.0);
-//			rotationPID.setkA(0.0);
-//			translationPID.setMinimumOutput(0.0);
-//			translationPID.setkP(17.0);
-//			translationPID.setkI(1.0);
-//			translationPID.setkD(0.5);
-//			translationPID.setkPv(0.0);
-//			translationPID.setkA(0.0);
-//			
-//			translationPID.setPositionTolerance(0.05);
-//			translationPID.setVelocityTolerance(0.0125);
-//			rotationPID.setPositionTolerance(0.0125);
-//			rotationPID.setVelocityTolerance(0.0125);
-			
 			rotationPID.setMinimumOutput(0.0);
 			rotationPID.setkP(0.0);
 			rotationPID.setkI(0.0);
@@ -194,7 +169,7 @@ public class DriveController {
 			rotationPID.setkPv(0.0);
 			rotationPID.setkA(0.0);
 			translationPID.setMinimumOutput(0.0);
-			translationPID.setkP(0.5);
+			translationPID.setkP(0.0);
 			translationPID.setkI(0.0);
 			translationPID.setkD(0.0);
 			translationPID.setkPv(0.0);
@@ -204,24 +179,6 @@ public class DriveController {
 			translationPID.setVelocityTolerance(0.0125);
 			rotationPID.setPositionTolerance(0.0125);
 			rotationPID.setVelocityTolerance(0.0125);
-			
-//			rotationPID.setMinimumOutput(0.0);
-//			rotationPID.setkP(22.0);
-//			rotationPID.setkI(10.0);
-//			rotationPID.setkD(0.5);
-//			rotationPID.setkPv(0.0);
-//			rotationPID.setkA(0.0);
-//			translationPID.setMinimumOutput(0.0);
-//			translationPID.setkP(17.0);
-//			translationPID.setkI(1.0);
-//			translationPID.setkD(0.5);
-//			translationPID.setkPv(0.0);
-//			translationPID.setkA(0.0);
-//			
-//			translationPID.setPositionTolerance(0.05);
-//			translationPID.setVelocityTolerance(0.0125);
-//			rotationPID.setPositionTolerance(0.0125);
-//			rotationPID.setVelocityTolerance(0.0125);
 		}
 		else{
 			rotationPID.setMinimumOutput(0.0);
@@ -264,14 +221,12 @@ public class DriveController {
 		activeTrajectory = defaultTrajectory;
 		nextTrajectory = defaultTrajectory;
 		resetPID();
-		hardware.chooseVelocityControl();
 	}
 
 	public void setMotionProfilingInactive() {
 		motionProfilingActive = false;
 		activeTrajectory = defaultTrajectory;
 		nextTrajectory = defaultTrajectory;
-		hardware.choosePercentVbus();
 	}
 
 	public boolean motionProfilingActive() {

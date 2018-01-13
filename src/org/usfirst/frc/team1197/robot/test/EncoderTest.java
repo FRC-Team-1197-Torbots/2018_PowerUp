@@ -31,7 +31,6 @@ class EncoderTest extends Test {
 
 	@Override
 	protected void setup() {
-		hardware.choosePercentVbus();
 		hardware.resetEncoder();
 		testPhase = TestPhase.BEGIN;
 	}

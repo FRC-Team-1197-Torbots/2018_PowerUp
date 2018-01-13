@@ -30,9 +30,9 @@ public class DriveHardware {
 	public static final double absoluteMaxOmega = absoluteMaxSpeed / halfTrackWidth;
 	
 	private final double kF = (1023.0) / ((approximateSensorSpeed * quadEncNativeUnits) / (600.0));
-	private final double kP = 1.0; 
+	private final double kP = 0.0; 
 	private final double kI = 0.0; 
-	private final double kD = 50.0; 
+	private final double kD = 0.0; 
 	
 	private boolean leftOutputReversed = false;
 	private boolean rightOutputReversed = true;
@@ -56,8 +56,10 @@ public class DriveHardware {
 		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
 		rightMaster.setSensorPhase(false);
 		rightMaster.setInverted(rightOutputReversed); 
-		// rightMaster.configNominalOutputVoltage(+0.0f, -0.0f);
-		// rightMaster.configPeakOutputVoltage(+12.0f, -12.0f);
+		rightMaster.configNominalOutputForward(+0.0f, 0);
+		rightMaster.configNominalOutputReverse(-0.0f, 0);
+		rightMaster.configPeakOutputForward(+12.0f, 0);
+		rightMaster.configPeakOutputReverse(-12.0f, 0);
 		rightMaster.selectProfileSlot(0, 0);
 		rightMaster.config_kF(0, kF, 0);
 		rightMaster.config_kP(0, kP, 0);
@@ -69,8 +71,10 @@ public class DriveHardware {
 		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
 		leftMaster.setSensorPhase(true); 
 		leftMaster.setInverted(leftOutputReversed); 
-		// leftMaster.configNominalOutputVoltage(+0.0f, -0.0f);
-		// leftMaster.configPeakOutputVoltage(+12.0f, -12.0f);
+		leftMaster.configNominalOutputForward(+0.0f, 0);
+		leftMaster.configNominalOutputReverse(-0.0f, 0);
+		leftMaster.configPeakOutputForward(+12.0f, 0);
+		leftMaster.configPeakOutputReverse(-12.0f, 0);
 		leftMaster.selectProfileSlot(0, 0);
 		leftMaster.config_kF(0, kF, 0);
 		leftMaster.config_kP(0, kP, 0);
@@ -79,8 +83,9 @@ public class DriveHardware {
 
 		leftSlave1.follow(leftMaster);
 
-//		rightMaster.setStatusFrameRateMs(StatusFrameRate.QuadEncoder, 2);
-//		leftMaster.setStatusFrameRateMs(StatusFrameRate.QuadEncoder, 2);
+		// 160ms, hardcoded in for now because CTR did not add the StatusFrameRate for QuadEncoder
+		leftMaster.setStatusFramePeriod(160, 2, 0);
+		leftMaster.setStatusFramePeriod(160, 2, 0);
 		
 		resetEncoder();
 		resetGyro();
@@ -109,24 +114,6 @@ public class DriveHardware {
 	// Setting the right master Talon's speed to the given parameter
 	public void SetRight(double speed) {
 		rightMaster.set(ControlMode.PercentOutput, speed);
-	}
-
-	/*
-	 * A method to change the right and left master Talon's control mode to
-	 * percentVbus, so we can use it when the robot is in low gear.
-	 */
-	public void choosePercentVbus() {
-//		rightMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
-//		leftMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
-	}
-
-	/*
-	 * A method to change the right and left master Talon's control mode to
-	 * speed, so we can use it when the robot is in high gear.
-	 */
-	public void chooseVelocityControl() {
-//		rightMaster.changeControlMode(CANTalon.TalonControlMode.Speed);
-//		leftMaster.changeControlMode(CANTalon.TalonControlMode.Speed);
 	}
 
 	public double getRightEncoder() {
@@ -171,8 +158,8 @@ public class DriveHardware {
 	}
 
 	public void setTargets(double v, double omega) {
-		rightMaster.set(ControlMode.MotionProfile, (v - omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter);
-		leftMaster.set(ControlMode.MotionProfile, (v + omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter);
+		rightMaster.set(ControlMode.Velocity, (v - omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter);
+		leftMaster.set(ControlMode.Velocity, (v + omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter);
 	}
 
 	public void resetEncoder() {
