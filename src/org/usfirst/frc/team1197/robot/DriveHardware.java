@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //Currently configured for the red sensor bot.
 public class DriveHardware {
 	
@@ -18,7 +19,7 @@ public class DriveHardware {
 	private final Solenoid solenoid;
 	
 	private static final double encoderTicksPerMeter = 1689.2; // (units: ticks per meter)
-	private static final double approximateSensorSpeed = 4357; // measured maximum (units: RPM)
+	private static final double approximateSensorSpeed = 714; // measured maximum (units: RPM)
 	private static final double quadEncNativeUnits = 512.0; // (units: ticks per revolution)
 	
 	public static final double trackWidth = 0.5786; // [meters] (0.5786m = 23.13")
@@ -49,13 +50,9 @@ public class DriveHardware {
 		rightMaster = new TalonSRX(3);
 		rightSlave1 = new TalonSRX(4);  
 
-		// use only when testing to get approximate sensor speed
-		// rightSlave2.configEncoderCodesPerRev(128);
-		// leftMaster.configEncoderCodesPerRev(128);
-
 		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
-		rightMaster.setSensorPhase(false);
-		rightMaster.setInverted(rightOutputReversed); 
+		rightMaster.setSensorPhase(true);
+//		rightMaster.setInverted(rightOutputReversed); 
 		rightMaster.configNominalOutputForward(+0.0f, 0);
 		rightMaster.configNominalOutputReverse(-0.0f, 0);
 		rightMaster.configPeakOutputForward(+12.0f, 0);
@@ -70,7 +67,7 @@ public class DriveHardware {
 
 		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
 		leftMaster.setSensorPhase(true); 
-		leftMaster.setInverted(leftOutputReversed); 
+//		leftMaster.setInverted(leftOutputReversed); 
 		leftMaster.configNominalOutputForward(+0.0f, 0);
 		leftMaster.configNominalOutputReverse(-0.0f, 0);
 		leftMaster.configPeakOutputForward(+12.0f, 0);
@@ -184,10 +181,12 @@ public class DriveHardware {
 	}
 	
 	public void shiftToLowGear() {
+		SmartDashboard.putBoolean("LowGear", true);
 		solenoid.set(true);
 	}
 	
 	public void shiftToHighGear() {
+		SmartDashboard.putBoolean("LowGear", false);
 		solenoid.set(false);
 	}
 	
