@@ -22,7 +22,7 @@ public class DriveHardware {
 	private static final double approximateSensorSpeed = 714; // measured maximum (units: RPM)
 	private static final double quadEncNativeUnits = 512.0; // (units: ticks per revolution)
 	
-	public static final double trackWidth = 0.5786; // [meters] (0.5786m = 23.13")
+	public static final double trackWidth = 0.5786; // [meters].
 	public static final double halfTrackWidth = trackWidth / 2.0; // [meters]
 	public static final double backlash = 0.015; // [meters]
 	
