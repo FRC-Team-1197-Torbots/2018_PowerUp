@@ -1,6 +1,8 @@
 package org.usfirst.frc.team1197.robot;
 
 import edu.wpi.first.wpilibj.SampleRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import org.usfirst.frc.team1197.robot.test.DriveHardwareTest;
 import org.usfirst.frc.team1197.robot.test.Test;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -40,13 +42,13 @@ public class Robot extends SampleRobot {
     	shootakeTalon1 = new TalonSRX(7);
     	shootakeTalon2 = new TalonSRX(8);
     	
-    	armTalon1 = new TalonSRX(9);
-    	armTalon2 = new TalonSRX(10);
+//    	armTalon1 = new TalonSRX(9);
+//    	armTalon2 = new TalonSRX(10);
     	
     	drive = new TorDrive(player1, autoBox);
  
-    	shootake = new TorBantorShootake(player2, shootakeTalon1, shootakeTalon2);
-    	arm = new TorBantorArm(player2, armTalon1, armTalon2);
+//    	shootake = new TorBantorShootake(player2, shootakeTalon1, shootakeTalon2);
+//    	arm = new TorBantorArm(player2, armTalon1, armTalon2);
     	
     	hardwareTest = new DriveHardwareTest(drive.controller.hardware);
     }
@@ -66,9 +68,10 @@ public class Robot extends SampleRobot {
     	while(isEnabled()){
     		drive.driving(getLeftY(), getLeftX(), getRightX(), getShiftButton(), getRightBumper(), 
 					getButtonA(), getButtonB(), getButtonX(), getButtonY());
-    		shootake.shootakeUpdate();
-    		arm.armUpdate();
+//    		shootake.shootakeUpdate();
+//    		arm.armUpdate();
 //    		SmartDashboard.putNumber("Gyro Value", drive.controller.hardware.getHeading());
+//    		SmartDashboard.putNumber("Average Encoder Position", drive.controller.hardware.getAverageEncoderPosition());
 //    		SmartDashboard.putNumber("Average Raw Velocity Position", drive.controller.hardware.getAverageRawVelocity());
     	}
     	drive.disable();

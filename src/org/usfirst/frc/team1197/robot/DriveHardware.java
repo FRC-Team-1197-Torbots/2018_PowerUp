@@ -14,15 +14,18 @@ public class DriveHardware {
 
 	private final TalonSRX rightMaster;
 	private final TalonSRX rightSlave1;
+	private final TalonSRX rightSlave2;
 	private final TalonSRX leftMaster;
 	private final TalonSRX leftSlave1;
-	private final Solenoid solenoid;
+	private final TalonSRX leftSlave2;
 	
-	private static final double encoderTicksPerMeter = 1689.2; // (units: ticks per meter)
-	private static final double approximateSensorSpeed = 714; // measured maximum (units: RPM)
+	private final Solenoid solenoid;
+	//5125 - encoder, 46 inches.
+	private static final double encoderTicksPerMeter = 4386.3403; // (units: ticks per meter)
+	private static final double approximateSensorSpeed = 508.74; // measured maximum (units: RPM)
 	private static final double quadEncNativeUnits = 512.0; // (units: ticks per revolution)
 	
-	public static final double trackWidth = 0.5786; // [meters].
+	public static final double trackWidth = 0.5842; // [meters].
 	public static final double halfTrackWidth = trackWidth / 2.0; // [meters]
 	public static final double backlash = 0.015; // [meters]
 	
@@ -37,6 +40,7 @@ public class DriveHardware {
 	
 	private boolean leftOutputReversed = false;
 	private boolean rightOutputReversed = true;
+	
 	private double heading = 0.0;
 
 	public DriveHardware() {
@@ -44,15 +48,15 @@ public class DriveHardware {
 		
 		solenoid = new Solenoid(0);
 		
-		// TalonSRX, temporary fix
-		leftMaster = new TalonSRX(5);
-		leftSlave1 = new TalonSRX(6);  
-		rightMaster = new TalonSRX(3);
-		rightSlave1 = new TalonSRX(4);  
+		rightMaster = new TalonSRX(1);
+		rightSlave1 = new TalonSRX(2);
+		rightSlave2 = new TalonSRX(3);
+		leftMaster = new TalonSRX(4);
+		leftSlave1 = new TalonSRX(5);
+		leftSlave2 = new TalonSRX(6);  
 
 		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
-		rightMaster.setSensorPhase(true);
-//		rightMaster.setInverted(rightOutputReversed); 
+		rightMaster.setSensorPhase(rightOutputReversed);
 		rightMaster.configNominalOutputForward(+0.0f, 0);
 		rightMaster.configNominalOutputReverse(-0.0f, 0);
 		rightMaster.configPeakOutputForward(+12.0f, 0);
@@ -64,10 +68,10 @@ public class DriveHardware {
 		rightMaster.config_kD(0, kD, 0);
 
 		rightSlave1.follow(rightMaster);
+		rightSlave2.follow(rightMaster);
 
 		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
-		leftMaster.setSensorPhase(true); 
-//		leftMaster.setInverted(leftOutputReversed); 
+		leftMaster.setSensorPhase(leftOutputReversed); 
 		leftMaster.configNominalOutputForward(+0.0f, 0);
 		leftMaster.configNominalOutputReverse(-0.0f, 0);
 		leftMaster.configPeakOutputForward(+12.0f, 0);
@@ -79,6 +83,7 @@ public class DriveHardware {
 		leftMaster.config_kD(0, kD, 0);
 
 		leftSlave1.follow(leftMaster);
+		leftSlave2.follow(leftMaster);
 
 		// 160ms, hardcoded in for now because CTR did not add the StatusFrameRate for QuadEncoder
 		leftMaster.setStatusFramePeriod(160, 2, 0);
