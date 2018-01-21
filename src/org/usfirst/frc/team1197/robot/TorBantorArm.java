@@ -1,10 +1,5 @@
 package org.usfirst.frc.team1197.robot;
 
-import org.usfirst.frc.team1198.robot.Robot.SCALEDOWN;
-import org.usfirst.frc.team1198.robot.Robot.SCALEUP;
-import org.usfirst.frc.team1198.robot.Robot.SWITCHDOWN;
-import org.usfirst.frc.team1198.robot.Robot.SWITCHUP;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.Joystick;
