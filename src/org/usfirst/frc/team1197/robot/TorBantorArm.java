@@ -1,8 +1,14 @@
 package org.usfirst.frc.team1197.robot;
 
+import org.usfirst.frc.team1198.robot.Robot.SCALEDOWN;
+import org.usfirst.frc.team1198.robot.Robot.SCALEUP;
+import org.usfirst.frc.team1198.robot.Robot.SWITCHDOWN;
+import org.usfirst.frc.team1198.robot.Robot.SWITCHUP;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
 
 public class TorBantorArm {
 	private Joystick player2;
@@ -11,21 +17,17 @@ public class TorBantorArm {
 	private long currentTime;
 	private long endTime;
 	
-	private int switchUpPos1Time = 40;
-	private int switchUpPos2Time = 40;
-	private int switchUpPos3Time = 40;
+	private int switchPos1Time = 400;
+	private int switchPos2Time = 400;
+	private int switchPos3Time = switchPos1Time;
 	
-	private int scaleUpPos1Time = 40;
-	private int scaleUpPos2Time = 40;
-	private int scaleUpPos3Time = 40;
+	private int scalePos1Time = 600;
+	private int scalePos2Time = 600;
+	private int scalePos3Time = scalePos1Time;
 	
-	private int switchDownPos1Time = 40;
-	private int switchDownPos2Time = 40;
-	private int switchDownPos3Time = 40;
-	
-	private int scaleDownPos1Time = 40;
-	private int scaleDownPos2Time = 40;
-	private int scaleDownPos3Time = 40;
+	private double speed = 0;//don't change this
+	private double increment = 0.0001;
+	private double secondincrement = 0.00005;
 	
 	public static enum SWITCHUP {
 		IDLE, POS0, POS1, POS2, POS3;
@@ -59,16 +61,16 @@ public class TorBantorArm {
 	}
 	
 	public void armControl() {
-		if(player2.getRawButton(1)) {
+		if(player2.getRawButton(1) && switchUpState == SWITCHUP.IDLE && switchDownState == SWITCHDOWN.IDLE && scaleUpState == SCALEUP.IDLE && scaleDownState == SCALEDOWN.IDLE) {
 			switchUpState = SWITCHUP.POS0;
 		}
-		else if(player2.getRawButton(3)) {
+		else if(player2.getRawButton(2) && switchUpState == SWITCHUP.IDLE && switchDownState == SWITCHDOWN.IDLE && scaleUpState == SCALEUP.IDLE && scaleDownState == SCALEDOWN.IDLE) {
 			switchDownState = SWITCHDOWN.POS0;
 		}
-		else if(player2.getRawButton(2)){
+		else if(player2.getRawButton(3) && switchUpState == SWITCHUP.IDLE && switchDownState == SWITCHDOWN.IDLE && scaleUpState == SCALEUP.IDLE && scaleDownState == SCALEDOWN.IDLE){
 			scaleUpState = SCALEUP.POS0;
 		}
-		else if(player2.getRawButton(4)) {
+		else if(player2.getRawButton(4) && switchUpState == SWITCHUP.IDLE && switchDownState == SWITCHDOWN.IDLE && scaleUpState == SCALEUP.IDLE && scaleDownState == SCALEDOWN.IDLE) {
 			scaleDownState = SCALEDOWN.POS0;
 		}
 	}
@@ -100,25 +102,34 @@ public class TorBantorArm {
 		case IDLE:
 			break;
 		case POS0:
-			endTime = System.currentTimeMillis() + switchUpPos1Time;
+			endTime = System.currentTimeMillis() + switchPos1Time;
+			speed = 0;
 			switchUpState = SWITCHUP.POS1;
 			break;
 		case POS1:
 			currentTime = System.currentTimeMillis();
+			armTalon1.set(ControlMode.PercentOutput, speed);
+			armTalon2.set(ControlMode.PercentOutput, speed);
+			speed += increment;
 			if(endTime < currentTime) {
-				endTime = System.currentTimeMillis() + switchUpPos2Time;
+				endTime = System.currentTimeMillis() + switchPos2Time;
 				switchUpState = SWITCHUP.POS2;
 			}
 			break;
 		case POS2:
 			currentTime = System.currentTimeMillis();
+			armTalon1.set(ControlMode.PercentOutput, speed);
+			armTalon2.set(ControlMode.PercentOutput, speed);
 			if(endTime < currentTime) {
-				endTime = System.currentTimeMillis() + switchUpPos3Time;
+				endTime = System.currentTimeMillis() + 2 * switchPos3Time;
 				switchUpState = SWITCHUP.POS3;
 			}
 			break;
 		case POS3:
 			currentTime = System.currentTimeMillis();
+			armTalon1.set(ControlMode.PercentOutput, speed);
+			armTalon2.set(ControlMode.PercentOutput, speed);
+			speed -= secondincrement;
 			if(endTime < currentTime) {
 				armTalon1.set(ControlMode.PercentOutput, 0.0);
 				armTalon2.set(ControlMode.PercentOutput, 0.0);
@@ -133,25 +144,34 @@ public class TorBantorArm {
 		case IDLE:
 			break;
 		case POS0:
-			endTime = System.currentTimeMillis() + switchDownPos1Time;
+			endTime = System.currentTimeMillis() + switchPos1Time;
+			speed = 0;
 			switchDownState = SWITCHDOWN.POS1;
 			break;
 		case POS1:
 			currentTime = System.currentTimeMillis();
+			armTalon1.set(ControlMode.PercentOutput, speed);
+			armTalon2.set(ControlMode.PercentOutput, -speed);
+			speed -= increment;
 			if(endTime < currentTime) {
-				endTime = System.currentTimeMillis() + switchDownPos2Time;
+				endTime = System.currentTimeMillis() + switchPos2Time;
 				switchDownState = SWITCHDOWN.POS2;
 			}
 			break;
 		case POS2:
 			currentTime = System.currentTimeMillis();
+			armTalon1.set(ControlMode.PercentOutput, speed);
+			armTalon2.set(ControlMode.PercentOutput, -speed);
 			if(endTime < currentTime) {
-				endTime = System.currentTimeMillis() + switchDownPos3Time;
+				endTime = System.currentTimeMillis() + 2 * switchPos3Time;
 				switchDownState = SWITCHDOWN.POS3;
 			}
 			break;
 		case POS3:
 			currentTime = System.currentTimeMillis();
+			armTalon1.set(ControlMode.PercentOutput, speed);
+			armTalon2.set(ControlMode.PercentOutput, -speed);
+			speed += secondincrement;
 			if(endTime < currentTime) {
 				armTalon1.set(ControlMode.PercentOutput, 0.0);
 				armTalon2.set(ControlMode.PercentOutput, 0.0);
@@ -166,25 +186,34 @@ public class TorBantorArm {
 		case IDLE:
 			break;
 		case POS0:
-			endTime = System.currentTimeMillis() + scaleUpPos1Time;
+			endTime = System.currentTimeMillis() + scalePos1Time;
+			speed = 0;
 			scaleUpState = SCALEUP.POS1;
 			break;
 		case POS1:
 			currentTime = System.currentTimeMillis();
+			armTalon1.set(ControlMode.PercentOutput, speed);
+			armTalon2.set(ControlMode.PercentOutput, -speed);
+			speed += increment;
 			if(endTime < currentTime) {
-				endTime = System.currentTimeMillis() + scaleUpPos2Time;
+				endTime = System.currentTimeMillis() + scalePos2Time;
 				scaleUpState = SCALEUP.POS2;
 			}
 			break;
 		case POS2:
 			currentTime = System.currentTimeMillis();
+			armTalon1.set(ControlMode.PercentOutput, speed);
+			armTalon2.set(ControlMode.PercentOutput, -speed);
 			if(endTime < currentTime) {
-				endTime = System.currentTimeMillis() + scaleUpPos3Time;
+				endTime = System.currentTimeMillis() + 2 * scalePos3Time;
 				scaleUpState = SCALEUP.POS3;
 			}
 			break;
 		case POS3:
 			currentTime = System.currentTimeMillis();
+			armTalon1.set(ControlMode.PercentOutput, speed);
+			armTalon2.set(ControlMode.PercentOutput, -speed);
+			speed -= secondincrement;
 			if(endTime < currentTime) {
 				armTalon1.set(ControlMode.PercentOutput, 0.0);
 				armTalon2.set(ControlMode.PercentOutput, 0.0);
@@ -195,40 +224,49 @@ public class TorBantorArm {
 	}
 	
 	public void scaleDown() {
-		switch(scaleDownState) {
+		switch(scaleUpState) {
 		case IDLE:
 			break;
 		case POS0:
-			endTime = System.currentTimeMillis() + scaleDownPos1Time;
-			scaleDownState = SCALEDOWN.POS1;
+			endTime = System.currentTimeMillis() + scalePos1Time;
+			speed = 0;
+			scaleUpState = SCALEUP.POS1;
 			break;
 		case POS1:
 			currentTime = System.currentTimeMillis();
+			armTalon1.set(ControlMode.PercentOutput, speed);
+			armTalon2.set(ControlMode.PercentOutput, -speed);
+			speed -= increment;
 			if(endTime < currentTime) {
-				endTime = System.currentTimeMillis() + scaleDownPos2Time;
-				scaleDownState = SCALEDOWN.POS2;
+				endTime = System.currentTimeMillis() + scalePos2Time;
+				scaleUpState = SCALEUP.POS2;
 			}
 			break;
 		case POS2:
 			currentTime = System.currentTimeMillis();
+			armTalon1.set(ControlMode.PercentOutput, speed);
+			armTalon2.set(ControlMode.PercentOutput, -speed);
 			if(endTime < currentTime) {
-				endTime = System.currentTimeMillis() + scaleDownPos3Time;
-				scaleDownState = SCALEDOWN.POS3;
+				endTime = System.currentTimeMillis() + 2 * scalePos3Time;
+				scaleUpState = SCALEUP.POS3;
 			}
 			break;
 		case POS3:
 			currentTime = System.currentTimeMillis();
+			armTalon1.set(ControlMode.PercentOutput, speed);
+			armTalon2.set(ControlMode.PercentOutput, -speed);
+			speed += secondincrement;
 			if(endTime < currentTime) {
 				armTalon1.set(ControlMode.PercentOutput, 0.0);
 				armTalon2.set(ControlMode.PercentOutput, 0.0);
-				scaleDownState = SCALEDOWN.IDLE;
+				scaleUpState = SCALEUP.IDLE;
 			}
 			break;
 		}
 	}
 	
 	public void manualOverride() {
-		armTalon1.set(ControlMode.PercentOutput, player2.getY());
-		armTalon2.set(ControlMode.PercentOutput, player2.getY());
+			armTalon1.set(ControlMode.PercentOutput, -player2.getRawAxis(1));
+			armTalon2.set(ControlMode.PercentOutput, player2.getRawAxis(1));
 	}
 }

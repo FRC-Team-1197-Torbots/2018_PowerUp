@@ -70,6 +70,7 @@ public class Robot extends SampleRobot {
 					getButtonA(), getButtonB(), getButtonX(), getButtonY());
 //    		shootake.shootakeUpdate();
 //    		arm.armUpdate();
+//    		arm.armControl();
 //    		SmartDashboard.putNumber("Gyro Value", drive.controller.hardware.getHeading());
 //    		SmartDashboard.putNumber("Average Encoder Position", drive.controller.hardware.getAverageEncoderPosition());
 //    		SmartDashboard.putNumber("Average Raw Velocity Position", drive.controller.hardware.getAverageRawVelocity());

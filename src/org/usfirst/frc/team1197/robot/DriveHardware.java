@@ -21,8 +21,8 @@ public class DriveHardware {
 	
 	private final Solenoid solenoid;
 	//5125 - encoder, 46 inches.
-	private static final double encoderTicksPerMeter = 4386.3403; // (units: ticks per meter)
-	private static final double approximateSensorSpeed = 508.74; // measured maximum (units: RPM)
+	private static final double encoderTicksPerMeter = 4416.08796; // (units: ticks per meter)
+	private static final double approximateSensorSpeed = 545.2148; // measured maximum (units: RPM)
 	private static final double quadEncNativeUnits = 512.0; // (units: ticks per revolution)
 	
 	public static final double trackWidth = 0.5842; // [meters].
@@ -43,6 +43,10 @@ public class DriveHardware {
 	
 	private double heading = 0.0;
 
+	// WEST COAST DRIVE GEARBOXES
+	// MAKE SURE
+	// TO
+	// MAKE ONE OF THE MOTORS OPPOSITE!!!!!!!!!!!!!!!!!!!!!!!!!!! (motor that is farthest from the ouput shaft)
 	public DriveHardware() {
 		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 		
