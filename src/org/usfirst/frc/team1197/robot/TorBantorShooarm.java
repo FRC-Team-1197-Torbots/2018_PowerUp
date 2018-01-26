@@ -32,6 +32,9 @@ public class TorBantorShooarm {
 	 */
 	private int uod = 1;//up or down for manuel override. Change it from 1 to -1 to change the control on the arm with the right player y
 	private int ioo = 1;//in or out variable. Change this to switch around the outtake and intake when it is up. Change it from 1 to -1 to make it so either shoots out or (not wanted) intakes up there
+	//ioo is for pressing the BUTTON NOT MANUEL CONTROL
+	
+	private int ioop = -1;//in or our variable for the player under manuel control
 	
 	//the switch tunes
 	private long switchPos1Time = 400;//change this to make it go up higher during the switch
@@ -55,8 +58,8 @@ public class TorBantorShooarm {
 		TO HERE
 	*/
 	
-	private long switchPos3Time = (long) ((double)switchPos1Time * (double)switchIncrement1 / (double)switchIncrement2);//these two lines make sure it goes down as much as it went up
-	private long scalePos3Time = (long) ((double)scalePos1Time * (double)scaleIncrement1 / (double)scaleIncrement2);
+	private long switchPos3Time = (long)Math.sqrt(((double)switchPos1Time * (double)switchPos1Time * (double)switchIncrement1 / (double)switchIncrement2));//these two lines make sure it goes down as much as it went up
+	private long scalePos3Time = (long)Math.sqrt(((double)scalePos1Time * (double)switchPos1Time * (double)scaleIncrement1 / (double)scaleIncrement2));
 	private long currentTime;
 	private long endTime;
 	
@@ -295,8 +298,27 @@ public class TorBantorShooarm {
 		if(player2.getRawButton(5)) {
 			switchDo1 = switchDo.IDLE;
 			scaleDo1 = scaleDo.IDLE;
-			armTalon1.set(ControlMode.PercentOutput, player2.getRawAxis(1) * uod);
-			armTalon2.set(ControlMode.PercentOutput, -player2.getRawAxis(1) * uod);
+			if(Math.abs(player2.getRawAxis(1)) > 0.2) {
+				armTalon1.set(ControlMode.PercentOutput, player2.getRawAxis(1) * uod);
+				armTalon2.set(ControlMode.PercentOutput, -player2.getRawAxis(1) * uod);
+			} else {
+				armTalon1.set(ControlMode.PercentOutput, 0);
+				armTalon2.set(ControlMode.PercentOutput, 0);
+			}
+			if(player2.getRawButton(6)) {
+				Pusher.set(true);
+			} else {
+				Pusher.set(false);
+			}
+			if(Math.abs(player2.getRawAxis(5)) > 0.2) {
+				shootakeTalon1.set(ControlMode.PercentOutput, player2.getRawAxis(5) * ioop);
+				shootakeTalon2.set(ControlMode.PercentOutput, -player2.getRawAxis(5) * ioop);
+			} else {
+				shootakeTalon1.set(ControlMode.PercentOutput, 0);
+				shootakeTalon2.set(ControlMode.PercentOutput, 0);
+			}
+			
+			
 		}
 	}
 }

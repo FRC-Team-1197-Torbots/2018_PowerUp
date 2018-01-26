@@ -53,7 +53,7 @@ public class DriveController {
 		translationPID.setLimitMode(sensorLimitMode.Default);
 		translationPID.setNoiseMode(sensorNoiseMode.Noisy);
 		translationPID.setBacklash(0.0);
-		translationPID.setPositionTolerance(0.05);
+		translationPID.setPositionTolerance(0.0125);
 		translationPID.setVelocityTolerance(0.0125);
 
 		rotationPID.setLimitMode(sensorLimitMode.Coterminal);
@@ -163,22 +163,22 @@ public class DriveController {
 		}
 		else if(state == RobotMode.TELEOP){
 			rotationPID.setMinimumOutput(0.0);
-			rotationPID.setkP(0.0);
+			rotationPID.setkP(0.01);
 			rotationPID.setkI(0.0);
 			rotationPID.setkD(0.0);
 			rotationPID.setkPv(0.0);
 			rotationPID.setkA(0.0);
 			translationPID.setMinimumOutput(0.0);
-			translationPID.setkP(0.0);
+			translationPID.setkP(0.15);
 			translationPID.setkI(0.0);
-			translationPID.setkD(0.0);
+			translationPID.setkD(0.01);
 			translationPID.setkPv(0.0);
 			translationPID.setkA(0.0);
 			
-			translationPID.setPositionTolerance(0.05);
-			translationPID.setVelocityTolerance(0.0125);
-			rotationPID.setPositionTolerance(0.0125);
-			rotationPID.setVelocityTolerance(0.0125);
+			translationPID.setPositionTolerance(0.5);
+			translationPID.setVelocityTolerance(0.125);
+			rotationPID.setPositionTolerance(0.5);
+			rotationPID.setVelocityTolerance(0.125);
 		}
 		else{
 			rotationPID.setMinimumOutput(0.0);
@@ -356,8 +356,6 @@ public class DriveController {
 		positionWaypoint = 0.0;
 		headingWaypoint = 0.0;
 		joystickTraj.setState(0.0, 0.0, 0.0, 0.0);
-//		positionWaypoint = translationPID.position(); // TODO: remove
-//		headingWaypoint = rotationPID.position();
 	}
 
 	public void resetPID() {

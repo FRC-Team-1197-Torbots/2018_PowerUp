@@ -46,8 +46,8 @@ public class TorDrive
 				/ (joystickProfile.getMinTurnRadius() + DriveHardware.halfTrackWidth));
 		mpNotifier.startPeriodic(0.005);
 		
-		forward = new LinearTrajectory(1.0);
-		backward = new LinearTrajectory(-1.0);
+		forward = new LinearTrajectory(0.5);
+		backward = new LinearTrajectory(-0.5);
 		right = new PivotTrajectory(90);
 		left = new PivotTrajectory(-90);
 	}
@@ -164,8 +164,8 @@ public class TorDrive
 	}
 
 	public void ArcadeDrive(double throttleAxis, double arcadeSteerAxis){
-		throttleAxis = -throttleAxis; // TODO: see below.
-		arcadeSteerAxis = -arcadeSteerAxis;
+//		throttleAxis = -throttleAxis; // TODO: see below.
+//		arcadeSteerAxis = -arcadeSteerAxis;
 		
 		if (Math.abs(arcadeSteerAxis) <= 0.1) {
 			arcadeSteerAxis = 0.0D;
@@ -216,7 +216,7 @@ public class TorDrive
 		}
 		
 //		controller.setTargets(rightMotorSpeed, leftMotorSpeed); // TODO: This is what it was till now. Fix sign issue pls?
-		controller.setTargets(leftMotorSpeed, rightMotorSpeed); // (Let's switch to this and use TorJoystickProfiles if we can)
+		controller.setTargets(leftMotorSpeed * .5, rightMotorSpeed * .5); // (Let's switch to this and use TorJoystickProfiles if we can)
 	}
 
 	public void buttonDrive(boolean buttonA, boolean buttonB, boolean buttonX, boolean buttonY){

@@ -34,11 +34,11 @@ public class DriveHardware {
 	public static final double absoluteMaxOmega = absoluteMaxSpeed / halfTrackWidth;
 	
 	private final double kF = (1023.0) / ((approximateSensorSpeed * quadEncNativeUnits) / (600.0));
-	private final double kP = 0.0; 
+	private final double kP = 5.0; 
 	private final double kI = 0.0; 
-	private final double kD = 0.0; 
+	private final double kD = 100.0; 
 	
-	private boolean leftOutputReversed = false;
+	private boolean leftOutputReversed = true;
 	private boolean rightOutputReversed = true;
 	
 	private double heading = 0.0;
@@ -52,15 +52,14 @@ public class DriveHardware {
 		
 		solenoid = new Solenoid(0);
 		
-		rightMaster = new TalonSRX(1);
-		rightSlave1 = new TalonSRX(2);
-		rightSlave2 = new TalonSRX(3);
-		leftMaster = new TalonSRX(4);
-		leftSlave1 = new TalonSRX(5);
-		leftSlave2 = new TalonSRX(6);  
+		rightMaster = new TalonSRX(4);
+		rightSlave1 = new TalonSRX(5);
+		rightSlave2 = new TalonSRX(6);
+		leftMaster = new TalonSRX(1);
+		leftSlave1 = new TalonSRX(2);
+		leftSlave2 = new TalonSRX(3);  
 
 		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
-		rightMaster.setSensorPhase(rightOutputReversed);
 		rightMaster.configNominalOutputForward(+0.0f, 0);
 		rightMaster.configNominalOutputReverse(-0.0f, 0);
 		rightMaster.configPeakOutputForward(+12.0f, 0);
@@ -75,7 +74,6 @@ public class DriveHardware {
 		rightSlave2.follow(rightMaster);
 
 		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
-		leftMaster.setSensorPhase(leftOutputReversed); 
 		leftMaster.configNominalOutputForward(+0.0f, 0);
 		leftMaster.configNominalOutputReverse(-0.0f, 0);
 		leftMaster.configPeakOutputForward(+12.0f, 0);
@@ -88,6 +86,10 @@ public class DriveHardware {
 
 		leftSlave1.follow(leftMaster);
 		leftSlave2.follow(leftMaster);
+		
+		leftMaster.setInverted(true);
+		leftSlave1.setInverted(true);
+		leftSlave2.setInverted(true);
 
 		// 160ms, hardcoded in for now because CTR did not add the StatusFrameRate for QuadEncoder
 		leftMaster.setStatusFramePeriod(160, 2, 0);
@@ -164,8 +166,8 @@ public class DriveHardware {
 	}
 
 	public void setTargets(double v, double omega) {
-		rightMaster.set(ControlMode.Velocity, (v - omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter);
-		leftMaster.set(ControlMode.Velocity, (v + omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter);
+		rightMaster.set(ControlMode.Velocity, (v + omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter);
+		leftMaster.set(ControlMode.Velocity, (v - omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter);
 	}
 
 	public void resetEncoder() {
