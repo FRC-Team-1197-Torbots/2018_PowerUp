@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 public class TelBantorShooarm {
 	private Joystick player2;
@@ -13,6 +14,7 @@ public class TelBantorShooarm {
 	private TalonSRX shootakeTalon1;
 	private TalonSRX shootakeTalon2;
 	private AnalogPotentiometer fourtwenty;//it is the POT
+	private DigitalInput breakBeam;
 //	private Solenoid Pusher;
 	
 	
@@ -54,7 +56,7 @@ public class TelBantorShooarm {
 	 TUNE THE ARM FROM HERE
 	 */
 	private int uod = 1;//up or down for manuel override. Change it from 1 to -1 to change the control on the arm with the right player y
-	private int ioo = 1;//in or out variable. Change this to switch around the outtake and intake when it is up. Change it from 1 to -1 to make it so either shoots out or (not wanted) intakes up there
+	private int ioo = -1;//in or out variable. Change this to switch around the outtake and intake when it is up. Change it from 1 to -1 to make it so either shoots out or (not wanted) intakes up there
 	//ioo is for pressing the BUTTON NOT MANUEL CONTROL
 	
 	private int ioop = -1;//in or our variable for the player under manuel control
@@ -67,6 +69,8 @@ public class TelBantorShooarm {
 	//the deacceleration increment for the switch
 	
 	
+	private double degreeTolerance = 0.5;//the tolerance of when it comes down to what degree it reaches
+	
 	//the scale tunes
 	private long scalePos1Time = 500;
 	private long scalePos2Time = 150;
@@ -75,7 +79,7 @@ public class TelBantorShooarm {
 	//the shooting and intake tunes
 	private double shootPower = 1;//the power it shoots out at
 	private long extendTime = 5;//the time we give to the solenoid to extend and push the cube
-	private long revTime = 150;//the time we give for the motors to go from 0 to the speed and back
+	private long revTime = 500;//the time we give for the motors to go from 0 to the speed and back
 	private double intakePower = 0.6;
 	private double startAngle;
 	/**********************************
@@ -88,6 +92,7 @@ public class TelBantorShooarm {
 	private double b;
 	private long startTime;
 	private long relativeTime;
+	private double lastAngle;
 	
 	public TelBantorShooarm(Joystick player2, TalonSRX armTalon1, TalonSRX armTalon2, TalonSRX shootakeTalon1, TalonSRX shootakeTalon2) {
 	//public TelBantorShooarm(Joystick player2, TalonSRX armTalon1, TalonSRX armTalon2, TalonSRX shootakeTalon, TalonSRX shootakeTalon2, Solenoid Pusher) {	
@@ -99,18 +104,21 @@ public class TelBantorShooarm {
 		//this.Pusher = Pusher;
 		fourtwenty = new AnalogPotentiometer(0, 360, 0);//analog number, how much the value changes as it goes over the 0 to 5 voltage range, the initial value of the degree of the potentiometer
 		startAngle = fourtwenty.get() % 360;
+		breakBeam = new DigitalInput(0);
 	}
 	
 	public void TorBantorArmAndShooterUpdate() {
 		switchDo();
 		scaleDo();
+		shoot();
+		intake();
 		if(player2.getRawButton(3) && switchDo1 == switchDo.IDLE && scaleDo1 == scaleDo.IDLE && !player2.getRawButton(5) && intakeIt == intake.IDLE && shootIt == shoot.IDLE) {
 			switchDo1 = switchDo.POS0;
 		}
 		if(player2.getRawButton(4) && switchDo1 == switchDo.IDLE && scaleDo1 == scaleDo.IDLE && !player2.getRawButton(5) && intakeIt == intake.IDLE && shootIt == shoot.IDLE) {
 			scaleDo1 = 	scaleDo.POS0;
 		}
-		if(player2.getRawButton(4) && switchDo1 == switchDo.IDLE && scaleDo1 == scaleDo.IDLE && !player2.getRawButton(5) && intakeIt == intake.IDLE && shootIt == shoot.IDLE) {
+		if(player2.getRawButton(1) && switchDo1 == switchDo.IDLE && scaleDo1 == scaleDo.IDLE && !player2.getRawButton(5) && intakeIt == intake.IDLE && shootIt == shoot.IDLE) {
 			intakeIt = intake.POS0;
 		}
 		if(Math.abs(player2.getRawAxis(3)) > 0.2 && switchDo1 == switchDo.IDLE && scaleDo1 == scaleDo.IDLE && !player2.getRawButton(5) && intakeIt == intake.IDLE && shootIt == shoot.IDLE) {
@@ -131,7 +139,7 @@ public class TelBantorShooarm {
 			a = -2 * switchMaxSpeed / (switchPos1Time * switchPos1Time * switchPos1Time);//a = -2y / (x ^ 3)
 			b = 3 * switchMaxSpeed / (switchPos1Time * switchPos1Time);
 			startTime = System.currentTimeMillis();
-			if((fourtwenty.get() - startAngle % 360) > 60) {
+			if((fourtwenty.get() - startAngle % 360) > 40) {
 				switchDo1 = switchDo.IDLE;
 			} else if((fourtwenty.get() - startAngle % 360) > 15) {
 				switchDo1 = switchDo.POS4;
@@ -187,14 +195,15 @@ public class TelBantorShooarm {
 			if(currentTime >= endTime) { 
 				endTime = currentTime + switchPos1Time;
 				startTime = System.currentTimeMillis();
+				lastAngle = (fourtwenty.get() - startAngle) % 360;
 				switchDo1 = switchDo.POS6;
 			}
 			break;
 		case POS6:
-			speed = switchMaxSpeed - ((a * relativeTime * relativeTime * relativeTime) + (b * relativeTime * relativeTime));
+			speed = (switchMaxSpeed * (fourtwenty.get() - startAngle) / lastAngle) + 0.05;
 			armTalon1.set(ControlMode.PercentOutput, speed * uod);
 			armTalon2.set(ControlMode.PercentOutput, -speed * uod);
-			if(currentTime >= endTime) {
+			if(Math.abs(fourtwenty.get() - startAngle) <= degreeTolerance) {
 				armTalon1.set(ControlMode.PercentOutput, 0);
 				armTalon2.set(ControlMode.PercentOutput, 0);
 				switchDo1 = switchDo.IDLE;
@@ -215,7 +224,7 @@ public class TelBantorShooarm {
 			a = -2 * scaleMaxSpeed / (scalePos1Time * scalePos1Time * scalePos1Time);//a = -2y / (x ^ 3)
 			b = 3 * scaleMaxSpeed / (scalePos1Time * scalePos1Time);
 			startTime = System.currentTimeMillis();
-			if(((fourtwenty.get() - startAngle % 360)) > 60) {
+			if(((fourtwenty.get() - startAngle % 360)) > 40) {
 				scaleDo1 = scaleDo.POS4;
 			} else if(((fourtwenty.get() - startAngle % 360)) > 15) {
 				scaleDo1 = scaleDo.IDLE;
@@ -271,14 +280,15 @@ public class TelBantorShooarm {
 			if(currentTime >= endTime) { 
 				endTime = currentTime + scalePos1Time;
 				startTime = System.currentTimeMillis();
+				lastAngle = fourtwenty.get();
 				scaleDo1 = scaleDo.POS6;
 			}
 			break;
 		case POS6:
-			speed = scaleMaxSpeed - ((a * relativeTime * relativeTime * relativeTime) + (b * relativeTime * relativeTime));
+			speed = (scaleMaxSpeed * (fourtwenty.get() - startAngle) / lastAngle) + 0.2;
 			armTalon1.set(ControlMode.PercentOutput, speed * uod);
 			armTalon2.set(ControlMode.PercentOutput, -speed * uod);
-			if(currentTime >= endTime) {
+			if(fourtwenty.get() - startAngle <= degreeTolerance) {
 				armTalon1.set(ControlMode.PercentOutput, 0);
 				armTalon2.set(ControlMode.PercentOutput, 0);
 				scaleDo1 = scaleDo.IDLE;
@@ -356,7 +366,7 @@ public class TelBantorShooarm {
 			currentTime = System.currentTimeMillis();
 			shootakeTalon1.set(ControlMode.PercentOutput, -intakePower * ioo);
 			shootakeTalon2.set(ControlMode.PercentOutput, intakePower * ioo);
-			if(currentTime >= endTime) {
+			if(breakBeam.get() || (currentTime >= endTime && player2.getRawButton(1))) {
 				endTime = currentTime + revTime;
 				intakeIt = intake.MOTORSTOP;
 			}

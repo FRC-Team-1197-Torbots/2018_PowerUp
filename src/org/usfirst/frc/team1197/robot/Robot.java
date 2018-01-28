@@ -40,7 +40,7 @@ public class Robot extends SampleRobot {
 //    	compressor = new Compressor();
     	
 //    	player1 = new Joystick(0);
-    	player2 = new Joystick(3);
+    	player2 = new Joystick(2);
 //    	autoBox = new Joystick(2);
    
     	shootakeTalon1 = new TalonSRX(5);
