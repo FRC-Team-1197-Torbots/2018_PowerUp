@@ -88,11 +88,10 @@ public class TelBantorShooarm {
 	
 	private long currentTime;
 	private long endTime;
-	private double a;//these are the a and b in the cubic function
-	private double b;
 	private long startTime;
 	private long relativeTime;
 	private double lastAngle;
+	private double x;
 	
 	public TelBantorShooarm(Joystick player2, TalonSRX armTalon1, TalonSRX armTalon2, TalonSRX shootakeTalon1, TalonSRX shootakeTalon2) {
 	//public TelBantorShooarm(Joystick player2, TalonSRX armTalon1, TalonSRX armTalon2, TalonSRX shootakeTalon, TalonSRX shootakeTalon2, Solenoid Pusher) {	
@@ -130,14 +129,13 @@ public class TelBantorShooarm {
 	public void switchDo() {
 		currentTime = System.currentTimeMillis();
 		relativeTime = currentTime - startTime;
+		x = (relativeTime * 2 * Math.PI / switchPos1Time) - Math.PI;
 		switch(switchDo1) {
 		case IDLE:
 			break;
 		case POS0:
 			endTime = currentTime + switchPos1Time;
 			speed = 0;
-			a = -2 * switchMaxSpeed / (switchPos1Time * switchPos1Time * switchPos1Time);//a = -2y / (x ^ 3)
-			b = 3 * switchMaxSpeed / (switchPos1Time * switchPos1Time);
 			startTime = System.currentTimeMillis();
 			if((fourtwenty.get() - startAngle % 360) > 40) {
 				switchDo1 = switchDo.IDLE;
@@ -148,7 +146,7 @@ public class TelBantorShooarm {
 			}
 			break;
 		case POS1:
-			speed = (a * relativeTime * relativeTime * relativeTime) + (b * relativeTime * relativeTime);
+			speed = (Math.sin(x) + x + Math.PI) * switchMaxSpeed / (2 * Math.PI);
 			armTalon1.set(ControlMode.PercentOutput, -speed * uod);
 			armTalon2.set(ControlMode.PercentOutput, speed * uod);
 			if(currentTime >= endTime) {
@@ -166,7 +164,7 @@ public class TelBantorShooarm {
 			}
 			break;
 		case POS3:
-			speed = switchMaxSpeed - ((a * relativeTime * relativeTime * relativeTime) + (b * relativeTime * relativeTime));
+			speed = switchMaxSpeed - ((Math.sin(x) + x + Math.PI) * switchMaxSpeed / (2 * Math.PI));
 			armTalon1.set(ControlMode.PercentOutput, -speed * uod);
 			armTalon2.set(ControlMode.PercentOutput, speed * uod);
 			if(currentTime >= endTime) {
@@ -178,7 +176,7 @@ public class TelBantorShooarm {
 			}
 			break;
 		case POS4:
-			speed = (a * relativeTime * relativeTime * relativeTime) + (b * relativeTime * relativeTime);
+			speed = (Math.sin(x) + x + Math.PI) * switchMaxSpeed / (2 * Math.PI);
 			armTalon1.set(ControlMode.PercentOutput, speed * uod);
 			armTalon2.set(ControlMode.PercentOutput, -speed * uod);
 			if(currentTime >= endTime) {
@@ -200,7 +198,7 @@ public class TelBantorShooarm {
 			}
 			break;
 		case POS6:
-			speed = (switchMaxSpeed * (fourtwenty.get() - startAngle) / lastAngle) + 0.05;
+			speed = (switchMaxSpeed * ((fourtwenty.get() - startAngle) / lastAngle)) + 0.05;
 			armTalon1.set(ControlMode.PercentOutput, speed * uod);
 			armTalon2.set(ControlMode.PercentOutput, -speed * uod);
 			if(Math.abs(fourtwenty.get() - startAngle) <= degreeTolerance) {
@@ -215,14 +213,13 @@ public class TelBantorShooarm {
 	public void scaleDo() {
 		currentTime = System.currentTimeMillis();
 		relativeTime = currentTime - startTime;
+		x = (relativeTime * 2 * Math.PI / scalePos1Time) - Math.PI;
 		switch(scaleDo1) {
 		case IDLE:
 			break;
 		case POS0:
 			endTime = currentTime + scalePos1Time;
 			speed = 0;
-			a = -2 * scaleMaxSpeed / (scalePos1Time * scalePos1Time * scalePos1Time);//a = -2y / (x ^ 3)
-			b = 3 * scaleMaxSpeed / (scalePos1Time * scalePos1Time);
 			startTime = System.currentTimeMillis();
 			if(((fourtwenty.get() - startAngle % 360)) > 40) {
 				scaleDo1 = scaleDo.POS4;
@@ -233,7 +230,7 @@ public class TelBantorShooarm {
 			}
 			break;
 		case POS1:
-			speed = (a * relativeTime * relativeTime * relativeTime) + (b * relativeTime * relativeTime);
+			speed = (Math.sin(x) + x + Math.PI) * scaleMaxSpeed / (2 * Math.PI);
 			armTalon1.set(ControlMode.PercentOutput, -speed * uod);
 			armTalon2.set(ControlMode.PercentOutput, speed * uod);
 			if(currentTime >= endTime) {
@@ -251,7 +248,7 @@ public class TelBantorShooarm {
 			}
 			break;
 		case POS3:
-			speed = scaleMaxSpeed - ((a * relativeTime * relativeTime * relativeTime) + (b * relativeTime * relativeTime));
+			speed = scaleMaxSpeed - ((Math.sin(x) + x + Math.PI) * scaleMaxSpeed / (2 * Math.PI));
 			armTalon1.set(ControlMode.PercentOutput, -speed * uod);
 			armTalon2.set(ControlMode.PercentOutput, speed * uod);
 			if(currentTime >= endTime) {
@@ -263,7 +260,7 @@ public class TelBantorShooarm {
 			}
 			break;
 		case POS4:
-			speed = (a * relativeTime * relativeTime * relativeTime) + (b * relativeTime * relativeTime);
+			speed = (Math.sin(x) + x + Math.PI) * scaleMaxSpeed / (2 * Math.PI);
 			armTalon1.set(ControlMode.PercentOutput, speed * uod);
 			armTalon2.set(ControlMode.PercentOutput, -speed * uod);
 			if(currentTime >= endTime) {
@@ -285,7 +282,7 @@ public class TelBantorShooarm {
 			}
 			break;
 		case POS6:
-			speed = (scaleMaxSpeed * (fourtwenty.get() - startAngle) / lastAngle) + 0.2;
+			speed = (scaleMaxSpeed * ((fourtwenty.get() - startAngle) / lastAngle)) + 0.2;
 			armTalon1.set(ControlMode.PercentOutput, speed * uod);
 			armTalon2.set(ControlMode.PercentOutput, -speed * uod);
 			if(fourtwenty.get() - startAngle <= degreeTolerance) {
