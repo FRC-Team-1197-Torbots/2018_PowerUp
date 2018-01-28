@@ -35,11 +35,11 @@ public class TelBantorShooarm {
 		private scaleDo() {}
 	}
 	private static enum shoot {
-		IDLE, POS0, MOTOROUT, EXTEND, RETRACT, MOTORSTOP;
+		IDLE, POS0, MOTOROUT, EXTEND, RETRACT;
 		private shoot() {}
 	}
 	private static enum intake {
-		IDLE, POS0, RETRACT, MOTORIN, MOTORSTOP;
+		IDLE, POS0, RETRACT, MOTORIN;
 		private intake() {}
 	}
 	
@@ -325,20 +325,10 @@ public class TelBantorShooarm {
 			currentTime = System.currentTimeMillis();
 //			Pusher.set(false);
 			if(currentTime >= endTime) {
-				endTime = currentTime + revTime;
-				shootIt = shoot.MOTORSTOP;
-			}
+				shootakeTalon1.set(ControlMode.PercentOutput, 0);
+				shootakeTalon2.set(ControlMode.PercentOutput, 0);	
+				shootIt = shoot.IDLE;		}
 			break;
-		case MOTORSTOP:
-			currentTime = System.currentTimeMillis();
-			shootakeTalon1.set(ControlMode.PercentOutput, 0);
-			shootakeTalon2.set(ControlMode.PercentOutput, 0);
-			if(currentTime >= endTime) {
-				shootIt = shoot.IDLE;
-			}
-			break;
-		
-		
 		}
 	}
 	
@@ -364,15 +354,8 @@ public class TelBantorShooarm {
 			shootakeTalon1.set(ControlMode.PercentOutput, -intakePower * ioo);
 			shootakeTalon2.set(ControlMode.PercentOutput, intakePower * ioo);
 			if(breakBeam.get() || (currentTime >= endTime && player2.getRawButton(1))) {
-				endTime = currentTime + revTime;
-				intakeIt = intake.MOTORSTOP;
-			}
-			break;
-		case MOTORSTOP:
-			currentTime = System.currentTimeMillis();
-			shootakeTalon1.set(ControlMode.PercentOutput, 0);
-			shootakeTalon2.set(ControlMode.PercentOutput, 0);
-			if(currentTime >= endTime) {
+				shootakeTalon1.set(ControlMode.PercentOutput, 0);
+				shootakeTalon2.set(ControlMode.PercentOutput, 0);
 				intakeIt = intake.IDLE;
 			}
 			break;
