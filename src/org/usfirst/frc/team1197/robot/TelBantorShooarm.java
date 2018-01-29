@@ -62,19 +62,19 @@ public class TelBantorShooarm {
 	private int ioop = -1;//in or our variable for the player under manuel control
 	
 	//the switch tunes
-	private long switchPos1Time = 400;//change this to make it go up higher during the switch
-	private long switchPos2Time = 150;
+	private long switchPos1Time = 200;//change this to make it go up higher during the switch
+	private long switchPos2Time = 75;
 	//this is the time it is at the max speed
-	private double switchMaxSpeed = .3;//the acceleration increment for the switch
+	private double switchMaxSpeed = .6;//the acceleration increment for the switch
 	//the deacceleration increment for the switch
 	
 	
 	private double degreeTolerance = 0.5;//the tolerance of when it comes down to what degree it reaches
 	
 	//the scale tunes
-	private long scalePos1Time = 500;
-	private long scalePos2Time = 150;
-	private double scaleMaxSpeed = .4;
+	private long scalePos1Time = 250;
+	private long scalePos2Time = 75;
+	private double scaleMaxSpeed = .8;
 	
 	//the shooting and intake tunes
 	private double shootPower = 1;//the power it shoots out at
@@ -93,6 +93,7 @@ public class TelBantorShooarm {
 	private double lastAngle;
 	private double x;
 	private boolean stop = false;
+	private double lastTime;
 	
 	public TelBantorShooarm(Joystick player2, TalonSRX armTalon1, TalonSRX armTalon2, TalonSRX shootakeTalon1, TalonSRX shootakeTalon2) {
 	//public TelBantorShooarm(Joystick player2, TalonSRX armTalon1, TalonSRX armTalon2, TalonSRX shootakeTalon, TalonSRX shootakeTalon2, Solenoid Pusher) {	
@@ -211,7 +212,7 @@ public class TelBantorShooarm {
 			}
 			break;
 		case POS6:
-			speed = (switchMaxSpeed * ((fourtwenty.get() - startAngle) / lastAngle)) + 0.05;
+			speed = (switchMaxSpeed * ((fourtwenty.get() - startAngle) / lastAngle)) - 0.05;
 			armTalon1.set(ControlMode.PercentOutput, speed * uod);
 			armTalon2.set(ControlMode.PercentOutput, -speed * uod);
 			if(Math.abs(fourtwenty.get() - startAngle) <= degreeTolerance) {
@@ -352,7 +353,11 @@ public class TelBantorShooarm {
 		case POS0:
 			currentTime = System.currentTimeMillis();
 			endTime = currentTime + extendTime;
-			intakeIt = intake.RETRACT;
+			if(currentTime - lastTime >= 2000) {
+				intakeIt = intake.RETRACT;	
+			} else {
+				intakeIt = intake.IDLE;
+			}
 			break;
 		case RETRACT:
 			currentTime = System.currentTimeMillis();
@@ -369,6 +374,7 @@ public class TelBantorShooarm {
 			if(breakBeam.get() || (currentTime >= endTime && player2.getRawButton(1))) {
 				shootakeTalon1.set(ControlMode.PercentOutput, 0);
 				shootakeTalon2.set(ControlMode.PercentOutput, 0);
+				lastTime = currentTime;
 				intakeIt = intake.IDLE;
 			}
 			break;
