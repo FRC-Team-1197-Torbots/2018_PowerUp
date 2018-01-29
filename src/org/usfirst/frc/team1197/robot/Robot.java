@@ -1,14 +1,14 @@
 package org.usfirst.frc.team1197.robot;
 
 import edu.wpi.first.wpilibj.SampleRobot;
-//import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Solenoid;
 //import edu.wpi.first.wpilibj.Ultrasonic;
 //import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //
 //import org.usfirst.frc.team1197.robot.test.DriveHardwareTest;
 //import org.usfirst.frc.team1197.robot.test.Test;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-//import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class Robot extends SampleRobot {
@@ -18,10 +18,13 @@ public class Robot extends SampleRobot {
 	private Joystick player2;
 	private Joystick autoBox;
 	
-	//private Solenoid Pusher;
+//	private Solenoid releaser;
+//	private Solenoid Pusher;
 	
 	private TalonSRX shootakeTalon1;
 	private TalonSRX shootakeTalon2;
+	
+//	private TalonSRX puller;
 	
 	private TalonSRX armTalon1;
 	private TalonSRX armTalon2;
@@ -31,6 +34,7 @@ public class Robot extends SampleRobot {
 	protected static RobotMode mode;
 	
 	private TelBantorShooarm shooArm;
+	private Climber climber;
 	
 //	private DriveHardwareTest hardwareTest;
 	
@@ -46,15 +50,20 @@ public class Robot extends SampleRobot {
     	shootakeTalon1 = new TalonSRX(5);
     	shootakeTalon2 = new TalonSRX(6);
     	
+    	
     	armTalon1 = new TalonSRX(3);
     	armTalon2 = new TalonSRX(4);
 //    	ultra = new Ultrasonic(0,1);
 //    	ultra.setAutomaticMode(isEnabled());
 //    	drive = new TorDrive(player1, autoBox);
+//    	puller = new TalonSRX(8);
     	
     	//Pusher = new Solenoid(5);
+//    	releaser = new Solenoid(7);
     	
     	shooArm = new TelBantorShooarm(player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2);
+//    	shooArm = new TelBantorShooarm(player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, Pusher);
+//    	climber = new Climber(releaser, puller, shooArm, player2);
     	
 //    	hardwareTest = new DriveHardwareTest(drive.controller.hardware);
     }

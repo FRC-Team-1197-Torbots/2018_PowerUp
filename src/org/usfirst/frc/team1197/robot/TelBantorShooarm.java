@@ -92,6 +92,7 @@ public class TelBantorShooarm {
 	private long relativeTime;
 	private double lastAngle;
 	private double x;
+	private boolean stop = false;
 	
 	public TelBantorShooarm(Joystick player2, TalonSRX armTalon1, TalonSRX armTalon2, TalonSRX shootakeTalon1, TalonSRX shootakeTalon2) {
 	//public TelBantorShooarm(Joystick player2, TalonSRX armTalon1, TalonSRX armTalon2, TalonSRX shootakeTalon, TalonSRX shootakeTalon2, Solenoid Pusher) {	
@@ -111,19 +112,31 @@ public class TelBantorShooarm {
 		scaleDo();
 		shoot();
 		intake();
-		if(player2.getRawButton(3) && switchDo1 == switchDo.IDLE && scaleDo1 == scaleDo.IDLE && !player2.getRawButton(5) && intakeIt == intake.IDLE && shootIt == shoot.IDLE) {
+		if(!stop && player2.getRawButton(3) && switchDo1 == switchDo.IDLE && scaleDo1 == scaleDo.IDLE && !player2.getRawButton(5) && intakeIt == intake.IDLE && shootIt == shoot.IDLE) {
 			switchDo1 = switchDo.POS0;
 		}
-		if(player2.getRawButton(4) && switchDo1 == switchDo.IDLE && scaleDo1 == scaleDo.IDLE && !player2.getRawButton(5) && intakeIt == intake.IDLE && shootIt == shoot.IDLE) {
+		if(!stop && player2.getRawButton(4) && switchDo1 == switchDo.IDLE && scaleDo1 == scaleDo.IDLE && !player2.getRawButton(5) && intakeIt == intake.IDLE && shootIt == shoot.IDLE) {
 			scaleDo1 = 	scaleDo.POS0;
 		}
-		if(player2.getRawButton(1) && switchDo1 == switchDo.IDLE && scaleDo1 == scaleDo.IDLE && !player2.getRawButton(5) && intakeIt == intake.IDLE && shootIt == shoot.IDLE) {
+		if(!stop && player2.getRawButton(1) && switchDo1 == switchDo.IDLE && scaleDo1 == scaleDo.IDLE && !player2.getRawButton(5) && intakeIt == intake.IDLE && shootIt == shoot.IDLE) {
 			intakeIt = intake.POS0;
 		}
-		if(Math.abs(player2.getRawAxis(3)) > 0.2 && switchDo1 == switchDo.IDLE && scaleDo1 == scaleDo.IDLE && !player2.getRawButton(5) && intakeIt == intake.IDLE && shootIt == shoot.IDLE) {
+		if(!stop && Math.abs(player2.getRawAxis(3)) > 0.2 && switchDo1 == switchDo.IDLE && scaleDo1 == scaleDo.IDLE && !player2.getRawButton(5) && intakeIt == intake.IDLE && shootIt == shoot.IDLE) {
 			shootIt = shoot.POS0;
 		}
 		manueloverride();
+	}
+	
+	public void stop() {
+		switchDo1 = switchDo.IDLE;
+		scaleDo1 = scaleDo.IDLE;
+		shootIt = shoot.IDLE;
+		intakeIt = intake.IDLE;
+		armTalon1.set(ControlMode.PercentOutput, 0);
+		armTalon2.set(ControlMode.PercentOutput, 0);
+		shootakeTalon1.set(ControlMode.PercentOutput, 0);
+		shootakeTalon2.set(ControlMode.PercentOutput, 0);
+		stop = true;
 	}
 	
 	public void switchDo() {
@@ -364,7 +377,7 @@ public class TelBantorShooarm {
 	
 	
 	public void manueloverride() {
-		if(player2.getRawButton(5)) {
+		if(player2.getRawButton(5) && !stop) {
 			switchDo1 = switchDo.IDLE;
 			scaleDo1 = scaleDo.IDLE;
 			shootIt = shoot.IDLE;
