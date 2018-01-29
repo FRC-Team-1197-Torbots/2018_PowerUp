@@ -62,19 +62,19 @@ public class TelBantorShooarm {
 	private int ioop = -1;//in or our variable for the player under manuel control
 	
 	//the switch tunes
-	private long switchPos1Time = 200;//change this to make it go up higher during the switch
-	private long switchPos2Time = 75;
+	private long switchPos1Time = 225;//change this to make it go up higher during the switch
+	private long switchPos2Time = 10;
 	//this is the time it is at the max speed
-	private double switchMaxSpeed = .6;//the acceleration increment for the switch
+	private double switchMaxSpeed = 0.55;//the acceleration increment for the switch
 	//the deacceleration increment for the switch
 	
 	
 	private double degreeTolerance = 0.5;//the tolerance of when it comes down to what degree it reaches
 	
 	//the scale tunes
-	private long scalePos1Time = 250;
-	private long scalePos2Time = 75;
-	private double scaleMaxSpeed = .8;
+	private long scalePos1Time = 215;
+	private long scalePos2Time = 10;
+	private double scaleMaxSpeed = 0.95;
 	
 	//the shooting and intake tunes
 	private double shootPower = 1;//the power it shoots out at
@@ -151,9 +151,9 @@ public class TelBantorShooarm {
 			endTime = currentTime + switchPos1Time;
 			speed = 0;
 			startTime = System.currentTimeMillis();
-			if((fourtwenty.get() - startAngle % 360) > 40) {
+			if((fourtwenty.get() - startAngle % 360) > 30) {
 				switchDo1 = switchDo.IDLE;
-			} else if((fourtwenty.get() - startAngle % 360) > 15) {
+			} else if((fourtwenty.get() - startAngle % 360) > 5) {
 				switchDo1 = switchDo.POS4;
 			} else {
 				switchDo1 = switchDo.POS1;
@@ -212,7 +212,7 @@ public class TelBantorShooarm {
 			}
 			break;
 		case POS6:
-			speed = (switchMaxSpeed * ((fourtwenty.get() - startAngle) / lastAngle)) - 0.05;
+			speed = (switchMaxSpeed * ((fourtwenty.get() - startAngle) / lastAngle)) - 0.1;
 			armTalon1.set(ControlMode.PercentOutput, speed * uod);
 			armTalon2.set(ControlMode.PercentOutput, -speed * uod);
 			if(Math.abs(fourtwenty.get() - startAngle) <= degreeTolerance) {
@@ -235,9 +235,9 @@ public class TelBantorShooarm {
 			endTime = currentTime + scalePos1Time;
 			speed = 0;
 			startTime = System.currentTimeMillis();
-			if(((fourtwenty.get() - startAngle % 360)) > 40) {
+			if(((fourtwenty.get() - startAngle % 360)) > 30) {
 				scaleDo1 = scaleDo.POS4;
-			} else if(((fourtwenty.get() - startAngle % 360)) > 15) {
+			} else if(((fourtwenty.get() - startAngle % 360)) > 5) {
 				scaleDo1 = scaleDo.IDLE;
 			} else {
 				scaleDo1 = scaleDo.POS1;
