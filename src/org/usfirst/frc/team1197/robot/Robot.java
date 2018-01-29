@@ -34,7 +34,7 @@ public class Robot extends SampleRobot {
 	protected static RobotMode mode;
 	
 	private TelBantorShooarm shooArm;
-	private Climber climber;
+// 	private Climber climber;
 	
 //	private DriveHardwareTest hardwareTest;
 	
@@ -88,6 +88,7 @@ public class Robot extends SampleRobot {
 //    		SmartDashboard.putNumber("Average Encoder Position", drive.controller.hardware.getAverageEncoderPosition());
 //    		SmartDashboard.putNumber("Average Raw Velocity Position", drive.controller.hardware.getAverageRawVelocity());
     		shooArm.TorBantorArmAndShooterUpdate();
+// 		climber.update();
 //    		System.out.println(ultra.getRangeInches());
     	}
 //    	drive.disable();
