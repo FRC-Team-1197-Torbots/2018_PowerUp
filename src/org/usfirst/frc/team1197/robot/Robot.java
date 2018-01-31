@@ -2,13 +2,20 @@ package org.usfirst.frc.team1197.robot;
 
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Solenoid;
-//import edu.wpi.first.wpilibj.Ultrasonic;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Ultrasonic;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 //import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //
 //import org.usfirst.frc.team1197.robot.test.DriveHardwareTest;
 //import org.usfirst.frc.team1197.robot.test.Test;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
+import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class Robot extends SampleRobot {
@@ -36,7 +43,24 @@ public class Robot extends SampleRobot {
 	private TelBantorShooarm shooArm;
 	private Climber climber;
 	
+	private DigitalInput breakBeam;
+	
 //	private DriveHardwareTest hardwareTest;
+	
+	private AnalogPotentiometer fourtwenty;//it is the POT
+	
+	/*----------------------------------------------------------------------
+	* The Tunes for the Beginning PID to hold the arm up
+	*/
+	private double kF = .005;
+	private double kP = 0.021;
+	private double kD = 0.00001;
+	private double scaleAngle = 75;
+	private double switchAngle = 35;
+	private double degreeTolerance = 5;//the tolerance for the normal x + sin x up to get within the switch/scale angle before PID controls it
+	
+	/*----------------------------------------------------------------------
+	*/
 	
     public Robot() {
 //    	mode = RobotMode.DISABLED;
@@ -58,14 +82,18 @@ public class Robot extends SampleRobot {
 //    	drive = new TorDrive(player1, autoBox);
 //    	puller = new TalonSRX(8);
     	
+		breakBeam = new DigitalInput(0);
+    	
     	//Pusher = new Solenoid(5);
 //    	releaser = new Solenoid(7);
     	
-    	shooArm = new TelBantorShooarm(player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2);
+		fourtwenty = new AnalogPotentiometer(0, 360, 0);//analog number, how much the value changes as it goes over the 0 to 5 voltage range, the initial value of the degree of the potentiometer
+		
+    	shooArm = new TelBantorShooarm(player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, breakBeam, fourtwenty, scaleAngle, switchAngle, degreeTolerance, kF, kP, kD);
 //    	shooArm = new TelBantorShooarm(player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, Pusher);
 //    	climber = new Climber(releaser, puller, shooArm, player2);
     	
-//    	hardwareTest = new DriveHardwareTest(drive.controller.hardware);
+//    	hardwareTest = new DriveHardwareTest(drive.controller.hardware);    	
     }
     
     public void robotInit() {
