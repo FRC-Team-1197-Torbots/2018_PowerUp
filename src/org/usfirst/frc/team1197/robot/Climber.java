@@ -24,7 +24,7 @@ public class Climber {
 	public void update() {
 		climbDo();
 		if(player2.getRawButton(2) && player2.getRawButton(5)) {
-			climbIt = climb.IDLE;
+			climbIt = climb.POS0;
 		}
 	}
 	/*THE TUNES--------------------------------------------------------------------------
