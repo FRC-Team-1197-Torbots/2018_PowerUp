@@ -75,20 +75,20 @@ public class TelBantorShooarm {
 	private int ioop = -1;//in or our variable for the player under manuel control
 
 	//the switch tunes
-	private long switchPos1Time = 235;//change this to make it go up higher during the switch
-	private long switchPos2Time = 10;
+	private long switchPos1Time = 250;//change this to make it go up higher during the switch
+	private long switchPos2Time = 1;
 	//this is the time it is at the max speed
-	private double switchMaxSpeed = 0.45;//the acceleration increment for the switch
+	private double switchMaxSpeed = 0.5;//the acceleration increment for the switch
 	//the deacceleration increment for the switch
-	private double switchPush = 0.13;//the extra speed to push to hit the degreeTolerance from just a proportional distance speed
-	private double switchCushion = -0.1;//NEGATIVE the extra cushion from a proportional down 
+	private double switchPush = 0.16;//the extra speed to push to hit the degreeTolerance from just a proportional distance speed
+	private double switchCushion = -0.13;//NEGATIVE the extra cushion from a proportional down 
 
 	//the scale tunes
 	private long scalePos1Time = 350;
 	private long scalePos2Time = 50;
-	private double scaleMaxSpeed = 0.8;
-	private double scalePush = 0.08;
-	private double scaleCushion = -0.125;
+	private double scaleMaxSpeed = 1;
+	private double scalePush = 0.1;
+	private double scaleCushion = -0.15;
 	
 	//the shooting and intake tunes
 	private double shootPower = 1;//the power it shoots out at
@@ -217,9 +217,9 @@ public class TelBantorShooarm {
 				switchPIDGO();
 				switchDo1 = switchDo.PID;
 			} else {
+				endTime = currentTime + switchPos1Time;
 				switchDo1 = switchDo.IDLE;
 			}
-			endTime = currentTime + switchPos1Time;
 			break;
 		case POS4:
 			speed = (Math.sin(x) + x + Math.PI) * switchMaxSpeed / (2 * Math.PI);
@@ -299,9 +299,9 @@ public class TelBantorShooarm {
 				scalePIDGO();
 				scaleDo1 = scaleDo.PID;
 			} else {
+				endTime = currentTime + scalePos1Time;
 				scaleDo1 = scaleDo.IDLE;
 			}
-			endTime = currentTime + scalePos1Time;
 			break;		
 		case POS4:
 			speed = (Math.sin(x) + x + Math.PI) * scaleMaxSpeed / (2 * Math.PI);
@@ -359,7 +359,8 @@ public class TelBantorShooarm {
 			if(currentTime >= endTime) {
 				shootakeTalon1.set(ControlMode.PercentOutput, 0);
 				shootakeTalon2.set(ControlMode.PercentOutput, 0);	
-				shootIt = shoot.IDLE;		}
+				shootIt = shoot.IDLE;
+			}
 			break;
 		}
 	}
