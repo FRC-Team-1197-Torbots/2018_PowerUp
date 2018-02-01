@@ -56,8 +56,8 @@ public class Robot extends SampleRobot {
 	private double kP = 0.021;
 	private double kD = 0.00001;
 	private double scaleAngle = 75;
-	private double switchAngle = 35;
-	private double degreeTolerance = 4;//the tolerance for the normal x + sin x up to get within the switch/scale angle before PID controls it
+	private double switchAngle = 40;
+	private double degreeTolerance = 2.5;//the tolerance for the normal x + sin x up to get within the switch/scale angle before PID controls it
 	
 	/*----------------------------------------------------------------------
 	*/

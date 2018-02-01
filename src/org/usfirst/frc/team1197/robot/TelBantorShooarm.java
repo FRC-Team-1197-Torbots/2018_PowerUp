@@ -80,15 +80,15 @@ public class TelBantorShooarm {
 	//this is the time it is at the max speed
 	private double switchMaxSpeed = 0.5;//the acceleration increment for the switch
 	//the deacceleration increment for the switch
-	private double switchPush = 0.16;//the extra speed to push to hit the degreeTolerance from just a proportional distance speed
+	private double switchPush = 0.18;//the extra speed to push to hit the degreeTolerance from just a proportional distance speed
 	private double switchCushion = -0.13;//NEGATIVE the extra cushion from a proportional down 
 
 	//the scale tunes
 	private long scalePos1Time = 350;
-	private long scalePos2Time = 50;
+	private long scalePos2Time = 20;
 	private double scaleMaxSpeed = 1;
 	private double scalePush = 0.1;
-	private double scaleCushion = -0.15;
+	private double scaleCushion = -0.13;
 	
 	//the shooting and intake tunes
 	private double shootPower = 1;//the power it shoots out at
