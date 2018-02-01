@@ -102,6 +102,7 @@ public class TelBantorShooarm {
 
 	private long currentTime;
 	private long endTime;
+	private long shootEndTime;
 	private long startTime;
 	private long relativeTime;
 	private double lastAngle;
@@ -176,6 +177,7 @@ public class TelBantorShooarm {
 			if((fourtwenty.get() - startAngle) > (scaleAngle - (2 * degreeTolerance))) {
 				switchDo1 = switchDo.IDLE;
 			} else if((fourtwenty.get() - startAngle) > (switchAngle - (2 * degreeTolerance))) {
+				endTime = currentTime + switchPos1Time;
 				switchDo1 = switchDo.POS4;
 			} else {
 				switchDo1 = switchDo.POS1;
@@ -217,7 +219,6 @@ public class TelBantorShooarm {
 				switchPIDGO();
 				switchDo1 = switchDo.PID;
 			} else {
-				endTime = currentTime + switchPos1Time;
 				switchDo1 = switchDo.IDLE;
 			}
 			break;
@@ -256,6 +257,7 @@ public class TelBantorShooarm {
 			speed = 0;
 			startTime = System.currentTimeMillis();
 			if(((fourtwenty.get() - startAngle)) > (scaleAngle - (2 * degreeTolerance))) {
+				endTime = currentTime + scalePos1Time;
 				scaleDo1 = scaleDo.POS4;
 			} else if(((fourtwenty.get() - startAngle)) > (switchAngle - (2 * degreeTolerance))) {
 				scaleDo1 = scaleDo.IDLE;
@@ -299,7 +301,6 @@ public class TelBantorShooarm {
 				scalePIDGO();
 				scaleDo1 = scaleDo.PID;
 			} else {
-				endTime = currentTime + scalePos1Time;
 				scaleDo1 = scaleDo.IDLE;
 			}
 			break;		
@@ -333,30 +334,30 @@ public class TelBantorShooarm {
 			break;
 		case POS0:
 			currentTime = System.currentTimeMillis();
-			endTime = currentTime + revTime;
+			shootEndTime = currentTime + revTime;
 			shootIt = shoot.MOTOROUT;
 			break;
 		case MOTOROUT:
 			currentTime = System.currentTimeMillis();
 			shootakeTalon1.set(ControlMode.PercentOutput, shootPower * ioo);
 			shootakeTalon2.set(ControlMode.PercentOutput, -shootPower * ioo);
-			if(currentTime >= endTime) {
-				endTime = currentTime + extendTime;
+			if(currentTime >= shootEndTime) {
+				shootEndTime = currentTime + extendTime;
 				shootIt = shoot.EXTEND;
 			}
 			break;
 		case EXTEND:
 			currentTime = System.currentTimeMillis();
 			//			Pusher.set(true);
-			if(currentTime >= endTime) {
-				endTime = currentTime + extendTime;
+			if(currentTime >= shootEndTime) {
+				shootEndTime = currentTime + extendTime;
 				shootIt = shoot.RETRACT;
 			}
 			break;
 		case RETRACT:
 			currentTime = System.currentTimeMillis();
 			//			Pusher.set(false);
-			if(currentTime >= endTime) {
+			if(currentTime >= shootEndTime) {
 				shootakeTalon1.set(ControlMode.PercentOutput, 0);
 				shootakeTalon2.set(ControlMode.PercentOutput, 0);	
 				shootIt = shoot.IDLE;
