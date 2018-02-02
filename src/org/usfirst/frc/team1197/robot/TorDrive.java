@@ -113,9 +113,9 @@ public class TorDrive
 		}
 		
 		if (arcadeSteerAxis >= 0.0D) {
-			arcadeSteerAxis *= arcadeSteerAxis * arcadeSteerAxis;
+			arcadeSteerAxis *= arcadeSteerAxis * arcadeSteerAxis * arcadeSteerAxis;
 		} else {
-			arcadeSteerAxis = -(arcadeSteerAxis * arcadeSteerAxis);
+			arcadeSteerAxis = -Math.abs(arcadeSteerAxis * arcadeSteerAxis * arcadeSteerAxis * arcadeSteerAxis);
 		}
 		if (throttleAxis >= 0.0D) {
 			throttleAxis *= throttleAxis;
