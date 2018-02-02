@@ -80,14 +80,14 @@ public class TelBantorShooarm {
 	//this is the time it is at the max speed
 	private double switchMaxSpeed = 0.5;//the acceleration increment for the switch
 	//the deacceleration increment for the switch
-	private double switchPush = 0.18;//the extra speed to push to hit the degreeTolerance from just a proportional distance speed
-	private double switchCushion = -0.13;//NEGATIVE the extra cushion from a proportional down 
+	private double switchPush = 0.2;//the extra speed to push to hit the degreeTolerance from just a proportional distance speed
+	private double switchCushion = -0.11;//NEGATIVE the extra cushion from a proportional down 
 
 	//the scale tunes
 	private long scalePos1Time = 350;
-	private long scalePos2Time = 20;
+	private long scalePos2Time = 10;
 	private double scaleMaxSpeed = 1;
-	private double scalePush = 0.1;
+	private double scalePush = 0.12;
 	private double scaleCushion = -0.13;
 	
 	//the shooting and intake tunes
@@ -102,7 +102,6 @@ public class TelBantorShooarm {
 
 	private long currentTime;
 	private long endTime;
-	private long shootEndTime;
 	private long startTime;
 	private long relativeTime;
 	private double lastAngle;
@@ -138,7 +137,7 @@ public class TelBantorShooarm {
 			switchEnable = false;
 			switchDo1 = switchDo.POS0;
 		}
-		if(!stop && player2.getRawButton(4) && (scaleDo1 == scaleDo.IDLE || scaleDo1 == scaleDo.PID) && switchDo1 == switchDo.IDLE && !player2.getRawButton(5) && intakeIt == intake.IDLE && shootIt == shoot.IDLE) {
+		if(!stop && player2.getRawButton(4) && (scaleDo1 == scaleDo.IDLE || scaleDo1 == scaleDo.PID) && (switchDo1 == switchDo.IDLE || switchDo1 == switchDo.PID) && !player2.getRawButton(5) && intakeIt == intake.IDLE && shootIt == shoot.IDLE) {
 			scaleEnable = false;
 			scaleDo1 = 	scaleDo.POS0;
 		}
@@ -177,7 +176,6 @@ public class TelBantorShooarm {
 			if((fourtwenty.get() - startAngle) > (scaleAngle - (2 * degreeTolerance))) {
 				switchDo1 = switchDo.IDLE;
 			} else if((fourtwenty.get() - startAngle) > (switchAngle - (2 * degreeTolerance))) {
-				endTime = currentTime + switchPos1Time;
 				switchDo1 = switchDo.POS4;
 			} else {
 				switchDo1 = switchDo.POS1;
@@ -219,6 +217,7 @@ public class TelBantorShooarm {
 				switchPIDGO();
 				switchDo1 = switchDo.PID;
 			} else {
+				endTime = currentTime + switchPos1Time;
 				switchDo1 = switchDo.IDLE;
 			}
 			break;
@@ -257,7 +256,6 @@ public class TelBantorShooarm {
 			speed = 0;
 			startTime = System.currentTimeMillis();
 			if(((fourtwenty.get() - startAngle)) > (scaleAngle - (2 * degreeTolerance))) {
-				endTime = currentTime + scalePos1Time;
 				scaleDo1 = scaleDo.POS4;
 			} else if(((fourtwenty.get() - startAngle)) > (switchAngle - (2 * degreeTolerance))) {
 				scaleDo1 = scaleDo.IDLE;
@@ -301,6 +299,7 @@ public class TelBantorShooarm {
 				scalePIDGO();
 				scaleDo1 = scaleDo.PID;
 			} else {
+				endTime = currentTime + scalePos1Time;
 				scaleDo1 = scaleDo.IDLE;
 			}
 			break;		
@@ -334,30 +333,30 @@ public class TelBantorShooarm {
 			break;
 		case POS0:
 			currentTime = System.currentTimeMillis();
-			shootEndTime = currentTime + revTime;
+			endTime = currentTime + revTime;
 			shootIt = shoot.MOTOROUT;
 			break;
 		case MOTOROUT:
 			currentTime = System.currentTimeMillis();
 			shootakeTalon1.set(ControlMode.PercentOutput, shootPower * ioo);
 			shootakeTalon2.set(ControlMode.PercentOutput, -shootPower * ioo);
-			if(currentTime >= shootEndTime) {
-				shootEndTime = currentTime + extendTime;
+			if(currentTime >= endTime) {
+				endTime = currentTime + extendTime;
 				shootIt = shoot.EXTEND;
 			}
 			break;
 		case EXTEND:
 			currentTime = System.currentTimeMillis();
 			//			Pusher.set(true);
-			if(currentTime >= shootEndTime) {
-				shootEndTime = currentTime + extendTime;
+			if(currentTime >= endTime) {
+				endTime = currentTime + extendTime;
 				shootIt = shoot.RETRACT;
 			}
 			break;
 		case RETRACT:
 			currentTime = System.currentTimeMillis();
 			//			Pusher.set(false);
-			if(currentTime >= shootEndTime) {
+			if(currentTime >= endTime) {
 				shootakeTalon1.set(ControlMode.PercentOutput, 0);
 				shootakeTalon2.set(ControlMode.PercentOutput, 0);	
 				shootIt = shoot.IDLE;
