@@ -7,14 +7,16 @@ import edu.wpi.first.wpilibj.Solenoid;
 
 public class Climber {
 	private Solenoid releaser;
-	private TalonSRX puller;
+	private TalonSRX puller1;
+	private TalonSRX puller2;
 	private TelBantorShooarm armShoo;
 	private Joystick player2;
-	public Climber(Solenoid releaser, TalonSRX puller, TelBantorShooarm armShoo, Joystick player2) {
+	public Climber(Solenoid releaser, TalonSRX puller1, TalonSRX puller2, TelBantorShooarm armShoo, Joystick player2) {
 		this.releaser = releaser;
-		this.puller = puller;
+		this.puller1 = puller1;
 		this.armShoo = armShoo;
 		this.player2 = player2;
+		this.puller2 = puller2;
 	}
 	public static enum climb {
 		IDLE, POS0, FIRE, LIFT;
@@ -23,7 +25,7 @@ public class Climber {
 	climb climbIt = climb.IDLE;
 	public void update() {
 		climbDo();
-		if(player2.getRawButton(2) && player2.getRawButton(5)) {
+		if(player2.getRawButton(2) && player2.getRawButton(5) && player2.getRawButton(6)) {
 			climbIt = climb.POS0;
 		}
 	}
@@ -55,10 +57,12 @@ public class Climber {
 			}
 			break;
 		case LIFT:
-			puller.set(ControlMode.PercentOutput, pullPower);
+			puller1.set(ControlMode.PercentOutput, pullPower);
+			puller2.set(ControlMode.PercentOutput, -pullPower);
 			if(currentTime > endTime) {
 				climbIt = climb.IDLE;
-				puller.set(ControlMode.PercentOutput, 0);
+				puller1.set(ControlMode.PercentOutput, 0);
+				puller2.set(ControlMode.PercentOutput, 0);
 			}
 			break;
 		}

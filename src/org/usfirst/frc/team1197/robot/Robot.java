@@ -31,7 +31,8 @@ public class Robot extends SampleRobot {
 	private TalonSRX shootakeTalon1;
 	private TalonSRX shootakeTalon2;
 	
-//	private TalonSRX puller;
+//	private TalonSRX puller1;
+//	private TalonSRX puller2;
 	
 	private TalonSRX armTalon1;
 	private TalonSRX armTalon2;
@@ -80,7 +81,8 @@ public class Robot extends SampleRobot {
 //    	ultra = new Ultrasonic(0,1);
 //    	ultra.setAutomaticMode(isEnabled());
 //    	drive = new TorDrive(player1, autoBox);
-//    	puller = new TalonSRX(8);
+//    	puller1 = new TalonSRX(8);
+//    	puller2 = new TalonSRX(9);
     	
 		breakBeam = new DigitalInput(0);
     	
@@ -91,7 +93,7 @@ public class Robot extends SampleRobot {
 		
     	shooArm = new TelBantorShooarm(player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, breakBeam, fourtwenty, scaleAngle, switchAngle, degreeTolerance, kF, kP, kD, holdAngle);
 //    	shooArm = new TelBantorShooarm(player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, Pusher);
-//    	climber = new Climber(releaser, puller, shooArm, player2);
+//    	climber = new Climber(releaser, puller1, puller2, shooArm, player2);
     	
 //    	hardwareTest = new DriveHardwareTest(drive.controller.hardware);    	
     }
