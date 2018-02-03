@@ -53,12 +53,12 @@ public class Robot extends SampleRobot {
 	* The Tunes for the Beginning PID to hold the arm up
 	*/
 	private double kF = .005;
-	private double kP = 0.021;
+	private double kP = 0.02;
 	private double kD = 0.00001;
 	private double scaleAngle = 75;
-	private double switchAngle = 40;
-	private double degreeTolerance = 2.5;//the tolerance for the normal x + sin x up to get within the switch/scale angle before PID controls it
-	
+	private double switchAngle = 45;
+	private double degreeTolerance = 7;//the tolerance for the normal x + sin x up to get within the switch/scale angle before PID controls it
+	private double holdAngle = 10;
 	/*----------------------------------------------------------------------
 	*/
 	
@@ -89,7 +89,7 @@ public class Robot extends SampleRobot {
     	
 		fourtwenty = new AnalogPotentiometer(0, 360, 0);//analog number, how much the value changes as it goes over the 0 to 5 voltage range, the initial value of the degree of the potentiometer
 		
-    	shooArm = new TelBantorShooarm(player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, breakBeam, fourtwenty, scaleAngle, switchAngle, degreeTolerance, kF, kP, kD);
+    	shooArm = new TelBantorShooarm(player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, breakBeam, fourtwenty, scaleAngle, switchAngle, degreeTolerance, kF, kP, kD, holdAngle);
 //    	shooArm = new TelBantorShooarm(player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, Pusher);
 //    	climber = new Climber(releaser, puller, shooArm, player2);
     	
