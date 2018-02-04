@@ -59,6 +59,9 @@ public class TelBantorShooarm {
 		START, PD, STOP;
 		private holder() {}
 	}
+	public static enum manuel {
+		IDLE, GOING, GOINGDOWN;
+	}
 
 
 
@@ -67,6 +70,7 @@ public class TelBantorShooarm {
 	public shoot shootIt = shoot.IDLE;
 	public intake intakeIt = intake.IDLE;
 	public holder holdIt = holder.START;
+	public manuel manuelGo = manuel.IDLE;
 	private double speed;
 
 	/**********************************
@@ -77,22 +81,24 @@ public class TelBantorShooarm {
 	//ioo is for pressing the BUTTON NOT MANUEL CONTROL
 
 	private int ioop = -1;//in or our variable for the player under manuel control
-
+	private double manuelMax = 0.6;//POSITIVE. The controls on the speeds for the manuel override.
+	private double manuelMin = -0.3;//HAS TO BE NEGATIVE
+	
 	//the switch tunes
-	private long switchPos1Time = 150;//change this to make it go up higher during the switch
+	private long switchPos1Time = 125;//change this to make it go up higher during the switch
 	private long switchPos2Time = 10;
 	//this is the time it is at the max speed
-	private double switchMaxSpeed = 0.7;//the acceleration increment for the switch
+	private double switchMaxSpeed = 0.5;//the acceleration increment for the switch
 	//the deacceleration increment for the switch
 	private double switchPush = 0.2;//the extra speed to push to hit the degreeTolerance from just a proportional distance speed
-	private double switchCushion = -0.1;//NEGATIVE the extra cushion from a proportional down 
+	private double switchCushion = -0.2;//NEGATIVE the extra cushion from a proportional down 
 
 	//the scale tunes
-	private long scalePos1Time = 350;
+	private long scalePos1Time = 450;
 	private long scalePos2Time = 10;
 	private double scaleMaxSpeed = 1;
-	private double scalePush = 0.12;
-	private double scaleCushion = -0;
+	private double scalePush = 0.13;
+	private double scaleCushion = -0.3;
 	
 	//the shooting and intake tunes
 	private double shootPower = 1;//the power it shoots out at
@@ -102,8 +108,8 @@ public class TelBantorShooarm {
 	private double startAngle;
 	
 	//the holding stuff
-	private double holdkP = 0.08;
-	private double holdkD = 0.00002;
+	private double holdkP = 0.025;
+	private double holdkD = 0.000006;
 	/**********************************
 		TO HERE
 	 */
@@ -123,6 +129,8 @@ public class TelBantorShooarm {
 	private double holdProportional;
 	private double holdDerivative;
 	private double holdVelocity;
+	private double armAxis;
+	private double wantedAngle;
 
 	public TelBantorShooarm(Joystick player2, TalonSRX armTalon1, TalonSRX armTalon2, TalonSRX shootakeTalon1, TalonSRX shootakeTalon2, DigitalInput breakbeam, AnalogPotentiometer fourtwenty, double scaleAngle, double switchAngle, double degreeTolerance, double kF, double kP, double kD, double holdAngle) {
 		//public TelBantorShooarm(Joystick player2, TalonSRX armTalon1, TalonSRX armTalon2, TalonSRX shootakeTalon, TalonSRX shootakeTalon2, Solenoid Pusher) {	
@@ -248,6 +256,7 @@ public class TelBantorShooarm {
 			armTalon2.set(ControlMode.PercentOutput, -speed * uod);
 			if(currentTime >= endTime) {
 				endTime = currentTime + switchPos2Time;
+				lastAngle = (fourtwenty.get() - startAngle) - holdAngle;
 				switchDo1 = switchDo.POS5;
 			}
 			break;
@@ -256,7 +265,7 @@ public class TelBantorShooarm {
 			speed = (switchMaxSpeed * (((fourtwenty.get() - startAngle) - holdAngle) / lastAngle)) + switchCushion;
 			armTalon1.set(ControlMode.PercentOutput, speed * uod);
 			armTalon2.set(ControlMode.PercentOutput, -speed * uod);
-			if(Math.abs(fourtwenty.get() - startAngle) <= degreeTolerance) {
+			if(Math.abs((fourtwenty.get() - startAngle) - holdAngle) <= degreeTolerance) {
 				armTalon1.set(ControlMode.PercentOutput, 0);
 				armTalon2.set(ControlMode.PercentOutput, 0);
 				holdIt = holder.START;
@@ -331,15 +340,16 @@ public class TelBantorShooarm {
 			armTalon2.set(ControlMode.PercentOutput, -speed * uod);
 			if(currentTime >= endTime) {
 				endTime = currentTime + scalePos2Time;
+				lastAngle = (fourtwenty.get() - startAngle) - holdAngle;
 				scaleDo1 = scaleDo.POS5;
 			}
-				break;
+			break;
 		case POS5:
 			scaleEnable = false;
 			speed = (scaleMaxSpeed * (((fourtwenty.get() - startAngle) - holdAngle) / lastAngle)) + scaleCushion;
 			armTalon1.set(ControlMode.PercentOutput, speed * uod);
 			armTalon2.set(ControlMode.PercentOutput, -speed * uod);
-			if(fourtwenty.get() - startAngle <= degreeTolerance) {
+			if(Math.abs((fourtwenty.get() - startAngle) - holdAngle) <= degreeTolerance) {
 				armTalon1.set(ControlMode.PercentOutput, 0);
 				armTalon2.set(ControlMode.PercentOutput, 0);
 				holdIt = holder.START;
@@ -424,37 +434,7 @@ public class TelBantorShooarm {
 	}
 
 
-	public void manueloverride() {
-		if(player2.getRawButton(5) && !stop) {
-			switchEnable = false;
-			scaleEnable = false;
-			holdContinue = false;
-			holdIt = holder.STOP;
-			switchDo1 = switchDo.IDLE;
-			scaleDo1 = scaleDo.IDLE;
-			shootIt = shoot.IDLE;
-			intakeIt = intake.IDLE;
-			if(Math.abs(player2.getRawAxis(1)) > 0.2) {
-				armTalon1.set(ControlMode.PercentOutput, player2.getRawAxis(1) * uod);
-				armTalon2.set(ControlMode.PercentOutput, -player2.getRawAxis(1) * uod);
-			} else {
-				armTalon1.set(ControlMode.PercentOutput, 0);
-				armTalon2.set(ControlMode.PercentOutput, 0);
-			}
-			if(player2.getRawButton(6)) {
-				//				Pusher.set(true);
-			} else {
-				//				Pusher.set(false);
-			}
-			if(Math.abs(player2.getRawAxis(5)) > 0.2) {
-				shootakeTalon1.set(ControlMode.PercentOutput, player2.getRawAxis(5) * ioop);
-				shootakeTalon2.set(ControlMode.PercentOutput, -player2.getRawAxis(5) * ioop);
-			} else {
-				shootakeTalon1.set(ControlMode.PercentOutput, 0);
-				shootakeTalon2.set(ControlMode.PercentOutput, 0);
-			}		
-		}
-	}
+
 
 	public void switchPIDGO() {
 		currentAngle = ((fourtwenty.get() - startAngle));
@@ -511,6 +491,67 @@ public class TelBantorShooarm {
 		armTalon2.set(ControlMode.PercentOutput, holdVelocity * uod);
 		
 		holdLastError = holdError;
+	}
+	public void manueloverride() {
+		switch(manuelGo) {
+		case IDLE:
+			if(player2.getRawButton(5) && !stop) {		
+				lastError = 0;
+				manuelGo = manuel.GOING;
+			}
+			break;
+		case GOING:
+			switchEnable = false;
+			scaleEnable = false;;
+			switchDo1 = switchDo.IDLE;
+			scaleDo1 = scaleDo.IDLE;
+			holdIt = holder.STOP;
+			shootIt = shoot.IDLE;
+			intakeIt = intake.IDLE;
+			if(player2.getRawButton(5) && !stop) {
+				armAxis = player2.getRawAxis(1);
+				armAxis *= -1;
+				if(Math.abs(armAxis) < 0.15) {
+					armAxis = 0;
+				}
+				armAxis *= armAxis * armAxis;
+				currentAngle = fourtwenty.get() - startAngle;
+				wantedAngle = currentAngle + (0.5 * armAxis);
+				if(wantedAngle < holdAngle) {
+					wantedAngle = holdAngle;
+				}
+				error = currentAngle - wantedAngle;
+				proportional = kP * error;
+				derivative = (kD * (error - lastError)) / kF;
+				velocity = proportional + derivative;
+				if(velocity > manuelMax) {
+					velocity = manuelMax;
+				}
+				if (velocity < manuelMin) {
+					velocity = manuelMin;
+				}
+				
+				armTalon1.set(ControlMode.PercentOutput, velocity);
+				armTalon2.set(ControlMode.PercentOutput, -velocity);
+				lastError = error;
+			} else {
+				lastAngle = (fourtwenty.get() - startAngle - holdAngle);
+				manuelGo = manuel.GOINGDOWN;
+			}
+			break;
+		case GOINGDOWN:
+			speed = (manuelMin * (((fourtwenty.get() - startAngle) - holdAngle) / lastAngle));
+			armTalon1.set(ControlMode.PercentOutput, -speed * uod);
+			armTalon2.set(ControlMode.PercentOutput, speed * uod);
+			if(Math.abs((fourtwenty.get() - startAngle) - holdAngle) <= degreeTolerance) {
+				armTalon1.set(ControlMode.PercentOutput, 0);
+				armTalon2.set(ControlMode.PercentOutput, 0);
+				holdIt = holder.START;
+				manuelGo = manuel.IDLE;
+			}
+			
+			break;
+		}
 	}
 }
 	
