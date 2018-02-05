@@ -41,7 +41,7 @@ public class Robot extends SampleRobot {
 	private TorDrive drive;
 	protected static RobotMode mode;
 	
-	private TelBantorShooarm shooArm;
+	private TorBantorShooarm shooArm;
 // 	private Climber climber;
 	
 	private DigitalInput breakBeam;
@@ -91,7 +91,7 @@ public class Robot extends SampleRobot {
     	
 		fourtwenty = new AnalogPotentiometer(0, 360, 0);//analog number, how much the value changes as it goes over the 0 to 5 voltage range, the initial value of the degree of the potentiometer
 		
-    	shooArm = new TelBantorShooarm(player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, breakBeam, fourtwenty, scaleAngle, switchAngle, degreeTolerance, kF, kP, kD, holdAngle);
+    	shooArm = new TorBantorShooarm(player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, breakBeam, fourtwenty, scaleAngle, switchAngle, degreeTolerance, kF, kP, kD, holdAngle);
 //    	shooArm = new TelBantorShooarm(player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, Pusher);
 //    	climber = new Climber(releaser, puller1, puller2, shooArm, player2);
     	

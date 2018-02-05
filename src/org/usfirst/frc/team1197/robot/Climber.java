@@ -9,9 +9,9 @@ public class Climber {
 	private Solenoid releaser;
 	private TalonSRX puller1;
 	private TalonSRX puller2;
-	private TelBantorShooarm armShoo;
+	private TorBantorShooarm armShoo;
 	private Joystick player2;
-	public Climber(Solenoid releaser, TalonSRX puller1, TalonSRX puller2, TelBantorShooarm armShoo, Joystick player2) {
+	public Climber(Solenoid releaser, TalonSRX puller1, TalonSRX puller2, TorBantorShooarm armShoo, Joystick player2) {
 		this.releaser = releaser;
 		this.puller1 = puller1;
 		this.armShoo = armShoo;
