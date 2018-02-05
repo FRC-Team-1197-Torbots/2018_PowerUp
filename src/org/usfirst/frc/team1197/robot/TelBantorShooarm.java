@@ -83,12 +83,13 @@ public class TelBantorShooarm {
 	private int ioop = -1;//in or our variable for the player under manuel control
 	private double manuelMax = 0.6;//POSITIVE. The controls on the speeds for the manuel override.
 	private double manuelMin = -0.3;//HAS TO BE NEGATIVE
+	private double manuelMaxAngle = 80;
 	
 	//the switch tunes
 	private long switchPos1Time = 125;//change this to make it go up higher during the switch
 	private long switchPos2Time = 10;
 	//this is the time it is at the max speed
-	private double switchMaxSpeed = 0.5;//the acceleration increment for the switch
+	private double switchMaxSpeed = 0.6;//the acceleration increment for the switch
 	//the deacceleration increment for the switch
 	private double switchPush = 0.2;//the extra speed to push to hit the degreeTolerance from just a proportional distance speed
 	private double switchCushion = -0.2;//NEGATIVE the extra cushion from a proportional down 
@@ -98,7 +99,7 @@ public class TelBantorShooarm {
 	private long scalePos2Time = 10;
 	private double scaleMaxSpeed = 1;
 	private double scalePush = 0.13;
-	private double scaleCushion = -0.3;
+	private double scaleCushion = -0.4;
 	
 	//the shooting and intake tunes
 	private double shootPower = 1;//the power it shoots out at
@@ -266,8 +267,6 @@ public class TelBantorShooarm {
 			armTalon1.set(ControlMode.PercentOutput, speed * uod);
 			armTalon2.set(ControlMode.PercentOutput, -speed * uod);
 			if(Math.abs((fourtwenty.get() - startAngle) - holdAngle) <= degreeTolerance) {
-				armTalon1.set(ControlMode.PercentOutput, 0);
-				armTalon2.set(ControlMode.PercentOutput, 0);
 				holdIt = holder.START;
 				switchDo1 = switchDo.IDLE;
 			}
@@ -350,8 +349,6 @@ public class TelBantorShooarm {
 			armTalon1.set(ControlMode.PercentOutput, speed * uod);
 			armTalon2.set(ControlMode.PercentOutput, -speed * uod);
 			if(Math.abs((fourtwenty.get() - startAngle) - holdAngle) <= degreeTolerance) {
-				armTalon1.set(ControlMode.PercentOutput, 0);
-				armTalon2.set(ControlMode.PercentOutput, 0);
 				holdIt = holder.START;
 				scaleDo1 = scaleDo.IDLE;
 			}
@@ -497,6 +494,7 @@ public class TelBantorShooarm {
 		case IDLE:
 			if(player2.getRawButton(5) && !stop) {		
 				lastError = 0;
+				wantedAngle = fourtwenty.get() - startAngle;
 				manuelGo = manuel.GOING;
 			}
 			break;
@@ -515,12 +513,14 @@ public class TelBantorShooarm {
 					armAxis = 0;
 				}
 				armAxis *= armAxis * armAxis;
-				currentAngle = fourtwenty.get() - startAngle;
-				wantedAngle = currentAngle + (0.5 * armAxis);
+				wantedAngle += (kF * armAxis);
 				if(wantedAngle < holdAngle) {
 					wantedAngle = holdAngle;
 				}
-				error = currentAngle - wantedAngle;
+				if(wantedAngle > manuelMaxAngle) {
+					wantedAngle = manuelMaxAngle;
+				}
+				error = wantedAngle - (fourtwenty.get() - startAngle);
 				proportional = kP * error;
 				derivative = (kD * (error - lastError)) / kF;
 				velocity = proportional + derivative;
@@ -531,8 +531,8 @@ public class TelBantorShooarm {
 					velocity = manuelMin;
 				}
 				
-				armTalon1.set(ControlMode.PercentOutput, velocity);
-				armTalon2.set(ControlMode.PercentOutput, -velocity);
+				armTalon1.set(ControlMode.PercentOutput, -velocity);
+				armTalon2.set(ControlMode.PercentOutput, velocity);
 				lastError = error;
 			} else {
 				lastAngle = (fourtwenty.get() - startAngle - holdAngle);
