@@ -26,6 +26,8 @@ public class Climber {
 	public void update() {
 		climbDo();
 		if(player2.getRawButton(2) && player2.getRawButton(5) && player2.getRawButton(6)) {
+			currentTime = System.currentTimeMillis();
+			endTime = currentTime + (long)waitTime;
 			climbIt = climb.POS0;
 		}
 	}
@@ -34,10 +36,13 @@ public class Climber {
 	private long fireTime = 600;
 	private long pullTime = 3000;
 	private double pullPower = 1;
+	private double angleToHold = 15;
+	private double waitTime = 500;//in milliseconds
 	/*-----------------------------------------------------------------------------------
 	*/
 	private long currentTime;
 	private long endTime;
+	private boolean isStopped = false;
 	
 	public void climbDo() {
 		currentTime = System.currentTimeMillis();
@@ -45,9 +50,15 @@ public class Climber {
 		case IDLE:
 			break;
 		case POS0:
-			armShoo.stop();
-			climbIt = climb.FIRE;
-			endTime = currentTime + fireTime;
+			if(!isStopped) {
+				armShoo.stop(angleToHold);
+				isStopped = true;
+			}
+			currentTime = System.currentTimeMillis();
+			if(currentTime > endTime) {
+				endTime = currentTime + fireTime;
+				climbIt = climb.FIRE;
+			}
 			break;
 		case FIRE:
 			releaser.set(false);

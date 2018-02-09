@@ -14,7 +14,7 @@ public class TorBantorShooarm {
 	private TalonSRX armTalon2;
 	private TalonSRX shootakeTalon1;
 	private TalonSRX shootakeTalon2;
-	private AnalogPotentiometer fourtwenty;//it is the POT
+	private AnalogPotentiometer fourtwenty; //it is the POT
 	private DigitalInput breakbeam;
 	//	private Solenoid Pusher;
 	private double scaleAngle;
@@ -37,7 +37,7 @@ public class TorBantorShooarm {
 	//x is switch 3
 	//y is scale 4
 	//right trigger is human fire stick 3
-	//left trigger is manuel override button 5
+	//left trigger is manual override button 5
 	//b is climb 2
 	public static enum switchDo {
 		IDLE, POS0, POS1, POS2, POS3, PID, POS4, POS5;
@@ -59,31 +59,29 @@ public class TorBantorShooarm {
 		START, PD, STOP;
 		private holder() {}
 	}
-	public static enum manuel {
+	public static enum manual {
 		IDLE, GOING, GOINGDOWN;
 	}
-
-
-
+	
 	public switchDo switchDo1 = switchDo.IDLE;
 	public scaleDo scaleDo1 = scaleDo.IDLE;
 	public shoot shootIt = shoot.IDLE;
 	public intake intakeIt = intake.IDLE;
 	public holder holdIt = holder.START;
-	public manuel manuelGo = manuel.IDLE;
+	public manual manualGo = manual.IDLE;
 	private double speed;
 
 	/**********************************
 	 TUNE THE ARM FROM HERE
 	 */
-	private int uod = 1;//up or down for manuel override. Change it from 1 to -1 to change the control on the arm with the right player y
+	private int uod = 1;//up or down for manual override. Change it from 1 to -1 to change the control on the arm with the right player y
 	private int ioo = 1;//in or out variable. Change this to switch around the outtake and intake when it is up. Change it from 1 to -1 to make it so either shoots out or (not wanted) intakes up there
-	//ioo is for pressing the BUTTON NOT MANUEL CONTROL
+	//ioo is for pressing the BUTTON NOT manual CONTROL
 
-	private int ioop = -1;//in or our variable for the player under manuel control
-	private double manuelMax = 0.6;//POSITIVE. The controls on the speeds for the manuel override.
-	private double manuelMin = -0.3;//HAS TO BE NEGATIVE
-	private double manuelMaxAngle = 80;
+	private int ioop = -1;//in or our variable for the player under manual control
+	private double manualMax = 0.6;//POSITIVE. The controls on the speeds for the manual override.
+	private double manualMin = -0.3;//HAS TO BE NEGATIVE
+	private double manualMaxAngle = 80;
 	
 	//the switch tunes
 	private long switchPos1Time = 125;//change this to make it go up higher during the switch
@@ -177,10 +175,10 @@ public class TorBantorShooarm {
 		if(!stop && Math.abs(player2.getRawAxis(3)) > 0.2 && (switchDo1 == switchDo.IDLE || switchDo1 == switchDo.PID) && (scaleDo1 == scaleDo.IDLE || scaleDo1 == scaleDo.PID) && !player2.getRawButton(5) && intakeIt == intake.IDLE && shootIt == shoot.IDLE && !(holdIt == holder.START)) {
 			shootIt = shoot.POS0;
 		}
-		manueloverride();
+		manualoverride();
 	}
 
-	public void stop() {
+	public void stop(double angleToHold) {
 		switchDo1 = switchDo.IDLE;
 		scaleDo1 = scaleDo.IDLE;
 		shootIt = shoot.IDLE;
@@ -190,6 +188,10 @@ public class TorBantorShooarm {
 		shootakeTalon1.set(ControlMode.PercentOutput, 0);
 		shootakeTalon2.set(ControlMode.PercentOutput, 0);
 		stop = true;
+		lastError = 0;
+		while(true) {
+			stop1(angleToHold);
+		}
 	}
 
 	public void switchDo() {
@@ -356,7 +358,6 @@ public class TorBantorShooarm {
 		}
 	}
 
-
 	public void shoot() {
 		switch(shootIt) {
 		case IDLE:
@@ -430,9 +431,6 @@ public class TorBantorShooarm {
 		}
 	}
 
-
-
-
 	public void switchPIDGO() {
 		currentAngle = ((fourtwenty.get() - startAngle));
 		error = switchAngle - currentAngle;
@@ -454,7 +452,6 @@ public class TorBantorShooarm {
 		armTalon2.set(ControlMode.PercentOutput, velocity);
 		lastError = error;
 	}
-
 
 	public void Hold() {
 		switch(holdIt) {
@@ -489,13 +486,13 @@ public class TorBantorShooarm {
 		
 		holdLastError = holdError;
 	}
-	public void manueloverride() {
-		switch(manuelGo) {
+	public void manualoverride() {
+		switch(manualGo) {
 		case IDLE:
 			if(player2.getRawButton(5) && !stop) {		
 				lastError = 0;
 				wantedAngle = fourtwenty.get() - startAngle;
-				manuelGo = manuel.GOING;
+				manualGo = manual.GOING;
 			}
 			break;
 		case GOING:
@@ -517,18 +514,18 @@ public class TorBantorShooarm {
 				if(wantedAngle < holdAngle) {
 					wantedAngle = holdAngle;
 				}
-				if(wantedAngle > manuelMaxAngle) {
-					wantedAngle = manuelMaxAngle;
+				if(wantedAngle > manualMaxAngle) {
+					wantedAngle = manualMaxAngle;
 				}
 				error = wantedAngle - (fourtwenty.get() - startAngle);
 				proportional = kP * error;
 				derivative = (kD * (error - lastError)) / kF;
 				velocity = proportional + derivative;
-				if(velocity > manuelMax) {
-					velocity = manuelMax;
+				if(velocity > manualMax) {
+					velocity = manualMax;
 				}
-				if (velocity < manuelMin) {
-					velocity = manuelMin;
+				if (velocity < manualMin) {
+					velocity = manualMin;
 				}
 				
 				armTalon1.set(ControlMode.PercentOutput, -velocity);
@@ -536,22 +533,45 @@ public class TorBantorShooarm {
 				lastError = error;
 			} else {
 				lastAngle = (fourtwenty.get() - startAngle - holdAngle);
-				manuelGo = manuel.GOINGDOWN;
+				manualGo = manual.GOINGDOWN;
 			}
 			break;
 		case GOINGDOWN:
-			speed = (manuelMin * (((fourtwenty.get() - startAngle) - holdAngle) / lastAngle));
+			speed = (manualMin * (((fourtwenty.get() - startAngle) - holdAngle) / lastAngle));
 			armTalon1.set(ControlMode.PercentOutput, -speed * uod);
 			armTalon2.set(ControlMode.PercentOutput, speed * uod);
 			if(Math.abs((fourtwenty.get() - startAngle) - holdAngle) <= degreeTolerance) {
 				armTalon1.set(ControlMode.PercentOutput, 0);
 				armTalon2.set(ControlMode.PercentOutput, 0);
 				holdIt = holder.START;
-				manuelGo = manuel.IDLE;
+				manualGo = manual.IDLE;
 			}
-			
 			break;
 		}
 	}
+	
+	
+	public void stop1(double angleToHold) {
+		currentAngle = fourtwenty.get() - startAngle;
+		wantedAngle = angleToHold;
+		
+		error = wantedAngle - currentAngle;
+		proportional = error * kP;
+		derivative = ((error - lastError) * kD) / kF;
+		velocity = proportional + derivative;
+		
+		if(velocity > manualMax) {
+			velocity = manualMax;
+		}
+		if(velocity < manualMin) {
+			velocity = manualMin;
+		}
+		armTalon1.set(ControlMode.PercentOutput, -velocity);
+		armTalon1.set(ControlMode.PercentOutput, velocity);
+		
+		lastError = error;
+	}
 }
+
+
 	
