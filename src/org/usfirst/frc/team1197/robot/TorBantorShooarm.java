@@ -16,7 +16,7 @@ public class TorBantorShooarm {
 	private TalonSRX shootakeTalon2;
 	private AnalogPotentiometer fourtwenty; //it is the POT
 	private DigitalInput breakbeam;
-	//	private Solenoid Pusher;
+	private Solenoid Pusher;
 	private double scaleAngle;
 	private double switchAngle;
 	private double degreeTolerance;
@@ -131,14 +131,13 @@ public class TorBantorShooarm {
 	private double armAxis;
 	private double wantedAngle;
 
-	public TorBantorShooarm(Joystick player2, TalonSRX armTalon1, TalonSRX armTalon2, TalonSRX shootakeTalon1, TalonSRX shootakeTalon2, DigitalInput breakbeam, AnalogPotentiometer fourtwenty, double scaleAngle, double switchAngle, double degreeTolerance, double kF, double kP, double kD, double holdAngle) {
-		//public TelBantorShooarm(Joystick player2, TalonSRX armTalon1, TalonSRX armTalon2, TalonSRX shootakeTalon, TalonSRX shootakeTalon2, Solenoid Pusher) {	
+	public TorBantorShooarm(Joystick player2, TalonSRX armTalon1, TalonSRX armTalon2, TalonSRX shootakeTalon1, TalonSRX shootakeTalon2, DigitalInput breakbeam, AnalogPotentiometer fourtwenty, double scaleAngle, double switchAngle, double degreeTolerance, double kF, double kP, double kD, double holdAngle, Solenoid Pusher) {	
 		this.player2 = player2;
 		this.armTalon1 = armTalon1;
 		this.armTalon2 = armTalon2;
 		this.shootakeTalon1 = shootakeTalon1;
 		this.shootakeTalon2 = shootakeTalon2;
-		//this.Pusher = Pusher;
+		this.Pusher = Pusher;
 		this.breakbeam = breakbeam;
 		this.fourtwenty = fourtwenty;
 		startAngle = fourtwenty.get();
@@ -378,7 +377,7 @@ public class TorBantorShooarm {
 			break;
 		case EXTEND:
 			currentTime = System.currentTimeMillis();
-			//			Pusher.set(true);
+			Pusher.set(true);
 			if(currentTime >= endTime) {
 				endTime = currentTime + extendTime;
 				shootIt = shoot.RETRACT;
@@ -386,7 +385,7 @@ public class TorBantorShooarm {
 			break;
 		case RETRACT:
 			currentTime = System.currentTimeMillis();
-			//			Pusher.set(false);
+			Pusher.set(false);
 			if(currentTime >= endTime) {
 				shootakeTalon1.set(ControlMode.PercentOutput, 0);
 				shootakeTalon2.set(ControlMode.PercentOutput, 0);	
@@ -411,7 +410,7 @@ public class TorBantorShooarm {
 			break;
 		case RETRACT:
 			currentTime = System.currentTimeMillis();
-			//			Pusher.set(false);
+			Pusher.set(false);
 			if(currentTime >= endTime) {
 				endTime = currentTime + revTime;
 				intakeIt = intake.MOTORIN;
@@ -501,8 +500,6 @@ public class TorBantorShooarm {
 			switchDo1 = switchDo.IDLE;
 			scaleDo1 = scaleDo.IDLE;
 			holdIt = holder.STOP;
-			shootIt = shoot.IDLE;
-			intakeIt = intake.IDLE;
 			if(player2.getRawButton(5) && !stop) {
 				armAxis = player2.getRawAxis(1);
 				armAxis *= -1;
