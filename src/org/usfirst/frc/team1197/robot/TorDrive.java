@@ -51,22 +51,6 @@ public class TorDrive
 		right = new PivotTrajectory(90);
 		left = new PivotTrajectory(-90);
 	}
-	
-	public TorDrive()
-	{
-		controller = new DriveController();
-		joystickProfile = new TorJoystickProfiles();
-		//TODO: Use static final in TorJoystickProfile, then remove maxThrottle initialization from the constructor.
-		maxThrottle = (dangerFactor) * (joystickProfile.getMinTurnRadius() 
-				/ (joystickProfile.getMinTurnRadius() + DriveHardware.halfTrackWidth));
-		mpNotifier.startPeriodic(0.005);
-		
-		forward = new LinearTrajectory(1.0);
-		backward = new LinearTrajectory(-1.0);
-		right = new PivotTrajectory(90);
-		left = new PivotTrajectory(-90);
-	}
-
 
 	public void driving(double throttleAxis, double arcadeSteerAxis, double carSteerAxis, boolean shiftButton,
 			boolean rightBumper, boolean buttonA, boolean buttonB, boolean buttonX, boolean buttonY) {

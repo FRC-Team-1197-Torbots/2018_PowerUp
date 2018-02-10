@@ -43,22 +43,27 @@ public class TorBantorShooarm {
 		IDLE, POS0, POS1, POS2, POS3, PID, POS4, POS5;
 		private switchDo() {}
 	}
+	
 	public static enum scaleDo {
 		IDLE, POS0, POS1, POS2, POS3, PID, POS4, POS5;
 		private scaleDo() {}
 	}
+	
 	private static enum shoot {
 		IDLE, POS0, MOTOROUT, EXTEND, RETRACT;
 		private shoot() {}
 	}
+	
 	private static enum intake {
 		IDLE, POS0, RETRACT, MOTORIN;
 		private intake() {}
 	}
+	
 	private static enum holder {//It holds the robot up for PID
 		START, PD, STOP;
 		private holder() {}
 	}
+	
 	public static enum manual {
 		IDLE, GOING, GOINGDOWN;
 	}
@@ -73,14 +78,11 @@ public class TorBantorShooarm {
 
 	/**********************************
 	 TUNE THE ARM FROM HERE
-	 */
+	 */ 
 	private int uod = 1;//up or down for manual override. Change it from 1 to -1 to change the control on the arm with the right player y
 	private int ioo = 1;//in or out variable. Change this to switch around the outtake and intake when it is up. Change it from 1 to -1 to make it so either shoots out or (not wanted) intakes up there
-	//ioo is for pressing the BUTTON NOT manual CONTROL
-
-	private int ioop = -1;//in or our variable for the player under manual control
 	private double manualMax = 0.6;//POSITIVE. The controls on the speeds for the manual override.
-	private double manualMin = -0.3;//HAS TO BE NEGATIVE
+	private double manualMin = -0.3;//HAS TO BE NEGATIVE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	private double manualMaxAngle = 80;
 	
 	//the switch tunes
@@ -88,7 +90,7 @@ public class TorBantorShooarm {
 	private long switchPos2Time = 10;
 	//this is the time it is at the max speed
 	private double switchMaxSpeed = 0.6;//the acceleration increment for the switch
-	//the deacceleration increment for the switch
+	//the deceleration increment for the switch
 	private double switchPush = 0.2;//the extra speed to push to hit the degreeTolerance from just a proportional distance speed
 	private double switchCushion = -0.2;//NEGATIVE the extra cushion from a proportional down 
 
@@ -156,25 +158,45 @@ public class TorBantorShooarm {
 		shoot();
 		intake();
 		Hold();
-		if(!stop && player2.getRawButton(3) && (switchDo1 == switchDo.IDLE || switchDo1 == switchDo.PID) && scaleDo1 == scaleDo.IDLE && !player2.getRawButton(5) && intakeIt == intake.IDLE && shootIt == shoot.IDLE) {
+		manualoverride();
+		if(!stop && player2.getRawButton(3) 
+				&& (switchDo1 == switchDo.IDLE || switchDo1 == switchDo.PID) 
+				&& scaleDo1 == scaleDo.IDLE 
+				&& !player2.getRawButton(5) 
+				&& intakeIt == intake.IDLE 
+				&& shootIt == shoot.IDLE) {
 			switchEnable = false;
 			holdContinue = false;
 			holdIt = holder.STOP;
 			switchDo1 = switchDo.POS0;
 		}
-		if(!stop && player2.getRawButton(4) && (scaleDo1 == scaleDo.IDLE || scaleDo1 == scaleDo.PID) && (switchDo1 == switchDo.IDLE || switchDo1 == switchDo.PID) && !player2.getRawButton(5) && intakeIt == intake.IDLE && shootIt == shoot.IDLE) {
+		if(!stop && player2.getRawButton(4) 
+				&& (scaleDo1 == scaleDo.IDLE || scaleDo1 == scaleDo.PID) 
+				&& (switchDo1 == switchDo.IDLE || switchDo1 == switchDo.PID) 
+				&& !player2.getRawButton(5) 
+				&& intakeIt == intake.IDLE 
+				&& shootIt == shoot.IDLE) {
 			scaleEnable = false;
 			holdContinue = false;
 			holdIt = holder.STOP;
 			scaleDo1 = 	scaleDo.POS0;
 		}
-		if(!stop && player2.getRawButton(1) && switchDo1 == switchDo.IDLE && scaleDo1 == scaleDo.IDLE && !player2.getRawButton(5) && intakeIt == intake.IDLE && shootIt == shoot.IDLE && holdIt == holder.PD) {
+		if(!stop && player2.getRawButton(1) 
+				&& switchDo1 == switchDo.IDLE 
+				&& scaleDo1 == scaleDo.IDLE  
+				&& intakeIt == intake.IDLE 
+				&& shootIt == shoot.IDLE 
+				&& holdIt == holder.PD) {
 			intakeIt = intake.POS0;
 		}
-		if(!stop && Math.abs(player2.getRawAxis(3)) > 0.2 && (switchDo1 == switchDo.IDLE || switchDo1 == switchDo.PID) && (scaleDo1 == scaleDo.IDLE || scaleDo1 == scaleDo.PID) && !player2.getRawButton(5) && intakeIt == intake.IDLE && shootIt == shoot.IDLE && !(holdIt == holder.START)) {
+		if(!stop && Math.abs(player2.getRawAxis(3)) > 0.2 
+				&& (switchDo1 == switchDo.IDLE || switchDo1 == switchDo.PID) 
+				&& (scaleDo1 == scaleDo.IDLE || scaleDo1 == scaleDo.PID)  
+				&& intakeIt == intake.IDLE 
+				&& shootIt == shoot.IDLE 
+				&& !(holdIt == holder.START)) {
 			shootIt = shoot.POS0;
 		}
-		manualoverride();
 	}
 
 	public void stop(double angleToHold) {
@@ -213,7 +235,7 @@ public class TorBantorShooarm {
 			}
 			break;
 		case POS1:
-			speed = (Math.sin(x) + x + Math.PI) * switchMaxSpeed / (2 * Math.PI);
+			speed = (x + Math.sin(x) + Math.PI) * switchMaxSpeed / (2 * Math.PI);
 			armTalon1.set(ControlMode.PercentOutput, -speed * uod);
 			armTalon2.set(ControlMode.PercentOutput, speed * uod);
 			if(currentTime >= endTime) {
@@ -480,6 +502,12 @@ public class TorBantorShooarm {
 		holdProportional = holdError * holdkP;
 		holdDerivative = (holdError - holdLastError) * holdkD / kF;
 		holdVelocity = holdProportional + holdDerivative;
+		if(holdVelocity > manualMax) {
+			holdVelocity = manualMax;
+		}
+		if(holdVelocity < manualMin) {
+			holdVelocity = manualMin;
+		}
 		armTalon1.set(ControlMode.PercentOutput, -holdVelocity * uod);
 		armTalon2.set(ControlMode.PercentOutput, holdVelocity * uod);
 		
@@ -535,6 +563,12 @@ public class TorBantorShooarm {
 			break;
 		case GOINGDOWN:
 			speed = (manualMin * (((fourtwenty.get() - startAngle) - holdAngle) / lastAngle));
+			if(speed > manualMax) {
+				speed = manualMax;
+			}
+			if(speed < manualMin) {
+				speed = manualMin;
+			}
 			armTalon1.set(ControlMode.PercentOutput, -speed * uod);
 			armTalon2.set(ControlMode.PercentOutput, speed * uod);
 			if(Math.abs((fourtwenty.get() - startAngle) - holdAngle) <= degreeTolerance) {
@@ -546,6 +580,7 @@ public class TorBantorShooarm {
 			break;
 		}
 	}
+	
 	
 	
 	public void stop1(double angleToHold) {
