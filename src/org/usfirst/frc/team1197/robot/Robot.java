@@ -65,7 +65,7 @@ public class Robot extends SampleRobot {
 	private double scaleAngle = 75;
 	private double switchAngle = 45;
 	private double degreeTolerance = 7;//the tolerance for the normal x + sin x up to get within the switch/scale angle before PID controls it
-	private double holdAngle = 15;
+	private double holdAngle = 30;
 	/*----------------------------------------------------------------------
 	*/
 	
@@ -101,7 +101,7 @@ public class Robot extends SampleRobot {
     	
     	hardwareTest = new DriveHardwareTest(drive.controller.hardware);  
     	
-    	auto = new TorAuto(drive, autoBox);
+    	auto = new TorAuto(drive, autoBox, shooArm);
     }
     
     public void robotInit() {
@@ -109,7 +109,13 @@ public class Robot extends SampleRobot {
     }
 
     public void autonomous() {
-    	
+    	mode = RobotMode.AUTO;
+    	drive.controller.setClosedLoopConstants(mode);
+    	drive.enable();
+    	while(isEnabled() && isAutonomous()) {
+    		auto.run();
+    	}
+    	drive.disable();
     }
 
     public void operatorControl() {

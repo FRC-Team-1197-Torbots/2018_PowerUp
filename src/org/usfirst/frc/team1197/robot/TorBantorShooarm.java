@@ -56,7 +56,7 @@ public class TorBantorShooarm {
 	}
 	
 	private static enum intake {
-		IDLE, POS0, RETRACT, MOTORIN;
+		IDLE, START, POS0, RETRACT, MOTORIN;
 		private intake() {}
 	}
 	
@@ -67,6 +67,11 @@ public class TorBantorShooarm {
 	
 	public static enum manual {
 		IDLE, GOING, GOINGDOWN;
+		private manual() {}
+	}
+	public static enum intakeDown {
+		IDLE, START, PD;
+		private intakeDown() {}
 	}
 	
 	public switchDo switchDo1 = switchDo.IDLE;
@@ -75,6 +80,7 @@ public class TorBantorShooarm {
 	public intake intakeIt = intake.IDLE;
 	public holder holdIt = holder.START;
 	public manual manualGo = manual.IDLE;
+	public intakeDown holdDown = intakeDown.IDLE;
 	private double speed;
 
 	/**********************************
@@ -82,8 +88,8 @@ public class TorBantorShooarm {
 	 */ 
 	private int uod = 1;//up or down for manual override. Change it from 1 to -1 to change the control on the arm with the right player y
 	private int ioo = 1;//in or out variable. Change this to switch around the outtake and intake when it is up. Change it from 1 to -1 to make it so either shoots out or (not wanted) intakes up there
-	private double manualMax = 0.6;//POSITIVE. The controls on the speeds for the manual override.
-	private double manualMin = -0.3;//HAS TO BE NEGATIVE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	private double manualMax = 0.4;//POSITIVE. The controls on the speeds for the manual override.
+	private double manualMin = -0.2;//HAS TO BE NEGATIVE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	private double manualMaxAngle = 80;
 	
 	//the switch tunes
@@ -161,6 +167,7 @@ public class TorBantorShooarm {
 		intake();
 		Hold();
 		manualoverride();
+		holdDownUpdate();
 		if(!stop && player2.getRawButton(3) 
 				&& (switchDo1 == switchDo.IDLE || switchDo1 == switchDo.PID) 
 				&& scaleDo1 == scaleDo.IDLE 
@@ -429,9 +436,19 @@ public class TorBantorShooarm {
 			currentTime = System.currentTimeMillis();
 			endTime = currentTime + extendTime;
 			if(currentTime - lastTime >= 2000) {
-				intakeIt = intake.RETRACT;	
+				endTime = currentTime + 500;
+				holdIt = holder.STOP;
+				holdDown = intakeDown.START;
+				intakeIt = intake.START;	
 			} else {
 				intakeIt = intake.IDLE;
+			}
+			break;
+		case START:
+			currentTime = System.currentTimeMillis();
+			if(currentTime >= endTime) {
+				endTime = currentTime + extendTime;
+				intakeIt = intake.RETRACT;
 			}
 			break;
 		case RETRACT:
@@ -451,6 +468,8 @@ public class TorBantorShooarm {
 				shootakeTalon1.set(ControlMode.PercentOutput, 0);
 				shootakeTalon2.set(ControlMode.PercentOutput, 0);
 				lastTime = currentTime;
+				holdDown = intakeDown.IDLE;
+				holdIt = holder.START;
 				intakeIt = intake.IDLE;
 			}
 			break;
@@ -541,8 +560,8 @@ public class TorBantorShooarm {
 				}
 				armAxis *= armAxis * armAxis;
 				wantedAngle += (kF * armAxis);
-				if(wantedAngle < holdAngle) {
-					wantedAngle = holdAngle;
+				if(wantedAngle < 0) {
+					wantedAngle = 0;
 				}
 				if(wantedAngle > manualMaxAngle) {
 					wantedAngle = manualMaxAngle;
@@ -586,8 +605,6 @@ public class TorBantorShooarm {
 		}
 	}
 	
-	
-	
 	public void stop1(double angleToHold) {
 		currentAngle = fourtwenty.get() - startAngle;
 		wantedAngle = angleToHold;
@@ -608,7 +625,39 @@ public class TorBantorShooarm {
 		
 		lastError = error;
 	}
-}
-
-
 	
+	public void autoFire() {
+		shootIt = shoot.POS0;
+	}
+	
+	
+	public void holdDownUpdate() {
+		switch(holdDown) {
+			case IDLE:
+				break;
+			case START:
+				holdLastError = 0;
+				holdIt = holder.STOP;
+				holdDown = intakeDown.PD;
+				break;
+			case PD:
+				holdError = startAngle - fourtwenty.get();
+				
+				holdProportional = error * kP;
+				holdDerivative = ((error - lastError) * kD) / kF; 
+				holdVelocity = holdProportional + holdDerivative;
+				if(holdVelocity > manualMax) {
+					holdVelocity = manualMax;
+				}
+				if(holdVelocity < manualMin) {
+					holdVelocity = manualMin;
+				}
+				
+				armTalon1.set(ControlMode.PercentOutput, -holdVelocity * uod);
+				armTalon2.set(ControlMode.PercentOutput, holdVelocity * uod);
+				
+				holdLastError = holdError;
+				break;
+		}
+	}
+}
