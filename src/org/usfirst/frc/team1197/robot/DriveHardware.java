@@ -87,9 +87,12 @@ public class DriveHardware {
 		leftSlave1.follow(leftMaster);
 		leftSlave2.follow(leftMaster);
 		
-		leftMaster.setInverted(true);
-		leftSlave1.setInverted(true);
+		leftMaster.setInverted(false);//Talon1 has to be attached to the farther gearbox
+		leftSlave1.setInverted(true);//left is 1, 2, 3
 		leftSlave2.setInverted(true);
+		rightMaster.setInverted(true);//Talon4 has to be attached to the farther gearbox
+		rightSlave1.setInverted(false);//right is 4, 5, 6
+		rightSlave2.setInverted(false);
 
 		// 160ms, hardcoded in for now because CTR did not add the StatusFrameRate for QuadEncoder
 		leftMaster.setStatusFramePeriod(160, 2, 0);

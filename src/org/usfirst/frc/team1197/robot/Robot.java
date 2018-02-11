@@ -19,6 +19,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class Robot extends SampleRobot {
@@ -52,6 +53,8 @@ public class Robot extends SampleRobot {
 	private DriveHardwareTest hardwareTest;
 	
 	private AnalogPotentiometer fourtwenty;//it is the POT
+	
+	private TorAuto auto;
 	
 	/*----------------------------------------------------------------------
 	* The Tunes for the Beginning PID to hold the arm up
@@ -96,7 +99,9 @@ public class Robot extends SampleRobot {
     	shooArm = new TorBantorShooarm(player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, breakBeam, fourtwenty, scaleAngle, switchAngle, degreeTolerance, kF, kP, kD, holdAngle, Pusher, Pusher2);
     	climber = new Climber(releaser, puller1, puller2, shooArm, player2);
     	
-    	hardwareTest = new DriveHardwareTest(drive.controller.hardware);    	
+    	hardwareTest = new DriveHardwareTest(drive.controller.hardware);  
+    	
+    	auto = new TorAuto(drive, autoBox);
     }
     
     public void robotInit() {
