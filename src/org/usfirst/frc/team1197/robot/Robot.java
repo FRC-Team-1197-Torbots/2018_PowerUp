@@ -30,6 +30,7 @@ public class Robot extends SampleRobot {
 	
 	private Solenoid releaser;
 	private Solenoid Pusher;
+	private Solenoid Pusher2;
 	
 	private TalonSRX shootakeTalon1;
 	private TalonSRX shootakeTalon2;
@@ -87,11 +88,12 @@ public class Robot extends SampleRobot {
 		breakBeam = new DigitalInput(0);
     	
     	Pusher = new Solenoid(0, 1);
+    	Pusher2 = new Solenoid(0, 2);
     	releaser = new Solenoid(7);
     	
 		fourtwenty = new AnalogPotentiometer(0, 360, 0);//analog number, how much the value changes as it goes over the 0 to 5 voltage range, the initial value of the degree of the potentiometer
 		
-    	shooArm = new TorBantorShooarm(player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, breakBeam, fourtwenty, scaleAngle, switchAngle, degreeTolerance, kF, kP, kD, holdAngle, Pusher);
+    	shooArm = new TorBantorShooarm(player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, breakBeam, fourtwenty, scaleAngle, switchAngle, degreeTolerance, kF, kP, kD, holdAngle, Pusher, Pusher2);
     	climber = new Climber(releaser, puller1, puller2, shooArm, player2);
     	
     	hardwareTest = new DriveHardwareTest(drive.controller.hardware);    	

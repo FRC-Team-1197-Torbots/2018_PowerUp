@@ -17,6 +17,7 @@ public class TorBantorShooarm {
 	private AnalogPotentiometer fourtwenty; //it is the POT
 	private DigitalInput breakbeam;
 	private Solenoid Pusher;
+	private Solenoid Pusher2;
 	private double scaleAngle;
 	private double switchAngle;
 	private double degreeTolerance;
@@ -133,7 +134,7 @@ public class TorBantorShooarm {
 	private double armAxis;
 	private double wantedAngle;
 
-	public TorBantorShooarm(Joystick player2, TalonSRX armTalon1, TalonSRX armTalon2, TalonSRX shootakeTalon1, TalonSRX shootakeTalon2, DigitalInput breakbeam, AnalogPotentiometer fourtwenty, double scaleAngle, double switchAngle, double degreeTolerance, double kF, double kP, double kD, double holdAngle, Solenoid Pusher) {	
+	public TorBantorShooarm(Joystick player2, TalonSRX armTalon1, TalonSRX armTalon2, TalonSRX shootakeTalon1, TalonSRX shootakeTalon2, DigitalInput breakbeam, AnalogPotentiometer fourtwenty, double scaleAngle, double switchAngle, double degreeTolerance, double kF, double kP, double kD, double holdAngle, Solenoid Pusher, Solenoid Pusher2) {	
 		this.player2 = player2;
 		this.armTalon1 = armTalon1;
 		this.armTalon2 = armTalon2;
@@ -150,6 +151,7 @@ public class TorBantorShooarm {
 		this.kP = kP;
 		this.kD = kD;
 		this.holdAngle = holdAngle;
+		this.Pusher2 = Pusher2;
 	}
 
 	public void TorBantorArmAndShooterUpdate() {
@@ -400,6 +402,7 @@ public class TorBantorShooarm {
 		case EXTEND:
 			currentTime = System.currentTimeMillis();
 			Pusher.set(true);
+			Pusher2.set(true);
 			if(currentTime >= endTime) {
 				endTime = currentTime + extendTime;
 				shootIt = shoot.RETRACT;
@@ -408,6 +411,7 @@ public class TorBantorShooarm {
 		case RETRACT:
 			currentTime = System.currentTimeMillis();
 			Pusher.set(false);
+			Pusher2.set(false);
 			if(currentTime >= endTime) {
 				shootakeTalon1.set(ControlMode.PercentOutput, 0);
 				shootakeTalon2.set(ControlMode.PercentOutput, 0);	
@@ -433,6 +437,7 @@ public class TorBantorShooarm {
 		case RETRACT:
 			currentTime = System.currentTimeMillis();
 			Pusher.set(false);
+			Pusher2.set(false);
 			if(currentTime >= endTime) {
 				endTime = currentTime + revTime;
 				intakeIt = intake.MOTORIN;
