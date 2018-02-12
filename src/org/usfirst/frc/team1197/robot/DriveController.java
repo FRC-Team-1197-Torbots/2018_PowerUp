@@ -11,7 +11,7 @@ public class DriveController {
 	private final TorPID translationPID;
 	private final TorPID rotationPID;
 
-	private boolean enabled = true; // Safer to assume we're enabled
+	private boolean enabled = true; 
 	private boolean motionProfilingActive = false; 
 	protected boolean isHighGear;
 	protected boolean usingCarDriveForHighGear = false;
@@ -78,7 +78,7 @@ public class DriveController {
 		joystickTraj.updateDt(dt);
 
 		translationPID.updatePosition(hardware.getPosition());
-		//		translationPID.updateVelocity(hardware.getVelocity());
+		// translationPID.updateVelocity(hardware.getVelocity());
 
 		rotationPID.updatePosition(hardware.getHeading());
 		rotationPID.updateVelocity(hardware.getOmega());

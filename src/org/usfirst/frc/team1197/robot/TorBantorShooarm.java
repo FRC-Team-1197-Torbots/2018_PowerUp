@@ -32,13 +32,16 @@ public class TorBantorShooarm {
 	private boolean switchEnable;
 	private boolean scaleEnable;
 
-	//buttons on the controller:
-	//a is intake 1
-	//x is switch 3
-	//y is scale 4
-	//right trigger is human fire stick 3
-	//left trigger is manual override button 5
-	//b is climb 2
+	/*** PLAYER 2 BUTTON CONFIGURATION FOR THE ARM ***
+	 
+	   A (1): Intake Position
+	   X (3): Switch Position (Press again to put back to hold position)
+	   Y (4): Scale Position  (Press again to put back to hold position)
+	   B (2): Climb
+	   RT(3): Human fire stick
+	   LT(5): Manual override (Hold the button)
+	
+	********************************************/
 	
 	public static enum switchDo {
 		IDLE, POS0, POS1, POS2, POS3, PID, POS4, POS5;
@@ -85,43 +88,41 @@ public class TorBantorShooarm {
 	private double speed;
 
 	/**********************************
-	 TUNE THE ARM FROM HERE
+	 TUNABLE ARM VARIABLES
 	 */ 
-	private int uod = 1;//up or down for manual override. Change it from 1 to -1 to change the control on the arm with the right player y
-	private int ioo = 1;//in or out variable. Change this to switch around the outtake and intake when it is up. Change it from 1 to -1 to make it so either shoots out or (not wanted) intakes up there
-	private double manualMax = 0.4;//POSITIVE. The controls on the speeds for the manual override.
-	private double manualMin = -0.2;//HAS TO BE NEGATIVE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	
+	private int uod = 1; // up or down for manual override. Change it from 1 to -1 to change the control on the arm with the right player y
+	private int ioo = 1; // in or out variable. Change this to switch around the outtake and intake when it is up. Change it from 1 to -1 to make it so either shoots out or (not wanted) intakes up there
+	private double manualMax = 0.4; // POSITIVE. The controls on the speeds for the manual override.
+	private double manualMin = -0.2; // HAS TO BE NEGATIVE!
 	private double manualMaxAngle = 80;
 	
-	//the switch tunes
-	private long switchPos1Time = 125;//change this to make it go up higher during the switch
-	private long switchPos2Time = 10;
-	//this is the time it is at the max speed
-	private double switchMaxSpeed = 0.6;//the acceleration increment for the switch
-	//the deceleration increment for the switch
-	private double switchPush = 0.2;//the extra speed to push to hit the degreeTolerance from just a proportional distance speed
-	private double switchCushion = -0.2;//NEGATIVE the extra cushion from a proportional down 
+	// Switch Variables
+	private long switchPos1Time = 125; // change this to make it go up higher during the switch
+	private long switchPos2Time = 10; // this is the time it is at the max speed
+	private double switchMaxSpeed = 0.6; // the acceleration increment for the switch
+	private double switchPush = 0.2; // the extra speed to push to hit the degreeTolerance from just a proportional distance speed
+	private double switchCushion = -0.2; // NEGATIVE the extra cushion from a proportional down 
 
-	//the scale tunes
+	// Scale Variables
 	private long scalePos1Time = 450;
 	private long scalePos2Time = 10;
 	private double scaleMaxSpeed = 1;
 	private double scalePush = 0.13;
 	private double scaleCushion = -0.4;
 	
-	//the shooting and intake tunes
+	// Shooter & Intake Variables
 	private double shootPower = 1;//the power it shoots out at
 	private long extendTime = 5;//the time we give to the solenoid to extend and push the cube
 	private long revTime = 500;//the time we give for the motors to go from 0 to the speed and back
 	private double intakePower = 0.6;
 	private double startAngle;
 	
-	//the holding stuff
+	// Hold PD Constants
 	private double holdkP = 0.025;
 	private double holdkD = 0.000006;
-	/**********************************
-		TO HERE
-	 */
+	
+	/***********************************/
 
 	private long currentTime;
 	private long endTime;
@@ -141,7 +142,12 @@ public class TorBantorShooarm {
 	private double armAxis;
 	private double wantedAngle;
 
-	public TorBantorShooarm(Joystick player2, TalonSRX armTalon1, TalonSRX armTalon2, TalonSRX shootakeTalon1, TalonSRX shootakeTalon2, DigitalInput breakbeam, AnalogPotentiometer fourtwenty, double scaleAngle, double switchAngle, double degreeTolerance, double kF, double kP, double kD, double holdAngle, Solenoid Pusher, Solenoid Pusher2) {	
+	public TorBantorShooarm(Joystick player2, TalonSRX armTalon1, TalonSRX armTalon2, 
+			TalonSRX shootakeTalon1, TalonSRX shootakeTalon2, 
+			DigitalInput breakbeam, AnalogPotentiometer fourtwenty, 
+			double scaleAngle, double switchAngle, double degreeTolerance, 
+			double kF, double kP, double kD, double holdAngle, 
+			Solenoid Pusher, Solenoid Pusher2) {	
 		this.player2 = player2;
 		this.armTalon1 = armTalon1;
 		this.armTalon2 = armTalon2;
@@ -162,14 +168,15 @@ public class TorBantorShooarm {
 	}
 
 	public void TorBantorArmAndShooterUpdate() {
-		switchDo();
-		scaleDo();
-		shoot();
-		intake();
-		Hold();
-		manualoverride();
-		holdDownUpdate();
+		switchDo(); 	  // Update for the switch
+		scaleDo(); 		  // Update for the scale
+		shoot(); 		  // Update for the shooter
+		intake(); 		  // Update for the intake
+		Hold(); 		  // Update for the hold
+		manualoverride(); // Update for the manual override
+		holdDownUpdate(); // Update for the hold down
 		
+		// Activate switch if button 'X' is pressed
 		if(!stop && player2.getRawButton(3) 
 				&& (switchDo1 == switchDo.IDLE || switchDo1 == switchDo.PID) 
 				&& scaleDo1 == scaleDo.IDLE 
@@ -182,6 +189,7 @@ public class TorBantorShooarm {
 			switchDo1 = switchDo.POS0;
 		}
 		
+		// Activate scale if button 'Y' is pressed
 		if(!stop && player2.getRawButton(4) 
 				&& (scaleDo1 == scaleDo.IDLE || scaleDo1 == scaleDo.PID) 
 				&& (switchDo1 == switchDo.IDLE || switchDo1 == switchDo.PID) 
@@ -194,6 +202,7 @@ public class TorBantorShooarm {
 			scaleDo1 = 	scaleDo.POS0;
 		}
 		
+		// Activate intake if button 'A' is pressed
 		if(!stop && player2.getRawButton(1) 
 				&& switchDo1 == switchDo.IDLE 
 				&& scaleDo1 == scaleDo.IDLE  
@@ -213,6 +222,7 @@ public class TorBantorShooarm {
 		}
 	}
 
+	// Method to stop everything when climb
 	public void stop(double angleToHold) {
 		switchDo1 = switchDo.IDLE;
 		scaleDo1 = scaleDo.IDLE;

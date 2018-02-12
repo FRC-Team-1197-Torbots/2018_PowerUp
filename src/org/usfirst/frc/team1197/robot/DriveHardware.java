@@ -19,6 +19,8 @@ public class DriveHardware {
 	
 	private final Solenoid solenoid;
 	
+	/** TUNABLE HARDWARE VALUES **/ 
+	
 	private static final double encoderTicksPerMeter = 4416.08796; // (units: ticks per meter)
 	private static final double approximateSensorSpeed = 545.2148; // measured maximum (units: RPM)
 	private static final double quadEncNativeUnits = 512.0; // (units: ticks per revolution)
@@ -27,35 +29,32 @@ public class DriveHardware {
 	public static final double halfTrackWidth = trackWidth / 2.0; // [meters]
 	public static final double backlash = 0.015; // [meters]
 	
-	public static final double absoluteMaxSpeed = (approximateSensorSpeed * quadEncNativeUnits) 
-			/ (60 * encoderTicksPerMeter); // [meters/sec] (2017 robot: ~4.405 m/s)
+	public static final double absoluteMaxSpeed = (approximateSensorSpeed * quadEncNativeUnits) / (60 * encoderTicksPerMeter); // [meters/sec] (2017 robot: ~4.405 m/s)
 	public static final double absoluteMaxOmega = absoluteMaxSpeed / halfTrackWidth;
 	
 	private final double kF = (1023.0) / ((approximateSensorSpeed * quadEncNativeUnits) / (600.0));
-	private final double kP = 5.0; 
+	private final double kP = 0.0; 
 	private final double kI = 0.0; 
-	private final double kD = 100.0; 
+	private final double kD = 0.0; 
+	
+	/***************************/
 	
 	private boolean leftOutputReversed = true;
 	private boolean rightOutputReversed = true;
 	
 	private double heading = 0.0;
-
-	// WEST COAST DRIVE GEARBOXES
-	// MAKE SURE
-	// TO
-	// MAKE ONE OF THE MOTORS OPPOSITE!!!!!!!!!!!!!!!!!!!!!!!!!!! (motor that is farthest from the ouput shaft)
+	
 	public DriveHardware() {
 		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 		
 		solenoid = new Solenoid(0);
 		
-		rightMaster = new TalonSRX(4);
-		rightSlave1 = new TalonSRX(5);
-		rightSlave2 = new TalonSRX(6);
 		leftMaster = new TalonSRX(1);
 		leftSlave1 = new TalonSRX(2);
 		leftSlave2 = new TalonSRX(3);  
+		rightMaster = new TalonSRX(4);
+		rightSlave1 = new TalonSRX(5);
+		rightSlave2 = new TalonSRX(6);
 
 		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
 		rightMaster.configNominalOutputForward(+0.0f, 0);
@@ -85,14 +84,15 @@ public class DriveHardware {
 		leftSlave1.follow(leftMaster);
 		leftSlave2.follow(leftMaster);
 		
-		leftMaster.setInverted(false);//Talon1 has to be attached to the farther gearbox
-		leftSlave1.setInverted(true);//left is 1, 2, 3
-		leftSlave2.setInverted(true);
-		rightMaster.setInverted(true);//Talon4 has to be attached to the farther gearbox
-		rightSlave1.setInverted(false);//right is 4, 5, 6
+		leftMaster.setInverted(true); // Left master must be attached to the farthest CIM from the output shaft
+		leftSlave1.setInverted(false); 
+		leftSlave2.setInverted(false);
+		
+		rightMaster.setInverted(true); // Right master must be attached to the farthest CIM from the output shaft
+		rightSlave1.setInverted(false); 
 		rightSlave2.setInverted(false);
 
-		// 160ms, hardcoded in for now because CTR did not add the StatusFrameRate for QuadEncoder
+		// 160ms, hard coded in for now because CTR did not add the StatusFrameRate for QuadEncoder
 		leftMaster.setStatusFramePeriod(160, 2, 0);
 		leftMaster.setStatusFramePeriod(160, 2, 0);
 		
@@ -208,15 +208,17 @@ public class DriveHardware {
 		return approximateSensorSpeed;
 	}
 	
-	// 
+	// Method to shift the drive to low gear
 	public void shiftToLowGear() {
 		solenoid.set(true);
 	}
 	
+	// Method to shift the drive to high gear
 	public void shiftToHighGear() {
 		solenoid.set(false);
 	}
 	
+	// Method to initialize 
 	public void init(){
 		if(gyro == null){ 
 			gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
