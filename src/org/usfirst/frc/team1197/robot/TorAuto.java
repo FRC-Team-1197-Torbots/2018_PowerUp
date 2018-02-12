@@ -47,16 +47,18 @@ public class TorAuto {
 				RightRightRun.run();
 				position = 3;
 			}
-		} else {//this is center
-			if(Autobox.getRawButton(1)) {
-				if(gameData.charAt(0) == 'L') {//center left
-					CenterLeftRun.run();
-					position = 4;
-				} else {//center right
-					CenterRightRun.run();
-					position = 5;
-				}
+		} else if(Autobox.getRawButton(1)) {//this is center
+			if(gameData.charAt(0) == 'L') {//center left
+				CenterLeftRun.run();
+				position = 4;
+			} else {//center right
+				CenterRightRun.run();
+				position = 5;
 			}
+		}
+		else {
+			// something is wrong
+			System.out.println("Something is wrong. Autobox might not be connected.");
 		}
 		
 	}

@@ -1,10 +1,10 @@
-package org.usfirst.frc.team1197.robot;
+package org.usfirst.frc.team1197.trajectories;
 import org.usfirst.frc.team1197.robot.MotionState1D;
 import org.usfirst.frc.team1197.robot.TorTrajectory;
 
-public class LeftRight3 extends TorTrajectory {
+public class RightLeft1 extends TorTrajectory {
 
-	public LeftRight3() {
+	public RightLeft1() {
 		super(19.2114, 1.5708);
 		time.clear();
 		translation.clear();

@@ -1,6 +1,9 @@
 package org.usfirst.frc.team1197.robot;
 
 import org.usfirst.frc.team1197.robot.LeftLeftRun.run;
+import org.usfirst.frc.team1197.trajectories.LeftRight1;
+import org.usfirst.frc.team1197.trajectories.LeftRight2;
+import org.usfirst.frc.team1197.trajectories.LeftRight3;
 
 public class LeftRightRun {
 	private TorDrive drive;

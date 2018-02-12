@@ -56,6 +56,8 @@ public class Robot extends SampleRobot {
 	
 	private TorAuto auto;
 	
+	private Ultrasonic ultra;
+	
 	/*----------------------------------------------------------------------
 	* The Tunes for the Beginning PID to hold the arm up
 	*/
@@ -69,8 +71,23 @@ public class Robot extends SampleRobot {
 	/*----------------------------------------------------------------------
 	*/
 	
+	/*------------------------------------------------------------------------
+	 * The ultrasonic tunes
+	 */
+	private double distance = 10;//this is the EXACT DISTANCE from the Ultrasonic 
+//	sensor to the end of the bumpers of the robot
+	private double maxSpeed = 0.1;//this can't be high
+	private double minSpeed = 0.05;
+	
+	
+	/*
+	 * ------------------------------------------------------------------------
+	 */
+	
     public Robot() {
     	mode = RobotMode.DISABLED;
+    	
+    	ultra = new Ultrasonic(0, 1);//output 0, input 1
     	
     	compressor = new Compressor();
     	
@@ -90,8 +107,8 @@ public class Robot extends SampleRobot {
     	
 		breakBeam = new DigitalInput(0);
     	
-    	Pusher = new Solenoid(0, 1);
-    	Pusher2 = new Solenoid(0, 2);
+    	Pusher = new Solenoid(0, 0);
+    	Pusher2 = new Solenoid(0, 1);
     	releaser = new Solenoid(7);
     	
 		fourtwenty = new AnalogPotentiometer(0, 360, 0);//analog number, how much the value changes as it goes over the 0 to 5 voltage range, the initial value of the degree of the potentiometer
@@ -130,7 +147,7 @@ public class Robot extends SampleRobot {
 //    		SmartDashboard.putNumber("Average Encoder Position", drive.controller.hardware.getAverageEncoderPosition());
 //    		SmartDashboard.putNumber("Average Raw Velocity Position", drive.controller.hardware.getAverageRawVelocity());
     		shooArm.TorBantorArmAndShooterUpdate();
-// 		climber.update();
+// 			climber.update();
 //    		System.out.println(ultra.getRangeInches());
     	}
 //    	drive.disable();
