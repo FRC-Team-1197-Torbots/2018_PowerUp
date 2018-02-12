@@ -5,7 +5,7 @@ import org.usfirst.frc.team1197.robot.TorPID.sensorNoiseMode;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class DriveController {
-	
+
 	public final DriveHardware hardware;
 	public final JoystickTrajectory joystickTraj;
 	private final TorPID translationPID;
@@ -18,7 +18,7 @@ public class DriveController {
 	private TorTrajectory defaultTrajectory = null;
 	public TorTrajectory activeTrajectory = null;
 	public TorTrajectory nextTrajectory = null;
-	
+
 	private double targetVelocity;
 	private double targetAcceleration;
 	private double targetPosition;
@@ -47,9 +47,9 @@ public class DriveController {
 
 		activeTrajectory = defaultTrajectory;
 		nextTrajectory = defaultTrajectory;
-		
-		setClosedLoopConstants(Robot.mode);
-		
+
+		setClosedLoopConstants();
+
 		translationPID.setLimitMode(sensorLimitMode.Default);
 		translationPID.setNoiseMode(sensorNoiseMode.Noisy);
 		translationPID.setBacklash(0.0);
@@ -61,12 +61,12 @@ public class DriveController {
 		rotationPID.setBacklash(0.0);
 		rotationPID.setPositionTolerance(0.0125);
 		rotationPID.setVelocityTolerance(0.0125);
-		
+
 		resetPID();
 		resetWaypoints();
 		disable();
 	}
-	
+
 	public void run() {
 		currentTime = System.currentTimeMillis();
 		dt = (currentTime - lastTime) * 0.001;
@@ -78,7 +78,7 @@ public class DriveController {
 		joystickTraj.updateDt(dt);
 
 		translationPID.updatePosition(hardware.getPosition());
-//		translationPID.updateVelocity(hardware.getVelocity());
+		//		translationPID.updateVelocity(hardware.getVelocity());
 
 		rotationPID.updatePosition(hardware.getHeading());
 		rotationPID.updateVelocity(hardware.getOmega());
@@ -117,7 +117,7 @@ public class DriveController {
 
 		translationPID.update();
 		rotationPID.update();
-		
+
 		SmartDashboard.putNumber("Rotation Error", rotationPID.error());
 
 		if (motionProfilingActive) {
@@ -140,72 +140,32 @@ public class DriveController {
 			}
 		}
 	}
-	
-	public void setClosedLoopConstants(RobotMode state){
-		if(state == RobotMode.AUTO){
-			rotationPID.setMinimumOutput(0.0);
-			rotationPID.setkP(0.0);
-			rotationPID.setkI(0.0);
-			rotationPID.setkD(0.0);
-			rotationPID.setkPv(0.0);
-			rotationPID.setkA(0.0);
-			translationPID.setMinimumOutput(0.0);
-			translationPID.setkP(0.0);
-			translationPID.setkI(0.0);
-			translationPID.setkD(0.0);
-			translationPID.setkPv(0.0);
-			translationPID.setkA(0.0);
-			
-			translationPID.setPositionTolerance(1.0);
-			translationPID.setVelocityTolerance(0.125);
-			rotationPID.setPositionTolerance(1.6);
-			rotationPID.setVelocityTolerance(1.25);
-		}
-		else if(state == RobotMode.TELEOP){
-			rotationPID.setMinimumOutput(0.0);
-			rotationPID.setkP(0.01);
-			rotationPID.setkI(0.0);
-			rotationPID.setkD(0.0);
-			rotationPID.setkPv(0.0);
-			rotationPID.setkA(0.0);
-			translationPID.setMinimumOutput(0.0);
-			translationPID.setkP(0.15);
-			translationPID.setkI(0.0);
-			translationPID.setkD(0.01);
-			translationPID.setkPv(0.0);
-			translationPID.setkA(0.0);
-			
-			translationPID.setPositionTolerance(0.5);
-			translationPID.setVelocityTolerance(0.125);
-			rotationPID.setPositionTolerance(0.5);
-			rotationPID.setVelocityTolerance(0.125);
-		}
-		else{
-			rotationPID.setMinimumOutput(0.0);
-			rotationPID.setkP(0.0);
-			rotationPID.setkI(0.0);
-			rotationPID.setkD(0.0);
-			rotationPID.setkPv(0.0);
-			rotationPID.setkA(0.0);
-			translationPID.setMinimumOutput(0.0);
-			translationPID.setkP(0.0);
-			translationPID.setkI(0.0);
-			translationPID.setkD(0.0);
-			translationPID.setkPv(0.0);
-			translationPID.setkA(0.0);
-			
-			translationPID.setPositionTolerance(0.5);
-			translationPID.setVelocityTolerance(0.125);
-			rotationPID.setPositionTolerance(1.25);
-			rotationPID.setVelocityTolerance(1.25);
-		}
+
+	public void setClosedLoopConstants(){
+		rotationPID.setMinimumOutput(0.0);
+		rotationPID.setkP(0.0);
+		rotationPID.setkI(0.0);
+		rotationPID.setkD(0.0);
+		rotationPID.setkPv(0.0);
+		rotationPID.setkA(0.0);
+		translationPID.setMinimumOutput(0.0);
+		translationPID.setkP(0.0);
+		translationPID.setkI(0.0);
+		translationPID.setkD(0.0);
+		translationPID.setkPv(0.0);
+		translationPID.setkA(0.0);
+
+		translationPID.setPositionTolerance(0.5);
+		translationPID.setVelocityTolerance(0.125);
+		rotationPID.setPositionTolerance(1.25);
+		rotationPID.setVelocityTolerance(1.25);
 	}
 
 	public void loadTrajectory(TorTrajectory traj) {
 		nextTrajectory = traj;
 		traj.setComplete(false);
 	}
-	
+
 	public void setTargets(double a, double b) {
 		if (motionProfilingActive) {
 			if(activeTrajectory == joystickTraj) {
@@ -251,7 +211,7 @@ public class DriveController {
 			}
 		}
 	}
-	
+
 	// Shifts the robot to low gear and sets motion profiling to inactive.
 	public void shiftToLowGear(){
 		if (isHighGear){
@@ -262,7 +222,7 @@ public class DriveController {
 			}
 		}
 	}
-	
+
 	public void useCarDriveInHighGear(boolean b){
 		usingCarDriveForHighGear = b;
 		if (usingCarDriveForHighGear 
@@ -277,12 +237,12 @@ public class DriveController {
 			setMotionProfilingInactive();
 		}
 	}
-	
+
 	public void enable() {
 		if (enabled) {
 			disable(); //Guarantee safe transition between AUTO/TELEOP/TEST.
 		}
-		resetWaypoints(); //TODO: Uncomment
+		resetWaypoints(); 
 		enabled  = true;
 		isHighGear = false;
 		shiftToHighGear();
@@ -327,7 +287,7 @@ public class DriveController {
 	public boolean onTargetRotation() {
 		return rotationPID.isOnTarget();
 	}
-	
+
 	public double getPositionError(){
 		return translationPID.error();
 	}
@@ -351,7 +311,7 @@ public class DriveController {
 	}
 
 	public void resetWaypoints() {
-		hardware.resetEncoder(); // TODO: Uncomment
+		hardware.resetEncoder(); 
 		hardware.resetGyro();
 		positionWaypoint = 0.0;
 		headingWaypoint = 0.0;

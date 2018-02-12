@@ -3,7 +3,6 @@ package org.usfirst.frc.team1197.robot;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -14,7 +13,7 @@ public class TorBantorShooarm {
 	private TalonSRX armTalon2;
 	private TalonSRX shootakeTalon1;
 	private TalonSRX shootakeTalon2;
-	private AnalogPotentiometer fourtwenty; //it is the POT
+	private AnalogPotentiometer fourtwenty;
 	private DigitalInput breakbeam;
 	private Solenoid Pusher;
 	private Solenoid Pusher2;
@@ -40,6 +39,7 @@ public class TorBantorShooarm {
 	//right trigger is human fire stick 3
 	//left trigger is manual override button 5
 	//b is climb 2
+	
 	public static enum switchDo {
 		IDLE, POS0, POS1, POS2, POS3, PID, POS4, POS5;
 		private switchDo() {}
@@ -60,7 +60,7 @@ public class TorBantorShooarm {
 		private intake() {}
 	}
 	
-	private static enum holder {//It holds the robot up for PID
+	private static enum holder {
 		START, PD, STOP;
 		private holder() {}
 	}
@@ -69,6 +69,7 @@ public class TorBantorShooarm {
 		IDLE, GOING, GOINGDOWN;
 		private manual() {}
 	}
+	
 	public static enum intakeDown {
 		IDLE, START, PD;
 		private intakeDown() {}
@@ -168,6 +169,7 @@ public class TorBantorShooarm {
 		Hold();
 		manualoverride();
 		holdDownUpdate();
+		
 		if(!stop && player2.getRawButton(3) 
 				&& (switchDo1 == switchDo.IDLE || switchDo1 == switchDo.PID) 
 				&& scaleDo1 == scaleDo.IDLE 
@@ -179,6 +181,7 @@ public class TorBantorShooarm {
 			holdIt = holder.STOP;
 			switchDo1 = switchDo.POS0;
 		}
+		
 		if(!stop && player2.getRawButton(4) 
 				&& (scaleDo1 == scaleDo.IDLE || scaleDo1 == scaleDo.PID) 
 				&& (switchDo1 == switchDo.IDLE || switchDo1 == switchDo.PID) 
@@ -190,6 +193,7 @@ public class TorBantorShooarm {
 			holdIt = holder.STOP;
 			scaleDo1 = 	scaleDo.POS0;
 		}
+		
 		if(!stop && player2.getRawButton(1) 
 				&& switchDo1 == switchDo.IDLE 
 				&& scaleDo1 == scaleDo.IDLE  
@@ -198,6 +202,7 @@ public class TorBantorShooarm {
 				&& holdIt == holder.PD) {
 			intakeIt = intake.POS0;
 		}
+		
 		if(!stop && Math.abs(player2.getRawAxis(3)) > 0.2 
 				&& (switchDo1 == switchDo.IDLE || switchDo1 == switchDo.PID) 
 				&& (scaleDo1 == scaleDo.IDLE || scaleDo1 == scaleDo.PID)  
@@ -537,6 +542,7 @@ public class TorBantorShooarm {
 		
 		holdLastError = holdError;
 	}
+	
 	public void manualoverride() {
 		switch(manualGo) {
 		case IDLE:
@@ -629,7 +635,6 @@ public class TorBantorShooarm {
 	public void autoFire() {
 		shootIt = shoot.POS0;
 	}
-	
 	
 	public void holdDownUpdate() {
 		switch(holdDown) {

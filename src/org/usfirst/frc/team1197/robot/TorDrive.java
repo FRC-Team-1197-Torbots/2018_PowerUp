@@ -54,17 +54,9 @@ public class TorDrive
 
 	public void driving(double throttleAxis, double arcadeSteerAxis, double carSteerAxis, boolean shiftButton,
 			boolean rightBumper, boolean buttonA, boolean buttonB, boolean buttonX, boolean buttonY) {
-		// Tell the drive controller whether to use car drive in high gear.
-		controller.useCarDriveInHighGear(!cypress.getRawButton(1));
 		if (controller.isHighGear) {
-			if (controller.usingCarDriveForHighGear) {
-//				carDrive(throttleAxis, carSteerAxis);
-//				ImprovedArcadeDrive(throttleAxis, arcadeSteerAxis);
-				buttonDrive(buttonA, buttonB, buttonX, buttonY);
-//				ArcadeDrive(throttleAxis, arcadeSteerAxis);
-			} else {
-				ArcadeDrive(throttleAxis, arcadeSteerAxis);
-			}
+			ArcadeDrive(throttleAxis, arcadeSteerAxis);
+			
 			// When you hold down the shiftButton (left bumper), then shift to low gear.
 			if (shiftButton) {
 				controller.shiftToLowGear();
@@ -86,8 +78,90 @@ public class TorDrive
 	public void disable() {
 		controller.disable();
 	}
+
+	public void ArcadeDrive(double throttleAxis, double arcadeSteerAxis){
+		if (Math.abs(arcadeSteerAxis) <= 0.1) {
+			arcadeSteerAxis = 0.0D;
+		}
+		if (Math.abs(throttleAxis) <= 0.2D) {
+			throttleAxis = 0.0D;
+		}
+
+		if (arcadeSteerAxis >= 0.0D) {
+			arcadeSteerAxis *= arcadeSteerAxis;
+		} else {
+			arcadeSteerAxis = -(arcadeSteerAxis * arcadeSteerAxis);
+		}
+		if (throttleAxis >= 0.0D) {
+			throttleAxis *= throttleAxis;
+		} else {
+			throttleAxis = -(throttleAxis * throttleAxis);
+		}
+		
+		double rightMotorSpeed;
+		double leftMotorSpeed;
+
+		if (throttleAxis > 0.0D)
+		{
+			if (arcadeSteerAxis > 0.0D)
+			{
+				leftMotorSpeed = throttleAxis - arcadeSteerAxis;
+				rightMotorSpeed = Math.max(throttleAxis, arcadeSteerAxis);
+			}
+			else
+			{
+				leftMotorSpeed = Math.max(throttleAxis, -arcadeSteerAxis);
+				rightMotorSpeed = throttleAxis + arcadeSteerAxis;
+			}
+		}
+		else
+		{
+			if (arcadeSteerAxis > 0.0D)
+			{
+				leftMotorSpeed = -Math.max(-throttleAxis, arcadeSteerAxis);
+				rightMotorSpeed = throttleAxis + arcadeSteerAxis;
+			}
+			else
+			{
+				leftMotorSpeed = throttleAxis - arcadeSteerAxis;
+				rightMotorSpeed = -Math.max(-throttleAxis, -arcadeSteerAxis);
+			}
+		}
+		
+		controller.setTargets(rightMotorSpeed, leftMotorSpeed);
+	}
 	
-	public void ImprovedArcadeDrive(double throttleAxis, double arcadeSteerAxis){
+	public void buttonDrive(boolean buttonA, boolean buttonB, boolean buttonX, boolean buttonY){
+		if(buttonB && !buttonBlast){
+			executeTrajectory(right);
+		}
+		else if(buttonX && !buttonXlast){
+			executeTrajectory(left);
+		}
+		else if(buttonY && !buttonYlast){
+			executeTrajectory(forward);
+		}
+		else if(buttonA && !buttonAlast){
+			executeTrajectory(backward);
+		}
+		else{
+			
+		}
+		buttonBlast = buttonB;
+		buttonYlast = buttonY;
+		buttonXlast = buttonX;
+		buttonAlast = buttonA;
+	}
+	
+	public void executeTrajectory(TorTrajectory traj) {
+		if (controller.motionProfilingActive()) {
+			controller.loadTrajectory(traj);
+		} else {
+			System.err.println("ERROR: Could not execute trajectory with motion profiling inactive.");
+		}
+	}
+	
+public void ImprovedArcadeDrive(double throttleAxis, double arcadeSteerAxis){
 		
 		if (Math.abs(arcadeSteerAxis) <= 0.2) {
 			arcadeSteerAxis = 0.0;
@@ -146,84 +220,6 @@ public class TorDrive
 		w = (rightMotorSpeed - leftMotorSpeed) / DriveHardware.trackWidth;
 		controller.setTargets(v, w);
 	}
-
-	public void ArcadeDrive(double throttleAxis, double arcadeSteerAxis){
-//		throttleAxis = -throttleAxis; // TODO: see below.
-//		arcadeSteerAxis = -arcadeSteerAxis;
-		
-		if (Math.abs(arcadeSteerAxis) <= 0.1) {
-			arcadeSteerAxis = 0.0D;
-		}
-		if (Math.abs(throttleAxis) <= 0.2D) {
-			throttleAxis = 0.0D;
-		}
-
-		if (arcadeSteerAxis >= 0.0D) {
-			arcadeSteerAxis *= arcadeSteerAxis;
-		} else {
-			arcadeSteerAxis = -(arcadeSteerAxis * arcadeSteerAxis);
-		}
-		if (throttleAxis >= 0.0D) {
-			throttleAxis *= throttleAxis;
-		} else {
-			throttleAxis = -(throttleAxis * throttleAxis);
-		}
-		
-		double rightMotorSpeed;
-		double leftMotorSpeed;
-
-		if (throttleAxis > 0.0D)
-		{
-			if (arcadeSteerAxis > 0.0D)
-			{
-				leftMotorSpeed = throttleAxis - arcadeSteerAxis;
-				rightMotorSpeed = Math.max(throttleAxis, arcadeSteerAxis);
-			}
-			else
-			{
-				leftMotorSpeed = Math.max(throttleAxis, -arcadeSteerAxis);
-				rightMotorSpeed = throttleAxis + arcadeSteerAxis;
-			}
-		}
-		else
-		{
-			if (arcadeSteerAxis > 0.0D)
-			{
-				leftMotorSpeed = -Math.max(-throttleAxis, arcadeSteerAxis);
-				rightMotorSpeed = throttleAxis + arcadeSteerAxis;
-			}
-			else
-			{
-				leftMotorSpeed = throttleAxis - arcadeSteerAxis;
-				rightMotorSpeed = -Math.max(-throttleAxis, -arcadeSteerAxis);
-			}
-		}
-		
-//		controller.setTargets(rightMotorSpeed, leftMotorSpeed); // TODO: This is what it was till now. Fix sign issue pls?
-		controller.setTargets(leftMotorSpeed * .5, rightMotorSpeed * .5); // (Let's switch to this and use TorJoystickProfiles if we can)
-	}
-
-	public void buttonDrive(boolean buttonA, boolean buttonB, boolean buttonX, boolean buttonY){
-		if(buttonB && !buttonBlast){
-			executeTrajectory(right);
-		}
-		else if(buttonX && !buttonXlast){
-			executeTrajectory(left);
-		}
-		else if(buttonY && !buttonYlast){
-			executeTrajectory(forward);
-		}
-		else if(buttonA && !buttonAlast){
-			executeTrajectory(backward);
-		}
-		else{
-			
-		}
-		buttonBlast = buttonB;
-		buttonYlast = buttonY;
-		buttonXlast = buttonX;
-		buttonAlast = buttonA;
-	}
 	
 	public void carDrive(double throttleAxis, double carSteeringAxis){
 		//Flipping the sign so it drives forward when you move the analog stick up and vice versa
@@ -250,13 +246,4 @@ public class TorDrive
 		// Setting the joystick trajectory targets so that it actually drives:
 		controller.setTargets(targetSpeed, targetOmega); // TODO: replace with controller.setTargets()
 	}
-
-	public void executeTrajectory(TorTrajectory traj) {
-		if (controller.motionProfilingActive()) {
-			controller.loadTrajectory(traj);
-		} else {
-			System.err.println("ERROR: Could not execute trajectory with motion profiling inactive.");
-		}
-	}
-
 }

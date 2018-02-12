@@ -1,6 +1,5 @@
 package org.usfirst.frc.team1197.robot;
 
-import org.usfirst.frc.team1197.robot.LeftLeftRun.run;
 import org.usfirst.frc.team1197.trajectories.LeftRight1;
 import org.usfirst.frc.team1197.trajectories.LeftRight2;
 import org.usfirst.frc.team1197.trajectories.LeftRight3;
@@ -18,7 +17,6 @@ public class LeftRightRun {
 	}
 	
 	public run runIt = run.IDLE;
-	
 	
 	public LeftRightRun(TorDrive drive, TorBantorShooarm shooArm) {
 		Move1 = new LeftRight1();
@@ -56,7 +54,6 @@ public class LeftRightRun {
 			break;
 		}
 	}
-	
 	
 	public void run() {
 		runIt = run.MOVE1;

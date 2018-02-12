@@ -47,15 +47,10 @@ public class Robot extends SampleRobot {
 	
 	private TorBantorShooarm shooArm;
  	private Climber climber;
-	
 	private DigitalInput breakBeam;
-	
 	private DriveHardwareTest hardwareTest;
-	
-	private AnalogPotentiometer fourtwenty;//it is the POT
-	
+	private AnalogPotentiometer fourtwenty;
 	private TorAuto auto;
-	
 	private Ultrasonic ultra;
 	
 	/*----------------------------------------------------------------------
@@ -74,11 +69,11 @@ public class Robot extends SampleRobot {
 	/*------------------------------------------------------------------------
 	 * The ultrasonic tunes
 	 */
+	
 	private double distance = 10;//this is the EXACT DISTANCE from the Ultrasonic 
 //	sensor to the end of the bumpers of the robot
 	private double maxSpeed = 0.1;//this can't be high
 	private double minSpeed = 0.05;
-	
 	
 	/*
 	 * ------------------------------------------------------------------------
@@ -98,7 +93,6 @@ public class Robot extends SampleRobot {
     	shootakeTalon1 = new TalonSRX(5);
     	shootakeTalon2 = new TalonSRX(6);
     	
-    	
     	armTalon1 = new TalonSRX(3);
     	armTalon2 = new TalonSRX(4);
     	drive = new TorDrive(player1, autoBox);
@@ -111,7 +105,7 @@ public class Robot extends SampleRobot {
     	Pusher2 = new Solenoid(0, 1);
     	releaser = new Solenoid(7);
     	
-		fourtwenty = new AnalogPotentiometer(0, 360, 0);//analog number, how much the value changes as it goes over the 0 to 5 voltage range, the initial value of the degree of the potentiometer
+		fourtwenty = new AnalogPotentiometer(0, 360, 0); //analog number, how much the value changes as it goes over the 0 to 5 voltage range, the initial value of the degree of the potentiometer
 		
     	shooArm = new TorBantorShooarm(player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, breakBeam, fourtwenty, scaleAngle, switchAngle, degreeTolerance, kF, kP, kD, holdAngle, Pusher, Pusher2);
     	climber = new Climber(releaser, puller1, puller2, shooArm, player2);
@@ -127,7 +121,7 @@ public class Robot extends SampleRobot {
 
     public void autonomous() {
     	mode = RobotMode.AUTO;
-    	drive.controller.setClosedLoopConstants(mode);
+    	drive.controller.setClosedLoopConstants();
     	drive.enable();
     	while(isEnabled() && isAutonomous()) {
     		auto.run();
@@ -155,12 +149,11 @@ public class Robot extends SampleRobot {
 
     public void test() {
     	mode = RobotMode.TELEOP;
-       	drive.controller.setClosedLoopConstants(mode);
+       	drive.controller.setClosedLoopConstants();
     	drive.enable();
     	while(isEnabled()) {
     		Test.setButtons(getButtonA(), getButtonB());
 			hardwareTest.run();
-			
     	}
 	}
 

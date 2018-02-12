@@ -19,10 +19,6 @@ public class TorJoystickProfiles {
 	private double previous_y = 0.0;
 	private double y = 0.0;
 	
-	public TorJoystickProfiles(){
-		
-	}
-	
 	public double findRadiusExponential(double x){
 		/* See https://www.desmos.com/calculator/g0st5i5ajy 
 		   for the turning profile equations we've played with. */

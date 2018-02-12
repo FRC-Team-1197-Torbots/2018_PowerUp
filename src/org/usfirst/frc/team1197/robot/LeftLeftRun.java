@@ -18,7 +18,6 @@ public class LeftLeftRun {
 	
 	public run runIt = run.IDLE;
 	
-	
 	public LeftLeftRun(TorDrive drive, TorBantorShooarm shooArm) {
 		Move1 = new LeftLeft1();
 		Move2 = new LeftLeft2();
@@ -55,7 +54,6 @@ public class LeftLeftRun {
 			break;
 		}
 	}
-	
 	
 	public void run() {
 		runIt = run.MOVE1;

@@ -2,12 +2,10 @@ package org.usfirst.frc.team1197.robot;
 
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-//Currently configured for the red sensor bot.
+
 public class DriveHardware {
 	
 	private ADXRS450_Gyro gyro;
@@ -20,7 +18,7 @@ public class DriveHardware {
 	private final TalonSRX leftSlave2;
 	
 	private final Solenoid solenoid;
-	//5125 - encoder, 46 inches.
+	
 	private static final double encoderTicksPerMeter = 4416.08796; // (units: ticks per meter)
 	private static final double approximateSensorSpeed = 545.2148; // measured maximum (units: RPM)
 	private static final double quadEncNativeUnits = 512.0; // (units: ticks per revolution)
@@ -127,80 +125,95 @@ public class DriveHardware {
 		rightMaster.set(ControlMode.PercentOutput, speed);
 	}
 
+	// Getting raw position value from the right encoder
 	public double getRightEncoder() {
 		return rightMaster.getSelectedSensorPosition(0);
 	}
 
+	// Getting raw position value from the left encoder
 	public double getLeftEncoder() {
 		return leftMaster.getSelectedSensorPosition(0);
 	}
 
+	// Getting the average raw velocity from both TalonSRXs
 	public double getAverageRawVelocity() {
 		return (rightMaster.getSelectedSensorVelocity(0) + leftMaster.getSelectedSensorVelocity(0)) * 0.5;
 	}
 	
+	// Getting the raw velocity from the right TalonSRX
 	public double getRightVelocity(){
 		return rightMaster.getSelectedSensorVelocity(0);
 	}
 	
+	// Getting the raw velocity from the left TalonSRX
 	public double getLeftVelocity(){
 		return leftMaster.getSelectedSensorVelocity(0);
 	}
 
+	// Getting the average encoder position from both encoders
 	public double getAverageEncoderPosition() {
 		return (rightMaster.getSelectedSensorPosition(0) + leftMaster.getSelectedSensorPosition(0)) * 0.5;
 	}
 
+	// Getting the position from both encoders in meters
 	public double getPosition() {
 		return (rightMaster.getSelectedSensorPosition(0) + leftMaster.getSelectedSensorPosition(0)) * 0.5 / encoderTicksPerMeter; // [meters]
 	}
 
+	// Getting the velocity from both TalonSRXs in meters per second
 	public double getVelocity() {
 		return (rightMaster.getSelectedSensorVelocity(0) + leftMaster.getSelectedSensorVelocity(0)) * 0.5 * 10 / encoderTicksPerMeter; // [meters/second]
 	}
 
+	// Getting the angle in radians from the spartan board
 	public double getHeading() {
 		heading = (gyro.getAngle() * (Math.PI / 180));
 		return heading; // [radians]
 	}
 
+	// Getting the angular speed in radian per second from the spartan board
 	public double getOmega() {
 		return (gyro.getRate() * (Math.PI / 180)); // [radians/second] 
 	}
 
+	// Method to set the the linear and angular speed of the robot
 	public void setTargets(double v, double omega) {
 		rightMaster.set(ControlMode.Velocity, (v + omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter);
 		leftMaster.set(ControlMode.Velocity, (v - omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter);
 	}
 
+	// Method to reset the encoder values
 	public void resetEncoder() {
 		rightMaster.setSelectedSensorPosition(0, 0, 0);
 		leftMaster.setSelectedSensorPosition(0, 0, 0);
 	}
 
+	// Method to reset the spartan board gyro values
 	public void resetGyro() {
 		gyro.reset(); 
 	}
 
+	// Accessor for the backlash variable
 	public double getBacklash() {
 		return backlash; // [meters]
 	}
 
+	// Accessor for the absoluteMaxSpeed variable
 	public double absoluteMaxSpeed() {
 		return absoluteMaxSpeed; // [meters/second]
 	}
 
+	// Accessor for the approximateSensorSpeed variable
 	public double getSensorSpeed() {
 		return approximateSensorSpeed;
 	}
 	
+	// 
 	public void shiftToLowGear() {
-		SmartDashboard.putBoolean("LowGear", true);
 		solenoid.set(true);
 	}
 	
 	public void shiftToHighGear() {
-		SmartDashboard.putBoolean("LowGear", false);
 		solenoid.set(false);
 	}
 	

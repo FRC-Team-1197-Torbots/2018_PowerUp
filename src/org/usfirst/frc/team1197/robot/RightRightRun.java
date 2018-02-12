@@ -1,7 +1,5 @@
 package org.usfirst.frc.team1197.robot;
 
-import org.usfirst.frc.team1197.robot.LeftLeftRun.run;
-
 public class RightRightRun {
 	private TorDrive drive;
 	
@@ -17,9 +15,10 @@ public class RightRightRun {
 	private TorTrajectory Move10;
 	private TorTrajectory Move11;
 	private TorTrajectory Move12;
+	
 	private TorBantorShooarm shooArm;
-	private int lor;//left or right
-	private int fob;//forwards or backwards
+	private int lor; //left or right
+	private int fob; //forwards or backwards
 	
 	public static enum run {
 		IDLE, MOVE1, MOVE2, MOVE3, MOVE4, MOVE5, FIRE, MOVE6, MOVE7, MOVE8, MOVE9, MOVE10, MOVE11, MOVE12;
@@ -28,9 +27,6 @@ public class RightRightRun {
 	
 	public run runIt = run.IDLE;
 	
-	
-	
-	
 	public RightRightRun(TorDrive drive, TorBantorShooarm shooArm) {
 		lor = 1;
 		fob = 1;
@@ -38,19 +34,18 @@ public class RightRightRun {
 		this.shooArm = shooArm;
 		
 		Move1 = new LinearTrajectory(1.36208 * fob);
-		Move2 = new PivotTrajectory(-90 * lor);//assumed negative was counter clockwise (don't know which is negative or positive)
+		Move2 = new PivotTrajectory(-90 * lor); // assumed negative was counter clockwise (don't know which is negative or positive)
 		Move3 = new LinearTrajectory(1.40373 * fob);
-		Move4 = new PivotTrajectory(90 * lor);//assumed positive was clockwise
+		Move4 = new PivotTrajectory(90 * lor); // assumed positive was clockwise
 		Move5 = new LinearTrajectory(1.36208 * fob);
-		//DO THE SWITCH
+		// DO THE SWITCH
 		Move6 = new LinearTrajectory(-1.36208 * fob);
 		Move7 = new PivotTrajectory(90 * lor);
 		Move8 = new LinearTrajectory(1.40373 * fob);
 		Move9 = new PivotTrajectory(-90 * lor);
 		Move10 = new LinearTrajectory(4.03203 * fob);
 		Move11 = new PivotTrajectory(-90 * lor);
-		Move12 = new LinearTrajectory(.89165 * fob);
-		
+		Move12 = new LinearTrajectory(.89165 * fob);	
 	}
 	
 	public void update() {
@@ -134,11 +129,9 @@ public class RightRightRun {
 			}
 			break;
 		}
-}
-	
+	}
 	
 	public void run() {
 		runIt = run.MOVE1;
 	}
-	
 }

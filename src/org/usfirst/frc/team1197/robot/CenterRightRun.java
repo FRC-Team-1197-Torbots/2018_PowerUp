@@ -1,6 +1,5 @@
 package org.usfirst.frc.team1197.robot;
 
-import org.usfirst.frc.team1197.robot.LeftLeftRun.run;
 import org.usfirst.frc.team1197.trajectories.CenterRight1;
 import org.usfirst.frc.team1197.trajectories.CenterRight2;
 import org.usfirst.frc.team1197.trajectories.CenterRight3;
@@ -11,15 +10,14 @@ public class CenterRightRun {
 	private TorTrajectory Move2;
 	private TorTrajectory Move3;
 	private TorBantorShooarm shooArm;
-	
+
 	public static enum run {
 		IDLE, MOVE1, FIRE, MOVE2, MOVE3;
 		private run() {}
 	}
-	
+
 	public run runIt = run.IDLE;
-	
-	
+
 	public CenterRightRun(TorDrive drive, TorBantorShooarm shooArm) {
 		this.drive = drive;
 		Move1 = new CenterRight1();
@@ -27,7 +25,7 @@ public class CenterRightRun {
 		Move3 = new CenterRight3();
 		this.shooArm = shooArm;
 	}
-	
+
 	public void update() {
 		switch(runIt) {
 		case IDLE:
@@ -56,8 +54,7 @@ public class CenterRightRun {
 			break;
 		}
 	}
-	
-	
+
 	public void run() {
 		runIt = run.MOVE1;
 	}

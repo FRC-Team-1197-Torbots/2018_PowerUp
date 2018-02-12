@@ -11,6 +11,7 @@ public class Climber {
 	private TalonSRX puller2;
 	private TorBantorShooarm armShoo;
 	private Joystick player2;
+	
 	public Climber(Solenoid releaser, TalonSRX puller1, TalonSRX puller2, TorBantorShooarm armShoo, Joystick player2) {
 		this.releaser = releaser;
 		this.puller1 = puller1;
@@ -18,19 +19,25 @@ public class Climber {
 		this.player2 = player2;
 		this.puller2 = puller2;
 	}
+	
 	public static enum climb {
 		IDLE, POS0, FIRE, LIFT;
 		private climb() {}
 	}
+	
 	climb climbIt = climb.IDLE;
+	
 	public void update() {
 		climbDo();
-		if(player2.getRawButton(2) && player2.getRawButton(5) && player2.getRawButton(6)) {
+		if(player2.getRawButton(2) 
+				&& player2.getRawButton(5) 
+				&& player2.getRawButton(6)) {
 			currentTime = System.currentTimeMillis();
 			endTime = currentTime + (long)waitTime;
 			climbIt = climb.POS0;
 		}
 	}
+	
 	/*THE TUNES--------------------------------------------------------------------------
 	*/
 	private long fireTime = 600;
@@ -40,6 +47,7 @@ public class Climber {
 	private double waitTime = 500;//in milliseconds
 	/*-----------------------------------------------------------------------------------
 	*/
+	
 	private long currentTime;
 	private long endTime;
 	private boolean isStopped = false;
@@ -78,6 +86,4 @@ public class Climber {
 			break;
 		}
 	}	
-	
-	
 }

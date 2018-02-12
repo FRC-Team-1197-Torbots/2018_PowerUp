@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class TorAuto {
-	private TorDrive drive;
 	private LeftLeftRun LeftLeftRun;
 	private LeftRightRun LeftRightRun;
 	private CenterLeftRun CenterLeftRun;
@@ -13,13 +12,11 @@ public class TorAuto {
 	private RightRightRun RightRightRun;
 	private Joystick Autobox;
 	private String gameData;
-	private TorBantorShooarm shooArm;
 	private boolean alreadyStarted = false;
 	private int position;
+	
 	public TorAuto(TorDrive drive, Joystick Autobox, TorBantorShooarm shooArm) {
-		this.drive = drive;
 		this.Autobox = Autobox;
-		this.shooArm = shooArm;
 		
 		LeftLeftRun = new LeftLeftRun(drive, shooArm);
 		LeftRightRun = new LeftRightRun(drive, shooArm);
@@ -31,50 +28,58 @@ public class TorAuto {
 	
 	public void oneSwitchRun() {
 		gameData = DriverStation.getInstance().getGameSpecificMessage();
-		if(Autobox.getRawButton(3) && Autobox.getRawButton(1)) {//this is left
-			if(gameData.charAt(0) == 'L') {//left left
+		if(Autobox.getRawButton(3) && Autobox.getRawButton(1)) { // left trajectories
+			if(gameData.charAt(0) == 'L') { // left left
 				LeftLeftRun.run();
 				position = 0;
-			} else {//left right
+			} 
+			else { // left right
 				LeftRightRun.run();
 				position = 1;
 			}
-		} else if(Autobox.getRawButton(2) && Autobox.getRawButton(1)) {//this is right
-			if(gameData.charAt(0) == 'L') {//right left
+		} 
+		else if(Autobox.getRawButton(2) && Autobox.getRawButton(1)) { // right trajectories
+			if(gameData.charAt(0) == 'L') { // right left
 				RightLeftRun.run();
 				position = 2;
-			} else {//right right
+			} 
+			else {// right right
 				RightRightRun.run();
 				position = 3;
 			}
-		} else if(Autobox.getRawButton(1)) {//this is center
-			if(gameData.charAt(0) == 'L') {//center left
+		} 
+		else if(Autobox.getRawButton(1)) { // center trajectories
+			if(gameData.charAt(0) == 'L') { // center left
 				CenterLeftRun.run();
 				position = 4;
-			} else {//center right
+			} 
+			else { // center right
 				CenterRightRun.run();
 				position = 5;
 			}
 		}
-		else {
-			// something is wrong
+		else { // else, something is not right
 			System.out.println("Something is wrong. Autobox might not be connected.");
 		}
-		
 	}
 	
 	public void update() {
 		if(position == 0) {
 			LeftLeftRun.update();
-		} else if(position == 1) {
+		} 
+		else if(position == 1) {
 			LeftRightRun.update();
-		} else if(position == 2) {
+		} 
+		else if(position == 2) {
 			CenterLeftRun.update();
-		} else if(position == 3) {
+		} 
+		else if(position == 3) {
 			CenterRightRun.update();
-		} else if(position == 4) {
+		} 
+		else if(position == 4) {
 			RightLeftRun.update();
-		} else {
+		} 
+		else if(position == 5){
 			RightRightRun.update();
 		}
 	}
