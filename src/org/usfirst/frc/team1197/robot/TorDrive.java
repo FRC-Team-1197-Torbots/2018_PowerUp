@@ -63,6 +63,7 @@ public class TorDrive
 			}
 		} else {
 			ArcadeDrive(throttleAxis, arcadeSteerAxis);
+			
 			// When you release the shiftButton (left bumper), then shift to high gear.
 			if (!shiftButton) {
 				controller.shiftToHighGear();
@@ -128,7 +129,7 @@ public class TorDrive
 			}
 		}
 		
-		controller.setTargets(rightMotorSpeed, leftMotorSpeed);
+		controller.hardware.setMotorSpeeds(rightMotorSpeed, leftMotorSpeed);
 	}
 	
 	public void buttonDrive(boolean buttonA, boolean buttonB, boolean buttonX, boolean buttonY){

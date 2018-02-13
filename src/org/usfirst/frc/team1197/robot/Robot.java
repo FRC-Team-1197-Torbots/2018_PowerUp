@@ -15,6 +15,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 //import org.usfirst.frc.team1197.robot.test.DriveHardwareTest;
 //import org.usfirst.frc.team1197.robot.test.Test;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.Compressor;
@@ -29,15 +30,14 @@ public class Robot extends SampleRobot {
 	private Joystick player2;
 	private Joystick autoBox;
 	
-	private Solenoid releaser;
+//	private Solenoid releaser;
 	private Solenoid Pusher;
-	private Solenoid Pusher2;
 	
-	private TalonSRX shootakeTalon1;
-	private TalonSRX shootakeTalon2;
+	private VictorSPX shootakeTalon1;
+	private VictorSPX shootakeTalon2;
 	
-	private TalonSRX puller1;
-	private TalonSRX puller2;
+//	private TalonSRX puller1;
+//	private TalonSRX puller2;
 	
 	private TalonSRX armTalon1;
 	private TalonSRX armTalon2;
@@ -46,12 +46,11 @@ public class Robot extends SampleRobot {
 	protected static RobotMode mode;
 	
 	private TorBantorShooarm shooArm;
- 	private Climber climber;
+// 	private Climber climber;
 	private DigitalInput breakBeam;
 	private DriveHardwareTest hardwareTest;
 	private AnalogPotentiometer fourtwenty;
 	private TorAuto auto;
-	private Ultrasonic ultra;
 	
 	/*----------------------------------------------------------------------
 	* The Tunes for the Beginning PID to hold the arm up
@@ -62,53 +61,41 @@ public class Robot extends SampleRobot {
 	private double scaleAngle = 75;
 	private double switchAngle = 45;
 	private double degreeTolerance = 7;//the tolerance for the normal x + sin x up to get within the switch/scale angle before PID controls it
-	private double holdAngle = 30;
+	private double holdAngle = 35;
+	private double scaleBackwardsAngle = 120;
 	/*----------------------------------------------------------------------
 	*/
-	
-	/*------------------------------------------------------------------------
-	 * The ultrasonic tunes
-	 */
-	
-	private double distance = 10;//this is the EXACT DISTANCE from the Ultrasonic 
-//	sensor to the end of the bumpers of the robot
-	private double maxSpeed = 0.1;//this can't be high
-	private double minSpeed = 0.05;
-	
-	/*
-	 * ------------------------------------------------------------------------
-	 */
+
 	
     public Robot() {
     	mode = RobotMode.DISABLED;
     	
-    	ultra = new Ultrasonic(0, 1);//output 0, input 1
-    	
     	compressor = new Compressor();
     	
     	player1 = new Joystick(0);
-    	player2 = new Joystick(2);
+    	player2 = new Joystick(1);
     	autoBox = new Joystick(2);
    
-    	shootakeTalon1 = new TalonSRX(5);
-    	shootakeTalon2 = new TalonSRX(6);
+    	armTalon1 = new TalonSRX(7);
+    	armTalon2 = new TalonSRX(8);
+    	shootakeTalon1 = new VictorSPX(9);
+    	shootakeTalon2 = new VictorSPX(10);
+//    	puller1 = new TalonSRX(11);
+//    	puller2 = new TalonSRX(12);
     	
-    	armTalon1 = new TalonSRX(3);
-    	armTalon2 = new TalonSRX(4);
     	drive = new TorDrive(player1, autoBox);
-    	puller1 = new TalonSRX(8);
-    	puller2 = new TalonSRX(9);
     	
 		breakBeam = new DigitalInput(0);
     	
-    	Pusher = new Solenoid(0, 0);
-    	Pusher2 = new Solenoid(0, 1);
-    	releaser = new Solenoid(7);
+//    	Pusher = new Solenoid(0, 0);
+//    	releaser = new Solenoid(0, 1);//for the climber
     	
 		fourtwenty = new AnalogPotentiometer(0, 360, 0); //analog number, how much the value changes as it goes over the 0 to 5 voltage range, the initial value of the degree of the potentiometer
 		
-    	shooArm = new TorBantorShooarm(player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, breakBeam, fourtwenty, scaleAngle, switchAngle, degreeTolerance, kF, kP, kD, holdAngle, Pusher, Pusher2);
-    	climber = new Climber(releaser, puller1, puller2, shooArm, player2);
+//    	shooArm = new TorBantorShooarm(player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, 
+//    			breakBeam, fourtwenty, scaleAngle, switchAngle, degreeTolerance, kF, kP, kD, 
+//    			holdAngle, Pusher, scaleBackwardsAngle);
+//    	climber = new Climber(releaser, puller1, puller2, shooArm, player2);
     	
     	hardwareTest = new DriveHardwareTest(drive.controller.hardware);  
     	
@@ -125,26 +112,23 @@ public class Robot extends SampleRobot {
     	drive.enable();
     	while(isEnabled() && isAutonomous()) {
     		auto.run();
-    	}
-    	drive.disable();
+    	}    
     }
 
     public void operatorControl() {
-//    	mode = RobotMode.TELEOP;
-//    	drive.controller.setClosedLoopConstants(mode);
-//    	drive.enable();
+    	mode = RobotMode.TELEOP;
+    	drive.controller.setClosedLoopConstants();
+    	drive.enable();
     	while(isEnabled()){
-//    		drive.driving(getLeftY(), getLeftX(), getRightX(), getShiftButton(), getRightBumper(), 
-//					getButtonA(), getButtonB(), getButtonX(), getButtonY());
-//    		
+    		drive.driving(getLeftY(), getLeftX(), getRightX(), getShiftButton(), getRightBumper(), 
+					getButtonA(), getButtonB(), getButtonX(), getButtonY());
 //    		SmartDashboard.putNumber("Gyro Value", drive.controller.hardware.getHeading());
 //    		SmartDashboard.putNumber("Average Encoder Position", drive.controller.hardware.getAverageEncoderPosition());
 //    		SmartDashboard.putNumber("Average Raw Velocity Position", drive.controller.hardware.getAverageRawVelocity());
-    		shooArm.TorBantorArmAndShooterUpdate();
-// 			climber.update();
-//    		System.out.println(ultra.getRangeInches());
+//    		shooArm.TorBantorArmAndShooterUpdate();
+//    		climber.update();
     	}
-//    	drive.disable();
+    	drive.disable();
     }
 
     public void test() {
@@ -159,8 +143,8 @@ public class Robot extends SampleRobot {
 
 	//Low-gear software wise, High-gear mechanically
 	public void disabled() {
-//		mode = RobotMode.DISABLED;
-//		drive.disable();
+		mode = RobotMode.DISABLED;
+		drive.disable();
 	}
 
 	// Getting the left analog stick X-axis value from the xbox controller. 

@@ -14,9 +14,11 @@ public class TorAuto {
 	private String gameData;
 	private boolean alreadyStarted = false;
 	private int position;
+	private TorBantorShooarm shooArm;
 	
 	public TorAuto(TorDrive drive, Joystick Autobox, TorBantorShooarm shooArm) {
 		this.Autobox = Autobox;
+		this.shooArm = shooArm;
 		
 		LeftLeftRun = new LeftLeftRun(drive, shooArm);
 		LeftRightRun = new LeftRightRun(drive, shooArm);
@@ -64,6 +66,7 @@ public class TorAuto {
 	}
 	
 	public void update() {
+		shooArm.TorBantorArmAndShooterUpdate();
 		if(position == 0) {
 			LeftLeftRun.update();
 		} 
@@ -85,10 +88,10 @@ public class TorAuto {
 	}
 	
 	public void run() {
-		update();
 		if(!alreadyStarted) {
 			oneSwitchRun();
 			alreadyStarted = true;
 		}
+		update();
 	}
 }

@@ -84,13 +84,13 @@ public class DriveHardware {
 		leftSlave1.follow(leftMaster);
 		leftSlave2.follow(leftMaster);
 		
-		leftMaster.setInverted(true); // Left master must be attached to the farthest CIM from the output shaft
-		leftSlave1.setInverted(false); 
-		leftSlave2.setInverted(false);
+		leftMaster.setInverted(false); // Left master must be attached to the farthest CIM from the output shaft
+		leftSlave1.setInverted(true); 
+		leftSlave2.setInverted(true);
 		
-		rightMaster.setInverted(true); // Right master must be attached to the farthest CIM from the output shaft
-		rightSlave1.setInverted(false); 
-		rightSlave2.setInverted(false);
+		rightMaster.setInverted(false); // Right master must be attached to the farthest CIM from the output shaft
+		rightSlave1.setInverted(true); 
+		rightSlave2.setInverted(true);
 
 		// 160ms, hard coded in for now because CTR did not add the StatusFrameRate for QuadEncoder
 		leftMaster.setStatusFramePeriod(160, 2, 0);
@@ -100,7 +100,7 @@ public class DriveHardware {
 		resetGyro();
 	}
 
-	public void setMotorSpeeds(double leftSpeed, double rightSpeed) {
+	public void setMotorSpeeds(double rightSpeed, double leftSpeed) {
 		if(leftOutputReversed){
 			SetLeft(-leftSpeed);
 		}
@@ -179,7 +179,7 @@ public class DriveHardware {
 	// Method to set the the linear and angular speed of the robot
 	public void setTargets(double v, double omega) {
 		rightMaster.set(ControlMode.Velocity, (v + omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter);
-		leftMaster.set(ControlMode.Velocity, (v - omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter);
+//		leftMaster.set(ControlMode.Velocity, (v - omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter);
 	}
 
 	// Method to reset the encoder values
