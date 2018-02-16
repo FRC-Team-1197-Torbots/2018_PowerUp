@@ -31,7 +31,7 @@ public class Robot extends SampleRobot {
 	private Joystick autoBox;
 	
 //	private Solenoid releaser;
-	private Solenoid Pusher;
+//	private Solenoid Pusher;
 	
 	private VictorSPX shootakeTalon1;
 	private VictorSPX shootakeTalon2;
@@ -116,19 +116,19 @@ public class Robot extends SampleRobot {
     }
 
     public void operatorControl() {
-    	mode = RobotMode.TELEOP;
-    	drive.controller.setClosedLoopConstants();
-    	drive.enable();
+//    	mode = RobotMode.TELEOP;
+//    	drive.controller.setClosedLoopConstants();
+//    	drive.enable();
     	while(isEnabled()){
     		drive.driving(getLeftY(), getLeftX(), getRightX(), getShiftButton(), getRightBumper(), 
 					getButtonA(), getButtonB(), getButtonX(), getButtonY());
 //    		SmartDashboard.putNumber("Gyro Value", drive.controller.hardware.getHeading());
 //    		SmartDashboard.putNumber("Average Encoder Position", drive.controller.hardware.getAverageEncoderPosition());
 //    		SmartDashboard.putNumber("Average Raw Velocity Position", drive.controller.hardware.getAverageRawVelocity());
-//    		shooArm.TorBantorArmAndShooterUpdate();
+    		shooArm.TorBantorArmAndShooterUpdate();
 //    		climber.update();
     	}
-    	drive.disable();
+//    	drive.disable();
     }
 
     public void test() {
@@ -149,48 +149,48 @@ public class Robot extends SampleRobot {
 
 	// Getting the left analog stick X-axis value from the xbox controller. 
 	public double getLeftX(){
-		return player1.getRawAxis(1);
+		return player1.getRawAxis(0);
 	}
 
 	
 	// Getting the left analog stick Y-axis value from the xbox controller. 
 	public double getLeftY(){
-		return player1.getRawAxis(2);
+		return player1.getRawAxis(1);
 	}
 
 	// Getting the right analog stick X-axis value from the xbox controller. 
 	public double getRightX(){
-		return player1.getRawAxis(5);
+		return player1.getRawAxis(4);
 	}
 
 	// Getting the right trigger value from the xbox controller.
 	public double getRightTrigger(){
-		return player1.getRawAxis(4);
+		return player1.getRawAxis(3);
 	}
 
 	// Getting the left bumper button value from the xbox controller. 
 	public boolean getShiftButton(){
-		return player1.getRawButton(6);
+		return player1.getRawButton(5);
 	}
 
 	public boolean getRightBumper(){
-		return player1.getRawButton(7);
+		return player1.getRawButton(6);
 	}
 
 	public boolean getButtonA(){
-		return player1.getRawButton(2);
+		return player1.getRawButton(1);
 	}
 
 	public boolean getButtonB(){
-		return player1.getRawButton(3);
+		return player1.getRawButton(2);
 	}
 
 	public boolean getButtonX(){
-		return player1.getRawButton(4);
+		return player1.getRawButton(3);
 	}
 
 	public boolean getButtonY(){
-		return player1.getRawButton(5);
+		return player1.getRawButton(4);
 	}
 	
 	public boolean isRed(){

@@ -32,8 +32,6 @@ public class Climber {
 		if(player2.getRawButton(2) 
 				&& player2.getRawButton(5) 
 				&& player2.getRawButton(6)) {
-			currentTime = System.currentTimeMillis();
-			endTime = currentTime + (long)waitTime;
 			climbIt = climb.POS0;
 		}
 	}
@@ -56,6 +54,7 @@ public class Climber {
 		currentTime = System.currentTimeMillis();
 		switch(climbIt) {
 		case IDLE:
+			endTime = currentTime + (long)waitTime;
 			break;
 		case POS0:
 			if(!isStopped) {

@@ -45,10 +45,12 @@ public class DriveHardware {
 	private double heading = 0.0;
 	
 	public DriveHardware() {
+		
+		
 		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 		
 		solenoid = new Solenoid(0);
-		
+
 		leftMaster = new TalonSRX(1);
 		leftSlave1 = new TalonSRX(2);
 		leftSlave2 = new TalonSRX(3);  
@@ -84,9 +86,9 @@ public class DriveHardware {
 		leftSlave1.follow(leftMaster);
 		leftSlave2.follow(leftMaster);
 		
-		leftMaster.setInverted(false); // Left master must be attached to the farthest CIM from the output shaft
-		leftSlave1.setInverted(true); 
-		leftSlave2.setInverted(true);
+		leftMaster.setInverted(true); // Left master must be attached to the farthest CIM from the output shaft
+		leftSlave1.setInverted(false); 
+		leftSlave2.setInverted(false);
 		
 		rightMaster.setInverted(false); // Right master must be attached to the farthest CIM from the output shaft
 		rightSlave1.setInverted(true); 
