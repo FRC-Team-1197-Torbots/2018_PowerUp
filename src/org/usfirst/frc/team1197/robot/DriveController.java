@@ -149,16 +149,16 @@ public class DriveController {
 		rotationPID.setkPv(0.0);
 		rotationPID.setkA(0.0);
 		translationPID.setMinimumOutput(0.0);
-		translationPID.setkP(0.0);
+		translationPID.setkP(2.0);
 		translationPID.setkI(0.0);
-		translationPID.setkD(0.0);
+		translationPID.setkD(0.1);
 		translationPID.setkPv(0.0);
 		translationPID.setkA(0.0);
 
-		translationPID.setPositionTolerance(0.5);
-		translationPID.setVelocityTolerance(0.125);
-		rotationPID.setPositionTolerance(1.25);
-		rotationPID.setVelocityTolerance(1.25);
+		translationPID.setPositionTolerance(0.05);
+		translationPID.setVelocityTolerance(0.0125);
+		rotationPID.setPositionTolerance(0.0125);
+		rotationPID.setVelocityTolerance(0.0125);
 	}
 
 	public void loadTrajectory(TorTrajectory traj) {

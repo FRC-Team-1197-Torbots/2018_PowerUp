@@ -9,10 +9,13 @@ public class CenterRightRun {
 	private TorTrajectory Move1;
 	private TorTrajectory Move2;
 	private TorTrajectory Move3;
+	private long currentTime;
+	private long endTime;
+	private final long extendTime = 200;
 	private TorBantorShooarm shooArm;
 
 	public static enum run {
-		IDLE, MOVE1, FIRE, MOVE2, MOVE3;
+		IDLE, MOVEUP, MOVE1, REVUP, FIRE, REVDOWN, MOVE2, MOVE3;
 		private run() {}
 	}
 
@@ -27,16 +30,33 @@ public class CenterRightRun {
 	}
 
 	public void update() {
+		currentTime = System.currentTimeMillis();
 		switch(runIt) {
 		case IDLE:
 			break;
+		case MOVEUP:
+			shooArm.pressX();
+			runIt = run.MOVE1;
 		case MOVE1:
-			drive.executeTrajectory(Move1);
+			if(shooArm.switchIsPID()) {
+				drive.executeTrajectory(Move1);
+				runIt = run.REVUP;
+			}
+			break;
+		case REVUP:
+			shooArm.pressLeftTrigger();
 			runIt = run.FIRE;
 			break;
 		case FIRE:
 			if(Move1.isComplete) {
 				shooArm.autoFire();
+				endTime = currentTime + extendTime;
+				runIt = run.REVDOWN;
+			}
+			break;
+		case REVDOWN:
+			if(currentTime > endTime) {
+				shooArm.releaseLeftTrigger();
 				drive.executeTrajectory(Move2);
 				runIt = run.MOVE2;
 			}
@@ -56,6 +76,6 @@ public class CenterRightRun {
 	}
 
 	public void run() {
-		runIt = run.MOVE1;
+		runIt = run.MOVEUP;
 	}
 }

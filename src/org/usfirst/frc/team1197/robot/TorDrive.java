@@ -46,8 +46,8 @@ public class TorDrive
 				/ (joystickProfile.getMinTurnRadius() + DriveHardware.halfTrackWidth));
 		mpNotifier.startPeriodic(0.005);
 		
-		forward = new LinearTrajectory(0.5);
-		backward = new LinearTrajectory(-0.5);
+		forward = new LinearTrajectory(1.0);
+		backward = new LinearTrajectory(-1.0);
 		right = new PivotTrajectory(90);
 		left = new PivotTrajectory(-90);
 	}
@@ -55,7 +55,8 @@ public class TorDrive
 	public void driving(double throttleAxis, double arcadeSteerAxis, double carSteerAxis, boolean shiftButton,
 			boolean rightBumper, boolean buttonA, boolean buttonB, boolean buttonX, boolean buttonY) {
 		if (controller.isHighGear) {
-			ArcadeDrive(throttleAxis, arcadeSteerAxis);
+//			ArcadeDrive(throttleAxis, arcadeSteerAxis);
+			buttonDrive(buttonA, buttonB, buttonX, buttonY);
 			
 			// When you hold down the shiftButton (left bumper), then shift to low gear.
 			if (shiftButton) {
@@ -162,8 +163,7 @@ public class TorDrive
 		}
 	}
 	
-public void ImprovedArcadeDrive(double throttleAxis, double arcadeSteerAxis){
-		
+	public void ImprovedArcadeDrive(double throttleAxis, double arcadeSteerAxis) {
 		if (Math.abs(arcadeSteerAxis) <= 0.2) {
 			arcadeSteerAxis = 0.0;
 		}

@@ -34,6 +34,8 @@ public class TorBantorShooarm {
 	private double currentAngle;
 	private boolean switchEnable;
 	private boolean scaleEnable;
+	private boolean vaultContinue = false;
+	private long vaultLastTime;
 	private double scaleBackwardsAngle;
 	private final double threshold = 10.0;
 	
@@ -76,6 +78,16 @@ public class TorBantorShooarm {
 		private intakeDown() {}
 	}
 	
+	public static enum vault {
+		IDLE, START, GOING;
+		private vault() {}
+	}
+	
+	public static enum vaultDown {
+		IDLE, START, PD;
+		private vaultDown() {}
+	}
+	
 	public switchDo switchDo1 = switchDo.IDLE;
 	public scaleDo scaleDo1 = scaleDo.IDLE;
 	public shoot shootIt = shoot.IDLE;
@@ -84,6 +96,8 @@ public class TorBantorShooarm {
 	public manual manualGo = manual.IDLE;
 	public intakeDown holdDown = intakeDown.IDLE;
 	public backwardsScale backScale = backwardsScale.IDLE;
+	public vaultDown vaultDown1 = vaultDown.IDLE;
+	public vault vault1 = vault.IDLE;
 	private double speed;
 
 	/**********************************
@@ -91,7 +105,6 @@ public class TorBantorShooarm {
 	 */ 
 
 	private double startAngle;//HAS TO BE TUNED TO THE POTENTIOMETER READING WHEN IT IS ALREADY DOWN
-	
 	
 	private int uod = 1; // up or down for manual override. Change it from 1 to -1 to change the control on the arm with the right player y
 	private int ioo = -1; // in or out variable. Change this to switch around the outtake and intake when it is up. Change it from 1 to -1 to make it so either shoots out or (not wanted) intakes up there
@@ -203,6 +216,8 @@ public class TorBantorShooarm {
 		holdDownUpdate(); // Update for the hold down
 //		backwardsScaleDo(); //Update for the backwards scale
 		shootTake();
+		vault();
+		vaultHold();
 		
 		// Activate switch if button 'X' is pressed
 		if(!stop && player2.getRawButton(3) 
@@ -807,5 +822,134 @@ public class TorBantorShooarm {
 			shootakeTalon2.set(ControlMode.PercentOutput, 0);
 			pressingRightTrigger = false;
 		}
+	}
+	
+	public void vaultHold() {
+		switch(vaultDown1) {
+		case IDLE:
+			break;
+		case START:
+			holdLastError = 0;
+			vaultContinue = true;
+			vaultDown1 = vaultDown.PD;
+			break;
+		case PD:
+			if(vaultContinue) {
+				vaultPIDGO();
+				vaultDown1 = vaultDown.PD;
+			} else {
+				armTalon1.set(ControlMode.PercentOutput, 0);
+				armTalon2.set(ControlMode.PercentOutput, 0);
+				vaultDown1 = vaultDown.IDLE;
+			}
+			break;
+		}
+	}
+	
+	public void vaultPIDGO() {
+		holdError = (holdAngle * 0.5) - ((fourtwenty.get() - startAngle) * potSwitch);
+		
+		holdProportional = holdError * holdkP;
+		holdDerivative = (holdError - holdLastError) * holdkD / kF;
+		holdVelocity = holdProportional + holdDerivative;
+		if(holdVelocity > manualMax) {
+			holdVelocity = manualMax;
+		}
+		if(holdVelocity < manualMin) {
+			holdVelocity = manualMin;
+		}
+		armTalon1.set(ControlMode.PercentOutput, -holdVelocity * uod);
+		armTalon2.set(ControlMode.PercentOutput, holdVelocity * uod);
+		
+		holdLastError = holdError;
+	}
+	
+	
+	public void vault() {
+		currentTime = System.currentTimeMillis();
+		switch(vault1) {
+		case IDLE:
+			break;
+		case START:
+			if(currentTime - vaultLastTime >= 2000) {
+				holdIt = holder.STOP;
+				holdDown = intakeDown.IDLE;
+				endTime = currentTime + revTime;
+				vaultDown1 = vaultDown.START;
+				vault1 = vault.GOING;
+			} else {
+				vault1 = vault.IDLE;
+			}
+			break;
+		case GOING:
+			if((currentTime >= endTime) && player2.getRawButton(2)) {
+				vaultContinue = false;
+				vaultDown1 = vaultDown.IDLE;
+				vaultLastTime = currentTime;
+				holdIt = holder.START;
+				vault1 = vault.IDLE;
+			}
+			break;
+		}
+	}
+	
+	/*
+	 * THESE ARE ALL THE AUTO METHODS
+	 * THEY ARE AT THE BOTTOM
+	 * THEY ARE VIRTUAL BUTTONS
+	 * CALL IN AUTO CLASS ONCE FOR EACH OF THEM
+	 */
+	
+	
+	
+	
+	
+	
+	
+	public boolean switchIsPID() {
+		return (switchDo1 == switchDo.PID);
+	}
+	public boolean scaleIsPID() {
+		return (scaleDo1 == scaleDo.PID);
+	}
+	
+	public void pressX() {
+		if(!stop 
+			&& (switchDo1 == switchDo.IDLE || switchDo1 == switchDo.PID) 
+			&& scaleDo1 == scaleDo.IDLE 
+			&& !player2.getRawButton(5) 
+			&& intakeIt == intake.IDLE 
+			&& shootIt == shoot.IDLE) {
+		switchEnable = false;
+		holdContinue = false;
+		holdIt = holder.STOP;
+		holdDown = intakeDown.IDLE;
+		switchDo1 = switchDo.POS0;
+		}
+	}
+	
+	public void pressY() {
+		if(!stop 
+				&& (scaleDo1 == scaleDo.IDLE || scaleDo1 == scaleDo.PID) 
+				&& (switchDo1 == switchDo.IDLE) 
+				&& !player2.getRawButton(5) 
+				&& intakeIt == intake.IDLE 
+				&& shootIt == shoot.IDLE) {
+			scaleEnable = false;
+			holdContinue = false;
+			holdIt = holder.STOP;
+			holdDown = intakeDown.IDLE;
+			scaleDo1 = 	scaleDo.POS0;
+		}
+	}
+	
+	public void pressLeftTrigger() {
+		shootakeTalon1.set(ControlMode.PercentOutput, shootPower * ioo);
+		shootakeTalon2.set(ControlMode.PercentOutput, -shootPower * ioo);
+	}
+	
+	public void releaseLeftTrigger() {
+		shootakeTalon1.set(ControlMode.PercentOutput, 0);
+		shootakeTalon2.set(ControlMode.PercentOutput, 0);
 	}
 }

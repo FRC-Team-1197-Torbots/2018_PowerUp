@@ -106,7 +106,7 @@ public class Robot extends SampleRobot {
     }
     
     public void robotInit() {
-//    	drive.controller.hardware.init();
+    	drive.controller.hardware.init();
     }
 
     public void autonomous() {
@@ -125,9 +125,12 @@ public class Robot extends SampleRobot {
     	while(isEnabled()){
     		drive.driving(getLeftY(), getLeftX(), getRightX(), getShiftButton(), getRightBumper(), 
 					getButtonA(), getButtonB(), getButtonX(), getButtonY());
-//    		SmartDashboard.putNumber("Gyro Value", drive.controller.hardware.getHeading());
-//    		SmartDashboard.putNumber("Average Encoder Position", drive.controller.hardware.getAverageEncoderPosition());
+    		SmartDashboard.putNumber("Gyro Value", drive.controller.hardware.getHeading());
+//    		SmartDashboard.putNumber("Average Encoder Position", drive.controller.hardware.getRightEncoder());
 //    		SmartDashboard.putNumber("Average Raw Velocity Position", drive.controller.hardware.getAverageRawVelocity());
+    		SmartDashboard.putBoolean("Motion Profiling Active", drive.controller.motionProfilingActive());
+    		SmartDashboard.putNumber("Right Encoder Position", drive.controller.hardware.getRightEncoder());
+    		SmartDashboard.putNumber("Left Encoder Position", drive.controller.hardware.getLeftEncoder());
     		shooArm.TorBantorArmAndShooterUpdate();
 //    		climber.update();
     	}

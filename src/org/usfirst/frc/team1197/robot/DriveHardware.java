@@ -18,14 +18,13 @@ public class DriveHardware {
 	private final TalonSRX leftSlave2;
 	
 	private final Solenoid solenoid;
-	
+	//924.0
 	/** TUNABLE HARDWARE VALUES **/ 
-	
-	private static final double encoderTicksPerMeter = 4416.08796; // (units: ticks per meter)
-	private static final double approximateSensorSpeed = 545.2148; // measured maximum (units: RPM)
+	private static final double encoderTicksPerMeter = 999.84825; // (units: ticks per meter)
+	private static final double approximateSensorSpeed = 924; // measured maximum (units: RPM)
 	private static final double quadEncNativeUnits = 512.0; // (units: ticks per revolution)
 	
-	public static final double trackWidth = 0.5842; // [meters].
+	public static final double trackWidth = 0.654177; // [meters].
 	public static final double halfTrackWidth = trackWidth / 2.0; // [meters]
 	public static final double backlash = 0.015; // [meters]
 	
@@ -45,8 +44,6 @@ public class DriveHardware {
 	private double heading = 0.0;
 	
 	public DriveHardware() {
-		
-		
 		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 		
 		solenoid = new Solenoid(0, 1);
@@ -95,8 +92,8 @@ public class DriveHardware {
 		rightSlave2.setInverted(true);
 
 		// 160ms, hard coded in for now because CTR did not add the StatusFrameRate for QuadEncoder
-		leftMaster.setStatusFramePeriod(160, 2, 0);
-		leftMaster.setStatusFramePeriod(160, 2, 0);
+//		rightMaster.setStatusFramePeriod(160, 2, 0);
+//		leftMaster.setStatusFramePeriod(160, 2, 0);
 		
 		resetEncoder();
 		resetGyro();
@@ -181,7 +178,7 @@ public class DriveHardware {
 	// Method to set the the linear and angular speed of the robot
 	public void setTargets(double v, double omega) {
 		rightMaster.set(ControlMode.Velocity, (v + omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter);
-//		leftMaster.set(ControlMode.Velocity, (v - omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter);
+		leftMaster.set(ControlMode.Velocity, (v - omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter);
 	}
 
 	// Method to reset the encoder values
