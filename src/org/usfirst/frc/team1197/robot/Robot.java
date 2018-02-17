@@ -31,7 +31,7 @@ public class Robot extends SampleRobot {
 	private Joystick autoBox;
 	
 //	private Solenoid releaser;
-//	private Solenoid Pusher;
+	private Solenoid Pusher;
 	
 	private VictorSPX shootakeTalon1;
 	private VictorSPX shootakeTalon2;
@@ -56,12 +56,12 @@ public class Robot extends SampleRobot {
 	* The Tunes for the Beginning PID to hold the arm up
 	*/
 	private double kF = .005;
-	private double kP = 0.02;
+	private double kP = 0.005;
 	private double kD = 0.00001;
-	private double scaleAngle = 75;
-	private double switchAngle = 45;
-	private double degreeTolerance = 7;//the tolerance for the normal x + sin x up to get within the switch/scale angle before PID controls it
-	private double holdAngle = 35;
+	private double scaleAngle = 80;
+	private double switchAngle = 55;
+	private double degreeTolerance = 8;//the tolerance for the normal x + sin x up to get within the switch/scale angle before PID controls it
+	private double holdAngle = 10;
 	private double scaleBackwardsAngle = 120;
 	/*----------------------------------------------------------------------
 	*/
@@ -87,19 +87,22 @@ public class Robot extends SampleRobot {
     	
 		breakBeam = new DigitalInput(0);
     	
-//    	Pusher = new Solenoid(0, 0);
-//    	releaser = new Solenoid(0, 1);//for the climber
+    	Pusher = new Solenoid(0, 0);
+//    	releaser = new Solenoid(0, 2);//for the climber
     	
 		fourtwenty = new AnalogPotentiometer(0, 360, 0); //analog number, how much the value changes as it goes over the 0 to 5 voltage range, the initial value of the degree of the potentiometer
 		
 //    	shooArm = new TorBantorShooarm(player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, 
 //    			breakBeam, fourtwenty, scaleAngle, switchAngle, degreeTolerance, kF, kP, kD, 
 //    			holdAngle, Pusher, scaleBackwardsAngle);
+    	shooArm = new TorBantorShooarm(player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, 
+    			fourtwenty, scaleAngle, switchAngle, degreeTolerance, kF, kP, kD, 
+    			holdAngle, Pusher, scaleBackwardsAngle);
 //    	climber = new Climber(releaser, puller1, puller2, shooArm, player2);
     	
-    	hardwareTest = new DriveHardwareTest(drive.controller.hardware);  
+//    	hardwareTest = new DriveHardwareTest(drive.controller.hardware);  
     	
-    	auto = new TorAuto(drive, autoBox, shooArm);
+//    	auto = new TorAuto(drive, autoBox, shooArm);
     }
     
     public void robotInit() {
@@ -116,9 +119,9 @@ public class Robot extends SampleRobot {
     }
 
     public void operatorControl() {
-//    	mode = RobotMode.TELEOP;
-//    	drive.controller.setClosedLoopConstants();
-//    	drive.enable();
+    	mode = RobotMode.TELEOP;
+    	drive.controller.setClosedLoopConstants();
+    	drive.enable();
     	while(isEnabled()){
     		drive.driving(getLeftY(), getLeftX(), getRightX(), getShiftButton(), getRightBumper(), 
 					getButtonA(), getButtonB(), getButtonX(), getButtonY());
@@ -128,7 +131,7 @@ public class Robot extends SampleRobot {
     		shooArm.TorBantorArmAndShooterUpdate();
 //    		climber.update();
     	}
-//    	drive.disable();
+    	drive.disable();
     }
 
     public void test() {
@@ -144,7 +147,7 @@ public class Robot extends SampleRobot {
 	//Low-gear software wise, High-gear mechanically
 	public void disabled() {
 		mode = RobotMode.DISABLED;
-		drive.disable();
+//		drive.disable();
 	}
 
 	// Getting the left analog stick X-axis value from the xbox controller. 
@@ -194,7 +197,8 @@ public class Robot extends SampleRobot {
 	}
 	
 	public boolean isRed(){
-		return autoBox.getRawButton(5);
+//		return autoBox.getRawButton(5);
+		return true;
 	}
 
 }
