@@ -17,6 +17,10 @@ public class DriveHardware {
 	private final TalonSRX leftSlave1;
 	private final TalonSRX leftSlave2;
 	
+	private double leftSpeed;
+	private double rightSpeed;
+	private double threshold = 50;
+	
 	private final Solenoid solenoid;
 	//924.0
 	/** TUNABLE HARDWARE VALUES **/ 
@@ -28,7 +32,7 @@ public class DriveHardware {
 	public static final double halfTrackWidth = trackWidth / 2.0; // [meters]
 	public static final double backlash = 0.015; // [meters]
 	
-	public static final double absoluteMaxSpeed = (approximateSensorSpeed * quadEncNativeUnits) / (60 * encoderTicksPerMeter); // [meters/sec] (2017 robot: ~4.405 m/s)
+	public static final double absoluteMaxSpeed = (approximateSensorSpeed * quadEncNativeUnits) / (60 * encoderTicksPerMeter); // [meters/sec] (2018 robot: ~7.886 m/s)
 	public static final double absoluteMaxOmega = absoluteMaxSpeed / halfTrackWidth;
 	
 	private final double kF = (1023.0) / ((approximateSensorSpeed * quadEncNativeUnits) / (600.0));
@@ -177,8 +181,30 @@ public class DriveHardware {
 
 	// Method to set the the linear and angular speed of the robot
 	public void setTargets(double v, double omega) {
-		rightMaster.set(ControlMode.Velocity, (v + omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter);
-		leftMaster.set(ControlMode.Velocity, (v - omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter);
+		leftSpeed = (v - omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter;
+		if(!(leftSpeed == 0)) {
+			if(leftSpeed > 0 && leftSpeed < threshold) {
+				leftSpeed = threshold;
+			}
+			if(leftSpeed < 0 && leftSpeed > -threshold) {
+				leftSpeed = -threshold;
+			}
+		}
+		
+		rightSpeed = (v + omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter;
+		if(!(rightSpeed == 0)) {
+			if(rightSpeed > 0 && rightSpeed < threshold) {
+				rightSpeed = threshold;
+			}
+			if(rightSpeed < 0 && rightSpeed > -threshold) {
+				rightSpeed = -threshold;
+			}
+		}
+		
+		
+		
+		rightMaster.set(ControlMode.Velocity, rightSpeed);
+		leftMaster.set(ControlMode.Velocity, leftSpeed);
 	}
 
 	// Method to reset the encoder values

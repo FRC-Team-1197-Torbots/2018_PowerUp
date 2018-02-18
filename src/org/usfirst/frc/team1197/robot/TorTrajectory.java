@@ -48,9 +48,9 @@ public abstract class TorTrajectory {
 		max_acc = 4.0; //3.5 
 		max_jerk = 12.5; //20.0
 		
-		max_omg = 8.0; //8.0
-		max_alf = 6.0; //7.0
-		max_jeta = 15.0; //40.0
+		max_omg = 16.0; //8.0
+		max_alf = 8.0; //7.0
+		max_jeta = 50.0; //40.0
 
 		
 		time = new ArrayList<Long>();
@@ -72,9 +72,9 @@ public abstract class TorTrajectory {
 		max_acc = 3.0; //3.5 
 		max_jerk = 15.0; //20.0
 		
-		max_omg = 8.0; //8.0
-		max_alf = 7.0; //7.0
-		max_jeta = 20.0; //40.0
+		max_omg = 16.0; //8.0
+		max_alf = 8.0; //7.0
+		max_jeta = 50.0; //40.0
 		
 		time = new ArrayList<Long>();
 		time.add((long) 0);

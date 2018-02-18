@@ -11,6 +11,8 @@ public class DriveController {
 	private final TorPID translationPID;
 	private final TorPID rotationPID;
 
+	private double translationPIDOutput;
+	
 	private boolean enabled = true; 
 	private boolean motionProfilingActive = false; 
 	protected boolean isHighGear;
@@ -119,13 +121,25 @@ public class DriveController {
 		rotationPID.update();
 
 		SmartDashboard.putNumber("Rotation Error", rotationPID.error());
-
+		SmartDashboard.putBoolean("MOTIONPROFILE", true);
 		if (motionProfilingActive) {
 			if (activeTrajectory != joystickTraj) {
 				joystickTraj.setState(targetPosition, targetVelocity, targetHeading, targetOmega);
 			}
 			graphTranslation();
 			graphRotation();
+//			translationPIDOutput = translationPID.output();
+//			if(!(translationPIDOutput == 0)) {
+//				if(translationPIDOutput > 0 && translationPIDOutput < 100) {
+//					translationPIDOutput = 100;
+//				}
+//				if(translationPIDOutput < 0 && translationPIDOutput > -100) {
+//					translationPIDOutput = -100;
+//				}
+//			}
+//			SmartDashboard.putNumber("PID Output with the > 0.1 Controller", translationPIDOutput);
+			SmartDashboard.putBoolean("Translation onTarget:", translationPID.isOnTarget());
+			SmartDashboard.putBoolean("Rotation on Target:", rotationPID.isOnTarget());
 			hardware.setTargets(translationPID.output(), rotationPID.output());
 		}
 		if (activeTrajectory.lookUpIsLast(lookupTime) && translationPID.isOnTarget() && rotationPID.isOnTarget()) {
@@ -143,22 +157,22 @@ public class DriveController {
 
 	public void setClosedLoopConstants(){
 		rotationPID.setMinimumOutput(0.0);
-		rotationPID.setkP(0.0);
-		rotationPID.setkI(0.0);
-		rotationPID.setkD(0.0);
-		rotationPID.setkPv(0.0);
-		rotationPID.setkA(0.0);
-		translationPID.setMinimumOutput(0.0);
-		translationPID.setkP(2.0);
-		translationPID.setkI(0.0);
-		translationPID.setkD(0.1);
-		translationPID.setkPv(0.0);
-		translationPID.setkA(0.0);
+		rotationPID.setkP(0.862);
+		rotationPID.setkI(0.075);
+		rotationPID.setkD(0.102);//.1 was the value
+		rotationPID.setkPv(0.8625);
+		rotationPID.setkA(1.054);
+		translationPID.setMinimumOutput(0.09);
+		translationPID.setkP(3.7);
+		translationPID.setkI(0.4);
+		translationPID.setkD(0.26);
+		translationPID.setkPv(0.1);
+		translationPID.setkA(0.001);
 
-		translationPID.setPositionTolerance(0.05);
-		translationPID.setVelocityTolerance(0.0125);
-		rotationPID.setPositionTolerance(0.0125);
-		rotationPID.setVelocityTolerance(0.0125);
+		translationPID.setPositionTolerance(0.35);
+		translationPID.setVelocityTolerance(0.125);
+		rotationPID.setPositionTolerance(3.0);
+		rotationPID.setVelocityTolerance(0.5);
 	}
 
 	public void loadTrajectory(TorTrajectory traj) {

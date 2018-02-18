@@ -65,7 +65,6 @@ public class Robot extends SampleRobot {
 	private double scaleBackwardsAngle = 120;
 	/*----------------------------------------------------------------------
 	*/
-
 	
     public Robot() {
     	mode = RobotMode.DISABLED;
@@ -92,12 +91,12 @@ public class Robot extends SampleRobot {
     	
 		fourtwenty = new AnalogPotentiometer(0, 360, 0); //analog number, how much the value changes as it goes over the 0 to 5 voltage range, the initial value of the degree of the potentiometer
 		
-//    	shooArm = new TorBantorShooarm(player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, 
-//    			breakBeam, fourtwenty, scaleAngle, switchAngle, degreeTolerance, kF, kP, kD, 
-//    			holdAngle, Pusher, scaleBackwardsAngle);
     	shooArm = new TorBantorShooarm(player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, 
-    			fourtwenty, scaleAngle, switchAngle, degreeTolerance, kF, kP, kD, 
+    			breakBeam, fourtwenty, scaleAngle, switchAngle, degreeTolerance, kF, kP, kD, 
     			holdAngle, Pusher, scaleBackwardsAngle);
+//    	shooArm = new TorBantorShooarm(player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, 
+//    			fourtwenty, scaleAngle, switchAngle, degreeTolerance, kF, kP, kD, 
+//    			holdAngle, Pusher, scaleBackwardsAngle);
 //    	climber = new Climber(releaser, puller1, puller2, shooArm, player2);
     	
 //    	hardwareTest = new DriveHardwareTest(drive.controller.hardware);  
@@ -114,7 +113,7 @@ public class Robot extends SampleRobot {
     	drive.controller.setClosedLoopConstants();
     	drive.enable();
     	while(isEnabled() && isAutonomous()) {
-    		auto.run();
+//    		auto.run();
     	}    
     }
 
@@ -132,6 +131,10 @@ public class Robot extends SampleRobot {
     		SmartDashboard.putNumber("Right Encoder Position", drive.controller.hardware.getRightEncoder());
     		SmartDashboard.putNumber("Left Encoder Position", drive.controller.hardware.getLeftEncoder());
     		shooArm.TorBantorArmAndShooterUpdate();
+    		if(shooArm.burning()) {
+    			System.out.println("It is burning!");
+    			shooArm.ESTOP();
+    		}
 //    		climber.update();
     	}
     	drive.disable();

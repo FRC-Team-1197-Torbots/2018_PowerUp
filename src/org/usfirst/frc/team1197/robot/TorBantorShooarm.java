@@ -18,7 +18,7 @@ public class TorBantorShooarm {
 	private VictorSPX shootakeTalon1;
 	private VictorSPX shootakeTalon2;
 	private AnalogPotentiometer fourtwenty;
-//	private DigitalInput breakbeam;
+	private DigitalInput breakbeam;
 	private Solenoid Pusher;
 	private double scaleAngle;
 	private double switchAngle;
@@ -124,7 +124,7 @@ public class TorBantorShooarm {
 	private long scalePos1Time = 450;
 	private long scalePos2Time = 50;
 	private double scaleMaxSpeed = 1;
-	private double scalePush = 0.18;
+	private double scalePush = 0.23;
 	private double scaleCushion = -0.02;
 	private double scaleShootPower = 1;
 	
@@ -137,7 +137,7 @@ public class TorBantorShooarm {
 	
 	// Hold PD Constants
 	private double holdkP = 0.05;
-	private double holdkD = 0.00005;
+	private double holdkD = 0.00001;
 	
 	private int potSwitch = 1;//change this from 1 to 
 //	-1 to control the pot. (pot might be mounted on backwards)
@@ -163,25 +163,25 @@ public class TorBantorShooarm {
 	private double wantedAngle;
 	private boolean pressingRightTrigger;
 
-//	public TorBantorShooarm(Joystick player2, TalonSRX armTalon1, TalonSRX armTalon2, 
-//			VictorSPX shootakeTalon1, VictorSPX shootakeTalon2, 
-//			DigitalInput breakbeam, AnalogPotentiometer fourtwenty, 
-//			double scaleAngle, double switchAngle, double degreeTolerance, 
-//			double kF, double kP, double kD, double holdAngle, 
-//			Solenoid Pusher, double scaleBackwardsAngle) {	
 	public TorBantorShooarm(Joystick player2, TalonSRX armTalon1, TalonSRX armTalon2, 
 			VictorSPX shootakeTalon1, VictorSPX shootakeTalon2, 
-			AnalogPotentiometer fourtwenty, 
+			DigitalInput breakbeam, AnalogPotentiometer fourtwenty, 
 			double scaleAngle, double switchAngle, double degreeTolerance, 
 			double kF, double kP, double kD, double holdAngle, 
 			Solenoid Pusher, double scaleBackwardsAngle) {	
+//	public TorBantorShooarm(Joystick player2, TalonSRX armTalon1, TalonSRX armTalon2, 
+//			VictorSPX shootakeTalon1, VictorSPX shootakeTalon2, 
+//			AnalogPotentiometer fourtwenty, 
+//			double scaleAngle, double switchAngle, double degreeTolerance, 
+//			double kF, double kP, double kD, double holdAngle, 
+//			Solenoid Pusher, double scaleBackwardsAngle) {	
 		this.player2 = player2;
 		this.armTalon1 = armTalon1;
 		this.armTalon2 = armTalon2;
 		this.shootakeTalon1 = shootakeTalon1;
 		this.shootakeTalon2 = shootakeTalon2;
 		this.Pusher = Pusher;
-//		this.breakbeam = breakbeam;
+		this.breakbeam = breakbeam;
 		this.fourtwenty = fourtwenty;
 		startAngle = 47.65;//MAKE THIS WHEN THE ARM IS FLAT
 		this.scaleAngle = scaleAngle;
@@ -193,6 +193,7 @@ public class TorBantorShooarm {
 		this.holdAngle = holdAngle;
 		this.scaleBackwardsAngle = scaleBackwardsAngle;
 		pressingRightTrigger = false;
+		Pusher.set(false);
 	}
 	
 	/*** PLAYER 2 BUTTON CONFIGURATION FOR THE ARM ***
@@ -207,6 +208,7 @@ public class TorBantorShooarm {
 	********************************************/
 
 	public void TorBantorArmAndShooterUpdate() {
+		
 		switchDo(); 	  // Update for the switch
 		scaleDo(); 		  // Update for the scale
 		shoot(); 		  // Update for the shooter
@@ -518,11 +520,9 @@ public class TorBantorShooarm {
 			currentTime = System.currentTimeMillis();
 			shootakeTalon1.set(ControlMode.PercentOutput, -intakePower * ioo);
 			shootakeTalon2.set(ControlMode.PercentOutput, intakePower * ioo);
-//			if(breakbeam.get() || (currentTime >= endTime && player2.getRawButton(1))) {
-
-			if((currentTime >= endTime) && ((player2.getRawButton(1)) || 
+			if((currentTime >= endTime) && (((player2.getRawButton(1)) || 
 			((Math.abs(shootakeTalon1.getOutputCurrent()) > threshold) ||
-			(Math.abs(shootakeTalon2.getOutputCurrent()) > threshold)))) {
+			(Math.abs(shootakeTalon2.getOutputCurrent()) > threshold))) || !breakbeam.get())) {
 				shootakeTalon1.set(ControlMode.PercentOutput, 0);
 				shootakeTalon2.set(ControlMode.PercentOutput, 0);
 				lastTime = currentTime;
@@ -951,5 +951,14 @@ public class TorBantorShooarm {
 	public void releaseLeftTrigger() {
 		shootakeTalon1.set(ControlMode.PercentOutput, 0);
 		shootakeTalon2.set(ControlMode.PercentOutput, 0);
+	}
+	
+	public boolean burning() {
+		return ((Math.abs(armTalon1.getOutputCurrent()) > threshold) ||
+				(Math.abs(armTalon2.getOutputCurrent()) > threshold));
+	}
+	
+	public void ESTOP() {
+		stop = true;
 	}
 }
