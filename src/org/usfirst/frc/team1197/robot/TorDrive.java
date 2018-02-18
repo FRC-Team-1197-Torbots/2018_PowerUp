@@ -5,80 +5,33 @@ import edu.wpi.first.wpilibj.Notifier;
 
 public class TorDrive
 {	
-	public final DriveController controller;
+	public DriveHardware hardware;
 	private Joystick cypress;
-	private TorJoystickProfiles joystickProfile;
-
-	private double targetSpeed;
-	private double targetOmega;
-	private double centerRadius;
-	private double maxThrottle;
+	private boolean isHighGear = true;
 	
-	private boolean buttonYlast;
-	private boolean buttonBlast;
-	private boolean buttonXlast;
-	private boolean buttonAlast;
-	
-	private double dangerFactor = 0.75;
-	
-	private double v;
-	private double w;
-	
-	private TorTrajectory forward;
-	private TorTrajectory backward;
-	private TorTrajectory right;
-	private TorTrajectory left;
-	
-	class PeriodicRunnable implements java.lang.Runnable {
-		public void run() {
-			controller.run();
-		}
-	}
-	Notifier mpNotifier = new Notifier(new PeriodicRunnable());
-
-	public TorDrive(Joystick stick, Joystick cypress)
-	{
-		controller = new DriveController();
+	public TorDrive(Joystick stick, Joystick cypress) {
 		this.cypress = cypress;
-		joystickProfile = new TorJoystickProfiles();
-		//TODO: Use static final in TorJoystickProfile, then remove maxThrottle initialization from the constructor.
-		maxThrottle = (dangerFactor) * (joystickProfile.getMinTurnRadius() 
-				/ (joystickProfile.getMinTurnRadius() + DriveHardware.halfTrackWidth));
-		mpNotifier.startPeriodic(0.005);
-		
-		forward = new LinearTrajectory(1.0);
-		backward = new LinearTrajectory(-1.0);
-		right = new PivotTrajectory(90);
-		left = new PivotTrajectory(-90);
 	}
 
 	public void driving(double throttleAxis, double arcadeSteerAxis, double carSteerAxis, boolean shiftButton,
 			boolean rightBumper, boolean buttonA, boolean buttonB, boolean buttonX, boolean buttonY) {
-		if (controller.isHighGear) {
-//			ArcadeDrive(throttleAxis, arcadeSteerAxis);
-			buttonDrive(buttonA, buttonB, buttonX, buttonY);
+		if (isHighGear) {
+			ArcadeDrive(throttleAxis, arcadeSteerAxis);
 			
 			// When you hold down the shiftButton (left bumper), then shift to low gear.
 			if (shiftButton) {
-				controller.shiftToLowGear();
+				isHighGear = false;
+				hardware.shiftToLowGear();
 			}
 		} else {
 			ArcadeDrive(throttleAxis, arcadeSteerAxis);
 			
 			// When you release the shiftButton (left bumper), then shift to high gear.
 			if (!shiftButton) {
-				controller.shiftToHighGear();
+				isHighGear = true;
+				hardware.shiftToHighGear();
 			}
 		}
-	}
-	
-	public void enable() {
-		controller.useCarDriveInHighGear(!cypress.getRawButton(1));
-		controller.enable();
-	}
-
-	public void disable() {
-		controller.disable();
 	}
 
 	public void ArcadeDrive(double throttleAxis, double arcadeSteerAxis){
@@ -91,160 +44,42 @@ public class TorDrive
 
 		if (arcadeSteerAxis >= 0.0D) {
 			arcadeSteerAxis *= arcadeSteerAxis;
-		} else {
+		} 
+		else {
 			arcadeSteerAxis = -(arcadeSteerAxis * arcadeSteerAxis);
 		}
+		
 		if (throttleAxis >= 0.0D) {
 			throttleAxis *= throttleAxis;
-		} else {
+		} 
+		else {
 			throttleAxis = -(throttleAxis * throttleAxis);
 		}
 		
 		double rightMotorSpeed;
 		double leftMotorSpeed;
 
-		if (throttleAxis > 0.0D)
-		{
-			if (arcadeSteerAxis > 0.0D)
-			{
+		if (throttleAxis > 0.0D) {
+			if (arcadeSteerAxis > 0.0D) {
 				leftMotorSpeed = throttleAxis - arcadeSteerAxis;
 				rightMotorSpeed = Math.max(throttleAxis, arcadeSteerAxis);
 			}
-			else
-			{
+			else {
 				leftMotorSpeed = Math.max(throttleAxis, -arcadeSteerAxis);
 				rightMotorSpeed = throttleAxis + arcadeSteerAxis;
 			}
 		}
-		else
-		{
-			if (arcadeSteerAxis > 0.0D)
-			{
-				leftMotorSpeed = -Math.max(-throttleAxis, arcadeSteerAxis);
-				rightMotorSpeed = throttleAxis + arcadeSteerAxis;
-			}
-			else
-			{
-				leftMotorSpeed = throttleAxis - arcadeSteerAxis;
-				rightMotorSpeed = -Math.max(-throttleAxis, -arcadeSteerAxis);
-			}
-		}
-		
-		controller.hardware.setMotorSpeeds(rightMotorSpeed, leftMotorSpeed);
-	}
-	
-	public void buttonDrive(boolean buttonA, boolean buttonB, boolean buttonX, boolean buttonY){
-		if(buttonB && !buttonBlast){
-			executeTrajectory(right);
-		}
-		else if(buttonX && !buttonXlast){
-			executeTrajectory(left);
-		}
-		else if(buttonY && !buttonYlast){
-			executeTrajectory(forward);
-		}
-		else if(buttonA && !buttonAlast){
-			executeTrajectory(backward);
-		}
-		else{
-			
-		}
-		buttonBlast = buttonB;
-		buttonYlast = buttonY;
-		buttonXlast = buttonX;
-		buttonAlast = buttonA;
-	}
-	
-	public void executeTrajectory(TorTrajectory traj) {
-		if (controller.motionProfilingActive()) {
-			controller.loadTrajectory(traj);
-		} else {
-			System.err.println("ERROR: Could not execute trajectory with motion profiling inactive.");
-		}
-	}
-	
-	public void ImprovedArcadeDrive(double throttleAxis, double arcadeSteerAxis) {
-		if (Math.abs(arcadeSteerAxis) <= 0.2) {
-			arcadeSteerAxis = 0.0;
-		}
-		if (Math.abs(throttleAxis) <= 0.2) {
-			throttleAxis = 0.0;
-		}
-		
-		if (arcadeSteerAxis >= 0.0D) {
-			arcadeSteerAxis *= arcadeSteerAxis * arcadeSteerAxis;
-		} else {
-			arcadeSteerAxis = -(arcadeSteerAxis * arcadeSteerAxis);
-		}
-		if (throttleAxis >= 0.0D) {
-			throttleAxis *= throttleAxis * throttleAxis * throttleAxis;
-		} else {
-			throttleAxis = -(throttleAxis * throttleAxis * throttleAxis * throttleAxis);
-		}
-		
-//		throttleAxis = joystickProfile.findSpeed(throttleAxis) * dangerFactor * DriveHardware.absoluteMaxSpeed;
-		throttleAxis *= dangerFactor * DriveHardware.absoluteMaxSpeed;
-		arcadeSteerAxis = joystickProfile.findSpeed(arcadeSteerAxis) * dangerFactor * DriveHardware.absoluteMaxOmega * DriveHardware.halfTrackWidth;
-//		arcadeSteerAxis *= dangerFactor * DriveHardware.absoluteMaxOmega * DriveHardware.halfTrackWidth;
-		
-		double rightMotorSpeed;
-		double leftMotorSpeed;
-		
-		if (throttleAxis > 0.0D)
-		{
-			if (arcadeSteerAxis > 0.0D)
-			{
-				leftMotorSpeed = throttleAxis - arcadeSteerAxis;
-				rightMotorSpeed = Math.max(throttleAxis, arcadeSteerAxis);
-			}
-			else
-			{
-				leftMotorSpeed = Math.max(throttleAxis, -arcadeSteerAxis);
-				rightMotorSpeed = throttleAxis + arcadeSteerAxis;
-			}
-		}
-		else
-		{
-			if (arcadeSteerAxis > 0.0D)
-			{
-				leftMotorSpeed = -Math.max(-throttleAxis, arcadeSteerAxis);
-				rightMotorSpeed = throttleAxis + arcadeSteerAxis;
-			}
-			else
-			{
-				leftMotorSpeed = throttleAxis - arcadeSteerAxis;
-				rightMotorSpeed = -Math.max(-throttleAxis, -arcadeSteerAxis);
-			}
-		}
-		
-		v = (rightMotorSpeed + leftMotorSpeed) * 0.1;
-		w = (rightMotorSpeed - leftMotorSpeed) / DriveHardware.trackWidth;
-		controller.setTargets(v, w);
-	}
-	
-	public void carDrive(double throttleAxis, double carSteeringAxis){
-		//Flipping the sign so it drives forward when you move the analog stick up and vice versa
-		//TODO: Shouldn't the signs be settled before we get to this point??? (fix in TorJoystickProfiles, not here)
-//		throttleAxis = -throttleAxis;
-//		carSteeringAxis = -carSteeringAxis;
-		targetSpeed = joystickProfile.findSpeedSimple(throttleAxis) * DriveHardware.absoluteMaxSpeed;
-		targetSpeed *= maxThrottle;
-
-		/* The centerRadius is the value we gain from findRadiusExponential method in the joystickProfile class.
-		   The TorMath.sign(throttleAxis) makes steering work the same when the robot drives backwards. */
-		centerRadius = Math.signum(throttleAxis) * joystickProfile.findRadiusExponential(carSteeringAxis);
-
-		// If the centerRadius is greater than the maxTurnRadius or if it is 0, then drive straight:
-		if (Math.abs(centerRadius) > joystickProfile.getMaxTurnRadius() || Math.abs(centerRadius) == 0.0)
-		{
-			targetOmega = 0.0;
-		}
-		// Else, steer:
 		else {
-			targetOmega = targetSpeed / centerRadius;
+			if (arcadeSteerAxis > 0.0D) {
+				leftMotorSpeed = -Math.max(-throttleAxis, arcadeSteerAxis);
+				rightMotorSpeed = throttleAxis + arcadeSteerAxis;
+			}
+			else {
+				leftMotorSpeed = throttleAxis - arcadeSteerAxis;
+				rightMotorSpeed = -Math.max(-throttleAxis, -arcadeSteerAxis);
+			}
 		}
-
-		// Setting the joystick trajectory targets so that it actually drives:
-		controller.setTargets(targetSpeed, targetOmega); // TODO: replace with controller.setTargets()
+		
+		hardware.setMotorSpeeds(rightMotorSpeed, leftMotorSpeed);
 	}
 }

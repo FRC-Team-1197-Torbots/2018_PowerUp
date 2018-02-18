@@ -13,8 +13,6 @@ public class TorBantorShooarm {
 	private Joystick player2;
 	private TalonSRX armTalon1;
 	private TalonSRX armTalon2;
-	
-	
 	private VictorSPX shootakeTalon1;
 	private VictorSPX shootakeTalon2;
 	private AnalogPotentiometer fourtwenty;
@@ -169,12 +167,6 @@ public class TorBantorShooarm {
 			double scaleAngle, double switchAngle, double degreeTolerance, 
 			double kF, double kP, double kD, double holdAngle, 
 			Solenoid Pusher, double scaleBackwardsAngle) {	
-//	public TorBantorShooarm(Joystick player2, TalonSRX armTalon1, TalonSRX armTalon2, 
-//			VictorSPX shootakeTalon1, VictorSPX shootakeTalon2, 
-//			AnalogPotentiometer fourtwenty, 
-//			double scaleAngle, double switchAngle, double degreeTolerance, 
-//			double kF, double kP, double kD, double holdAngle, 
-//			Solenoid Pusher, double scaleBackwardsAngle) {	
 		this.player2 = player2;
 		this.armTalon1 = armTalon1;
 		this.armTalon2 = armTalon2;
