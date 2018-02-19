@@ -17,9 +17,9 @@ public class DriveHardware {
 	private final TalonSRX leftSlave1;
 	private final TalonSRX leftSlave2;
 	
-	private double leftSpeed;
-	private double rightSpeed;
-	private double threshold = 50;
+//	private double leftSpeed;
+//	private double rightSpeed;
+//	private double threshold = 50;
 	
 	private final Solenoid solenoid;
 	//924.0
@@ -35,15 +35,12 @@ public class DriveHardware {
 	public static final double absoluteMaxSpeed = (approximateSensorSpeed * quadEncNativeUnits) / (60 * encoderTicksPerMeter); // [meters/sec] (2018 robot: ~7.886 m/s)
 	public static final double absoluteMaxOmega = absoluteMaxSpeed / halfTrackWidth;
 	
-	private final double kF = (1023.0) / ((approximateSensorSpeed * quadEncNativeUnits) / (600.0));
-	private final double kP = 0.0; 
-	private final double kI = 0.0; 
-	private final double kD = 0.0; 
+//	private final double kF = (1023.0) / ((approximateSensorSpeed * quadEncNativeUnits) / (600.0));
+//	private final double kP = 0.0; 
+//	private final double kI = 0.0; 
+//	private final double kD = 0.0; 
 	
 	/***************************/
-	
-	private boolean leftOutputReversed = true;
-	private boolean rightOutputReversed = true;
 	
 	private double heading = 0.0;
 	
@@ -59,30 +56,30 @@ public class DriveHardware {
 		rightSlave1 = new TalonSRX(5);
 		rightSlave2 = new TalonSRX(6);
 
-		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
-		rightMaster.configNominalOutputForward(+0.0f, 0);
-		rightMaster.configNominalOutputReverse(-0.0f, 0);
-		rightMaster.configPeakOutputForward(+12.0f, 0);
-		rightMaster.configPeakOutputReverse(-12.0f, 0);
-		rightMaster.selectProfileSlot(0, 0);
-		rightMaster.config_kF(0, kF, 0);
-		rightMaster.config_kP(0, kP, 0);
-		rightMaster.config_kI(0, kI, 0);
-		rightMaster.config_kD(0, kD, 0);
+//		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
+//		rightMaster.configNominalOutputForward(+0.0f, 0);
+//		rightMaster.configNominalOutputReverse(-0.0f, 0);
+//		rightMaster.configPeakOutputForward(+12.0f, 0);
+//		rightMaster.configPeakOutputReverse(-12.0f, 0);
+//		rightMaster.selectProfileSlot(0, 0);
+//		rightMaster.config_kF(0, kF, 0);
+//		rightMaster.config_kP(0, kP, 0);
+//		rightMaster.config_kI(0, kI, 0);
+//		rightMaster.config_kD(0, kD, 0);
 
 		rightSlave1.follow(rightMaster);
 		rightSlave2.follow(rightMaster);
 
-		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
-		leftMaster.configNominalOutputForward(+0.0f, 0);
-		leftMaster.configNominalOutputReverse(-0.0f, 0);
-		leftMaster.configPeakOutputForward(+12.0f, 0);
-		leftMaster.configPeakOutputReverse(-12.0f, 0);
-		leftMaster.selectProfileSlot(0, 0);
-		leftMaster.config_kF(0, kF, 0);
-		leftMaster.config_kP(0, kP, 0);
-		leftMaster.config_kI(0, kI, 0);
-		leftMaster.config_kD(0, kD, 0);
+//		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
+//		leftMaster.configNominalOutputForward(+0.0f, 0);
+//		leftMaster.configNominalOutputReverse(-0.0f, 0);
+//		leftMaster.configPeakOutputForward(+12.0f, 0);
+//		leftMaster.configPeakOutputReverse(-12.0f, 0);
+//		leftMaster.selectProfileSlot(0, 0);
+//		leftMaster.config_kF(0, kF, 0);
+//		leftMaster.config_kP(0, kP, 0);
+//		leftMaster.config_kI(0, kI, 0);
+//		leftMaster.config_kD(0, kD, 0);
 
 		leftSlave1.follow(leftMaster);
 		leftSlave2.follow(leftMaster);
@@ -104,18 +101,8 @@ public class DriveHardware {
 	}
 
 	public void setMotorSpeeds(double rightSpeed, double leftSpeed) {
-		if(leftOutputReversed){
-			SetLeft(-leftSpeed);
-		}
-		else{
-			SetLeft(leftSpeed);
-		}
-		if(rightOutputReversed){
-			SetRight(-rightSpeed);
-		}
-		else{
-			SetRight(rightSpeed);
-		}
+		SetLeft(leftSpeed);
+		SetRight(rightSpeed);
 	}
 
 	// Setting the left master Talon's speed to the given parameter
@@ -180,32 +167,32 @@ public class DriveHardware {
 	}
 
 	// Method to set the the linear and angular speed of the robot
-	public void setTargets(double v, double omega) {
-		leftSpeed = (v - omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter;
-		if(!(leftSpeed == 0)) {
-			if(leftSpeed > 0 && leftSpeed < threshold) {
-				leftSpeed = threshold;
-			}
-			if(leftSpeed < 0 && leftSpeed > -threshold) {
-				leftSpeed = -threshold;
-			}
-		}
+//	public void setTargets(double v, double omega) {
+//		leftSpeed = (v - omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter;
+//		if(!(leftSpeed == 0)) {
+//			if(leftSpeed > 0 && leftSpeed < threshold) {
+//				leftSpeed = threshold;
+//			}
+//			if(leftSpeed < 0 && leftSpeed > -threshold) {
+//				leftSpeed = -threshold;
+//			}
+//		}
+//		
+//		rightSpeed = (v + omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter;
+//		if(!(rightSpeed == 0)) {
+//			if(rightSpeed > 0 && rightSpeed < threshold) {
+//				rightSpeed = threshold;
+//			}
+//			if(rightSpeed < 0 && rightSpeed > -threshold) {
+//				rightSpeed = -threshold;
+//			}
+//		}
 		
-		rightSpeed = (v + omega * halfTrackWidth) * 0.1 * encoderTicksPerMeter;
-		if(!(rightSpeed == 0)) {
-			if(rightSpeed > 0 && rightSpeed < threshold) {
-				rightSpeed = threshold;
-			}
-			if(rightSpeed < 0 && rightSpeed > -threshold) {
-				rightSpeed = -threshold;
-			}
-		}
 		
 		
-		
-		rightMaster.set(ControlMode.Velocity, rightSpeed);
-		leftMaster.set(ControlMode.Velocity, leftSpeed);
-	}
+//		rightMaster.set(ControlMode.Velocity, rightSpeed);
+//		leftMaster.set(ControlMode.Velocity, leftSpeed);
+//	}
 
 	// Method to reset the encoder values
 	public void resetEncoder() {
@@ -235,12 +222,12 @@ public class DriveHardware {
 	
 	// Method to shift the drive to low gear
 	public void shiftToLowGear() {
-		solenoid.set(true);
+		solenoid.set(false);
 	}
 	
 	// Method to shift the drive to high gear
 	public void shiftToHighGear() {
-		solenoid.set(false);
+		solenoid.set(true);
 	}
 	
 	// Method to initialize 

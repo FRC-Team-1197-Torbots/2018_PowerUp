@@ -1,16 +1,14 @@
 package org.usfirst.frc.team1197.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Notifier;
 
 public class TorDrive
 {	
-	public DriveHardware hardware;
-	private Joystick cypress;
+	private DriveHardware hardware;
 	private boolean isHighGear = true;
 	
-	public TorDrive(Joystick stick, Joystick cypress) {
-		this.cypress = cypress;
+	public TorDrive(Joystick stick, Joystick cypress, DriveHardware hardware) {
+		this.hardware = hardware;
 	}
 
 	public void driving(double throttleAxis, double arcadeSteerAxis, double carSteerAxis, boolean shiftButton,
@@ -80,6 +78,6 @@ public class TorDrive
 			}
 		}
 		
-		hardware.setMotorSpeeds(rightMotorSpeed, leftMotorSpeed);
+		hardware.setMotorSpeeds(-rightMotorSpeed, -leftMotorSpeed);
 	}
 }
