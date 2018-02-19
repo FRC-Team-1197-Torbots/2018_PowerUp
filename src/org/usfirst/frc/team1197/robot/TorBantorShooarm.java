@@ -316,7 +316,6 @@ public class TorBantorShooarm {
 		case IDLE:
 			break;
 		case POS0:
-			System.out.println("POS0");
 			speed = 0;
 			startTime = System.currentTimeMillis();
 			if(((fourtwenty.get() - startAngle) * potSwitch) > (scaleAngle - degreeTolerance)) {

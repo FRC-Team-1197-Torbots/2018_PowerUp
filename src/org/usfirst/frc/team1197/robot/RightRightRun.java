@@ -38,8 +38,10 @@ public class RightRightRun {
 			runIt = run.MOVE1;
 			break;
 		case MOVE1:
-			Move1.run();
-			runIt = run.MOVE2;
+			if(shooArm.scaleIsPID()) {
+				Move1.run();
+				runIt = run.MOVE2;
+			}
 			break;
 		case MOVE2:
 			if(Move1.isDone()) {
