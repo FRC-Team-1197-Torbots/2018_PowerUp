@@ -39,32 +39,31 @@ public class CenterRightRun {
 			runIt = run.MOVE1;
 			break;
 		case MOVE1:
-			if(shooArm.switchIsPID()) {
+			if(shooArm.switchIsPID() && shooArm.inSwitch()) {
 				Move1.run();
 				runIt = run.MOVE2;
 			}
 			break;
 		case MOVE2:
-			if(Move1.isDone()) {
+			if(Move1.isDone() && shooArm.inSwitch()) {
 				Move2.run();
 				runIt = run.MOVE3;
 			}
 			break;
 		case MOVE3:
-			if(Move2.isDone()) {
+			if(Move2.isDone() && shooArm.inSwitch()) {
 				Move3.run();
 				runIt = run.MOVE4;
 			}
 			break;
 		case MOVE4:
-			if(Move3.isDone()) {
-				shooArm.switchShoot();
+			if(Move3.isDone() && shooArm.inSwitch()) {
 				Move4.run();
 				runIt = run.REVUP;
 			}
 			break;
 		case REVUP:
-			if(Move4.isDone()) {
+			if(Move4.isDone() && shooArm.inSwitch()) {
 				shooArm.pressLeftTrigger();
 				runIt = run.MOVE5;
 			}
@@ -74,7 +73,7 @@ public class CenterRightRun {
 			runIt = run.FIRE;
 			break;
 		case FIRE:
-			if(Move5.isDone()) {
+			if(Move5.isDone() && shooArm.inSwitch()) {
 				shooArm.autoFire();
 				endTime = currentTime + revTime;
 				runIt = run.REVDOWN;

@@ -36,8 +36,8 @@ public class Robot extends SampleRobot {
 	*  Tunable variables for the hold position of the arm
 	*/
 	private double kF = .005;
-	private double kP = 0.009;
-	private double kD = 0.00001;
+	private double kP = 0.02;
+	private double kD = 0.000075;
 	private double scaleAngle = 80;
 	private double switchAngle = 60;
 	private double degreeTolerance = 8;//the tolerance for the normal x + sin x up to get within the switch/scale angle before PID controls it
@@ -91,10 +91,6 @@ public class Robot extends SampleRobot {
     		drive.driving(getLeftY(), getLeftX(), getRightX(), getShiftButton(), getRightBumper(), 
     				getButtonA(), getButtonB(), getButtonX(), getButtonY()); // Enabling the drive ofthe robot
     		shooArm.TorBantorArmAndShooterUpdate(); // Enabling arm control
-    		if(shooArm.burning()) { // If the arm motors are burning (high current), then stop the arm motors
-    			System.out.println("It is burning!");
-    			shooArm.ESTOP();
-    		}
     	}
     }
 

@@ -22,7 +22,7 @@ public class DriveHardware {
 //	private double threshold = 50;
 	
 	private final Solenoid solenoid;
-	//924.0
+	
 	/** TUNABLE HARDWARE VALUES **/ 
 	private static final double encoderTicksPerMeter = 999.84825; // (units: ticks per meter)
 	private static final double approximateSensorSpeed = 924; // measured maximum (units: RPM)

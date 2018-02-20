@@ -1,7 +1,5 @@
 package org.usfirst.frc.team1197.robot;
 
-import org.usfirst.frc.team1197.robot.LeftLeftRun.run;
-
 public class RightRightRun {
 	private LinearTrajectory Move1;
 	private PivotTrajectory Move2;
@@ -10,11 +8,11 @@ public class RightRightRun {
 	private long currentTime;
 	private long endTime;
 	private long revTime = 700;
-	private long stopTime = 500;
+	private long extendTime = 300;
 	private boolean isFinished = false;
 	
 	public static enum run {
-		IDLE, SCALEUP, MOVE1, MOVE2, REVUP, MOVE3, SCALEDOWN, SCALEUP2, FIRE, REVDOWN;
+		IDLE, SCALEUP, MOVE1, MOVE2, MOVE3, REVUP, FIRE, REVDOWN;
 		private run() {}
 	}
 	
@@ -22,9 +20,9 @@ public class RightRightRun {
 	
 	public RightRightRun(DriveHardware drive, TorBantorShooarm shooArm) {
 		this.shooArm = shooArm;
-		Move1 = new LinearTrajectory(drive, 8.2, 0.8, 1500, 0.0);
+		Move1 = new LinearTrajectory(drive, 3.8, 0.87, 4000, 0.0);
 		Move2 = new PivotTrajectory(drive, -90, 0.575, 2500, 0.0);
-		Move3 = new LinearTrajectory(drive, -0.5, 0.4, 3000, 0.0);
+		Move3 = new LinearTrajectory(drive, 0.5, 0.55, 3000, 0.0);
 	}
 	
 	public void update() {
@@ -34,49 +32,38 @@ public class RightRightRun {
 		case IDLE:
 			break;
 		case SCALEUP:
-			shooArm.pressYStart();
+			shooArm.pressXStart();
 			runIt = run.MOVE1;
 			break;
 		case MOVE1:
-			if(shooArm.scaleIsPID()) {
+			if(shooArm.switchIsPID() && shooArm.inSwitch()) {
 				Move1.run();
 				runIt = run.MOVE2;
 			}
 			break;
 		case MOVE2:
-			if(Move1.isDone()) {
+			if(Move1.isDone() && shooArm.inSwitch()) {
 				Move2.run();
 				runIt = run.MOVE3;
 			}
 			break;
 		case MOVE3:
-			if(Move2.isDone()) {
+			if(Move2.isDone() && shooArm.inSwitch()) {
 				Move3.run();
-				endTime = currentTime + stopTime;
-				runIt = run.SCALEDOWN;	
-			}
-			break;
-		case SCALEDOWN:
-			if(Move3.isDone() && currentTime >= endTime) {
-				shooArm.pressY();
-				runIt = run.REVUP;
+				runIt = run.REVUP;	
 			}
 			break;
 		case REVUP:
-			if(shooArm.isHold()) {
+			if(Move3.isDone() && shooArm.inSwitch()) {
 				shooArm.pressLeftTrigger();
-				runIt = run.SCALEUP2;				
+				endTime = currentTime + revTime;
+				runIt = run.FIRE;				
 			}
-			break;
-		case SCALEUP2:
-			shooArm.pressY();
-			endTime = currentTime + revTime;
-			runIt = run.FIRE;
 			break;
 		case FIRE:
 			if(currentTime >= endTime) {
 				shooArm.autoFire();
-				endTime = currentTime + revTime;
+				endTime = currentTime + extendTime;
 				runIt = run.REVDOWN;
 			}
 			break;
