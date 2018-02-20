@@ -22,7 +22,7 @@ public class RightRightRun {
 		this.shooArm = shooArm;
 		Move1 = new LinearTrajectory(drive, 3.8, 0.87, 4000, 0.0);
 		Move2 = new PivotTrajectory(drive, -90, 0.575, 2500, 0.0);
-		Move3 = new LinearTrajectory(drive, 0.5, 0.55, 3000, 0.0);
+		Move3 = new LinearTrajectory(drive, 0.55, 0.6, 4000, 0.0);
 	}
 	
 	public void update() {
@@ -42,28 +42,28 @@ public class RightRightRun {
 			}
 			break;
 		case MOVE2:
-			if(Move1.isDone() && shooArm.inSwitch()) {
+			if(Move1.isDone()) {
 				Move2.run();
 				runIt = run.MOVE3;
 			}
 			break;
 		case MOVE3:
-			if(Move2.isDone() && shooArm.inSwitch()) {
+			if(Move2.isDone()) {
 				Move3.run();
 				runIt = run.REVUP;	
 			}
 			break;
 		case REVUP:
-			if(Move3.isDone() && shooArm.inSwitch()) {
+			if(Move3.isDone()) {
 				shooArm.pressLeftTrigger();
-				endTime = currentTime + revTime;
+				endTime = currentTime + revTime + extendTime;
 				runIt = run.FIRE;				
 			}
 			break;
 		case FIRE:
 			if(currentTime >= endTime) {
 				shooArm.autoFire();
-				endTime = currentTime + extendTime;
+				endTime = currentTime + revTime;
 				runIt = run.REVDOWN;
 			}
 			break;

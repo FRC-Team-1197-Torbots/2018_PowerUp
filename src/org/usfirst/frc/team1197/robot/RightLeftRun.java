@@ -16,7 +16,7 @@ public class RightLeftRun {
 	
 	public RightLeftRun(DriveHardware drive, TorBantorShooarm shooArm) {
 		this.shooArm = shooArm;
-		Move1 = new LinearTrajectory(drive, 6, 0.75, 2500, 0);
+		Move1 = new LinearTrajectory(drive, 6, 0.75, 5000, 0);
 	}
 	
 	public void update() {

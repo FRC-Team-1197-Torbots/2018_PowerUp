@@ -21,11 +21,11 @@ public class CenterLeftRun {
 	
 	public CenterLeftRun(DriveHardware drive, TorBantorShooarm shooArm) {
 		this.shooArm = shooArm;
-		Move1 = new LinearTrajectory(drive, 1.6, 0.6, 1500, 0.0);
+		Move1 = new LinearTrajectory(drive, 1.5, 0.7, 4000, 0.0);
 		Move2 = new PivotTrajectory(drive, -90, 0.565, 2500, 0.0);
-		Move3 = new LinearTrajectory(drive, 1.45, 0.7, 1300, 0.0);
+		Move3 = new LinearTrajectory(drive, 1.4, 0.7, 4000, 0.0);
 		Move4 = new PivotTrajectory(drive, 90, 0.565, 2500, 0.0);
-		Move5 = new LinearTrajectory(drive, 1.2, 0.6, 1500, 0.0);
+		Move5 = new LinearTrajectory(drive, 1.1, 0.7, 4000, 0.0);
 	}
 	
 	public void update() {
@@ -45,25 +45,25 @@ public class CenterLeftRun {
 			}
 			break;
 		case MOVE2:
-			if(Move1.isDone() && shooArm.inSwitch()) {
+			if(Move1.isDone()) {
 				Move2.run();
 				runIt = run.MOVE3;
 			}
 			break;
 		case MOVE3:
-			if(Move2.isDone() && shooArm.inSwitch()) {
+			if(Move2.isDone()) {
 				Move3.run();
 				runIt = run.MOVE4;
 			}
 			break;
 		case MOVE4:
-			if(Move3.isDone() && shooArm.inSwitch()) {
+			if(Move3.isDone()) {
 				Move4.run();
 				runIt = run.REVUP;
 			}
 			break;
 		case REVUP:
-			if(Move4.isDone() && shooArm.inSwitch()) {
+			if(Move4.isDone()) {
 				shooArm.pressLeftTrigger();
 				runIt = run.MOVE5;
 			}
@@ -73,7 +73,7 @@ public class CenterLeftRun {
 			runIt = run.FIRE;
 			break;
 		case FIRE:
-			if(Move5.isDone() && shooArm.inSwitch()) {
+			if(Move5.isDone()) {
 				shooArm.autoFire();
 				endTime = currentTime + revTime;
 				runIt = run.REVDOWN;
