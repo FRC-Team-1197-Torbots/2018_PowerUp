@@ -555,7 +555,7 @@ public class TorBantorShooarm {
 		case POS0:
 			currentTime = System.currentTimeMillis();
 			endTime = currentTime + 1;
-			if(currentTime - lastTime >= 2000) {
+			if(currentTime - lastTime >= 400) {
 				holdIt = holder.STOP;
 				holdDown = intakeDown.START;
 				intakeIt = intake.START;	
