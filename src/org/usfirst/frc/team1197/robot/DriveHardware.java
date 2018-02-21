@@ -28,13 +28,15 @@ public class DriveHardware {
 
 		leftMaster = new TalonSRX(1);
 		leftSlave1 = new TalonSRX(2);
-		leftSlave2 = new TalonSRX(3);  
+		leftSlave2 = new TalonSRX(3); 
 		rightMaster = new TalonSRX(4);
 		rightSlave1 = new TalonSRX(5);
 		rightSlave2 = new TalonSRX(6);
 
 		leftSlave1.follow(leftMaster);
 		leftSlave2.follow(leftMaster);
+		rightSlave1.follow(rightMaster);
+		rightSlave2.follow(rightMaster);
 		
 		leftMaster.setInverted(true); // Left master must be attached to the farthest CIM from the output shaft
 		leftSlave1.setInverted(false); 

@@ -116,7 +116,7 @@ public class TorBantorShooarm {
 	private double switchMaxSpeed = 0.9; // the acceleration increment for the switch
 	private double switchPush = 0.17; // the extra speed to push to hit the degreeTolerance from just a proportional distance speed
 	private double switchCushion = 0; // NEGATIVE the extra cushion from a proportional down 
-	private double switchShootPower = 0.2;
+	private double switchShootPower = 0.25;
 
 	// Scale Variables
 	private long scalePos1Time = 450;
