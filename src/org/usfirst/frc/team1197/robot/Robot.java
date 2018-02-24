@@ -31,6 +31,10 @@ public class Robot extends SampleRobot {
 	private AnalogPotentiometer fourtwenty;
 	private DriveHardware hardware;
 	private TorAuto TorAuto;
+	private Solenoid releaser;
+	private VictorSPX puller1;
+	private VictorSPX puller2;
+	private Climber climber;
 	
 	/*----------------------------------------------------------------------
 	*  Tunable variables for the hold position of the arm
@@ -65,6 +69,9 @@ public class Robot extends SampleRobot {
     	shootakeTalon1 = new VictorSPX(9);   // Intake/Shooter VictorSPX on the arm
     	shootakeTalon2 = new VictorSPX(10);  // Intake/Shooter VictorSPX on the arm
     	Pusher = new Solenoid(0, 0);         // Solenoid to shoot out the cube
+    	releaser = new Solenoid(0, 1);
+    	puller1 = new VictorSPX(11);
+    	puller2 = new VictorSPX(12);
     	
     	drive = new TorDrive(player1, autoBox, hardware); // TorDrive object used to enable the drive of the robot
     	
@@ -76,6 +83,8 @@ public class Robot extends SampleRobot {
     			holdAngle, Pusher, scaleBackwardsAngle, hittingDown); // TorBantorShooarm object used to enable the arm control + intake/shoot control of the robot
     	
     	TorAuto = new TorAuto(hardware, autoBox, shooArm);
+
+		climber = new Climber(releaser, puller1, puller2, shooArm, autoBox);
     }
     
     public void robotInit() {
@@ -91,6 +100,7 @@ public class Robot extends SampleRobot {
     		drive.driving(getLeftY(), getLeftX(), getRightX(), getShiftButton(), getRightBumper(), 
     				getButtonA(), getButtonB(), getButtonX(), getButtonY()); // Enabling the drive ofthe robot
     		shooArm.TorBantorArmAndShooterUpdate(); // Enabling arm control
+    		climber.update();
     	}
     }
 

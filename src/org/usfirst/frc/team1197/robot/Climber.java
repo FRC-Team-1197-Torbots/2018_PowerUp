@@ -1,22 +1,23 @@
 package org.usfirst.frc.team1197.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class Climber {
 	private Solenoid releaser;
-	private TalonSRX puller1;
-	private TalonSRX puller2;
+	private VictorSPX puller1;
+	private VictorSPX puller2;
 	private TorBantorShooarm armShoo;
-	private Joystick player2;
+	private Joystick autobox;
 	
-	public Climber(Solenoid releaser, TalonSRX puller1, TalonSRX puller2, TorBantorShooarm armShoo, Joystick player2) {
+	public Climber(Solenoid releaser, VictorSPX puller1, 
+			VictorSPX puller2, TorBantorShooarm armShoo, Joystick autobox) {
 		this.releaser = releaser;
 		this.puller1 = puller1;
 		this.armShoo = armShoo;
-		this.player2 = player2;
+		this.autobox = autobox;
 		this.puller2 = puller2;
 	}
 	
@@ -29,9 +30,7 @@ public class Climber {
 	
 	public void update() {
 		climbDo();
-		if(player2.getRawButton(2) 
-				&& player2.getRawButton(5) 
-				&& player2.getRawButton(6)) {
+		if(!autobox.getRawButton(1)) {
 			climbIt = climb.POS0;
 		}
 	}

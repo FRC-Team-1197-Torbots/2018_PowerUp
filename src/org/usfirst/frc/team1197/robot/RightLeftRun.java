@@ -13,10 +13,17 @@ public class RightLeftRun {
 	
 	public run runIt = run.IDLE;
 	
+//	public LinearTrajectory(DriveHardware drive, double distance, 
+//	double accelerationFraction, long accelerateTime,
+//	double tkP, double tkD, double rkP,
+//	double rkD, int lor) {
+//
+//public PivotTrajectory(DriveHardware drive, double angle, double accelerationFraction, 
+//	long accelerateTime, double rkP, double rkD, int lor) {
 	
 	public RightLeftRun(DriveHardware drive, TorBantorShooarm shooArm) {
 		this.shooArm = shooArm;
-		Move1 = new LinearTrajectory(drive, 6, 0.75, 5000, 0);
+		Move1 = new LinearTrajectory(drive, 6, 0.75, 5000);
 	}
 	
 	public void update() {

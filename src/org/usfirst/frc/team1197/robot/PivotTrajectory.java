@@ -11,10 +11,26 @@ public class PivotTrajectory {
 	private double thisAngle;
 	private long accelerateTime;
 	private double x;
-	private double lor = 1;
 	private long startTime;
 	private long relativeTime;
 	private long currentTime;
+	
+	private double startAngle;
+
+	private final double halfTrackWidth = .352425;//in meters
+	
+	private final double rkP = 0.0;//PD For rotation
+	private final double rkD = 0.0;
+
+	private int lor = 1;
+	
+	private double omegaP;//turning proportional
+	private double omegaD;//turning derivative
+	
+	private double angleError;
+	private double angleLastError;
+	
+	
 	
 	public static enum run {
 		IDLE, ACCELERATE, COAST, DECELERATE;
@@ -23,7 +39,8 @@ public class PivotTrajectory {
 	
 	public run runIt = run.IDLE;
 	
-	public PivotTrajectory(DriveHardware drive, double angle, double accelerationFraction, long accelerateTime, double holdBack) {
+	public PivotTrajectory(DriveHardware drive, double angle, double accelerationFraction, 
+			long accelerateTime) {
 		this.drive = drive;
 		this.accelerateTime = accelerateTime;
 		this.thisAngle = angle;
@@ -42,6 +59,7 @@ public class PivotTrajectory {
 	public void run() {
 		runIt = run.ACCELERATE;
 		lastAngle = drive.getHeading();
+		startAngle = drive.getHeading();
 		startTime = System.currentTimeMillis();
 		while(!isFinished) {
 			currentAngle = drive.getHeading();
@@ -63,14 +81,28 @@ public class PivotTrajectory {
 				if(((currentAngle - lastAngle) * lor) >= coastAngle) {
 					lastAngle = currentAngle;
 					startTime = currentTime;
+					angleLastError = angleError = ((currentAngle - startAngle) * lor) - thisAngle;
 					runIt = run.DECELERATE;
 				}
 				break;
 			case DECELERATE:
-				speed = 0;
-				drive.setMotorSpeeds(0, 0);
-				isFinished = true;
-				runIt = run.IDLE;
+				angleError = ((currentAngle - startAngle) * lor) - thisAngle;
+				omegaP = angleError * rkP;
+				omegaD = angleError = (angleError- angleLastError) * rkD;
+				speed = omegaP + omegaD;
+
+				speed *= lor;
+				speed *= (Math.PI / 180.0);
+				speed *= halfTrackWidth;
+				
+				drive.setMotorSpeeds(-speed, speed);
+				
+				angleLastError = angleError;
+				if(Math.abs(((currentAngle - startAngle) * lor) - thisAngle) <= 4 || (currentTime - startTime > 1000)) {
+					drive.setMotorSpeeds(0, 0);
+					isFinished = true;
+					runIt = run.IDLE;
+				}
 				break;
 			}
 		}
