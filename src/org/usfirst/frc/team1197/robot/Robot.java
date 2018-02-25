@@ -95,14 +95,14 @@ public class Robot extends SampleRobot {
     	while(isEnabled()){
     		drive.driving(getLeftY(), getLeftX(), getRightX(), getShiftButton(), getRightBumper(), 
     				getButtonA(), getButtonB(), getButtonX(), getButtonY()); // Enabling the drive ofthe robot
-    		shooArm.TorBantorArmAndShooterUpdate(); // Enabling arm control
+    		//shooArm.TorBantorArmAndShooterUpdate(); // Enabling arm control
     		climber.update();
     	}
     }
 
     public void test() {
     	while(isEnabled()) {
-    		
+    		//compressor.start
     	}
 	}
     
