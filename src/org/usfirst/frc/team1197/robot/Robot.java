@@ -49,9 +49,9 @@ public class Robot extends SampleRobot {
 	*/
 	
     public Robot() {
-    	CameraServer server = CameraServer.getInstance();
-    	server.startAutomaticCapture("TorCam", 0);
-    	server.putVideo("BWENAN OPEN YOUR EYES", 640, 480);
+//    	CameraServer server = CameraServer.getInstance();
+//    	server.startAutomaticCapture("TorCam", 0);
+//    	server.putVideo("BWENAN OPEN YOUR EYES", 640, 480);
     	
     	hardware = new DriveHardware();
     	
@@ -80,7 +80,7 @@ public class Robot extends SampleRobot {
     	
     	TorAuto = new TorAuto(hardware, autoBox, shooArm);
 
-		climber = new Climber(releaser, puller1, puller2, shooArm, autoBox);
+//		climber = new Climber(releaser, puller1, puller2, shooArm, autoBox);
     }
     
     public void robotInit() {
@@ -95,8 +95,8 @@ public class Robot extends SampleRobot {
     	while(isEnabled()){
     		drive.driving(getLeftY(), getLeftX(), getRightX(), getShiftButton(), getRightBumper(), 
     				getButtonA(), getButtonB(), getButtonX(), getButtonY()); // Enabling the drive ofthe robot
-    		//shooArm.TorBantorArmAndShooterUpdate(); // Enabling arm control
-    		climber.update();
+    		shooArm.TorBantorArmAndShooterUpdate(); // Enabling arm control
+//    		climber.update();
     	}
     }
 
