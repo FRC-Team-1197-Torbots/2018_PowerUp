@@ -15,6 +15,7 @@ public class LinearTrajectory {
 	private final double tkD = 0.0;
 	private final double rkP = 0.0;//PD For rotation
 	private final double rkD = 0.0;
+	private final double kF = 0.005;
 	private final int lor = 1;
 	
 	private final double halfTrackWidth = .352425;//in meters
@@ -107,14 +108,13 @@ public class LinearTrajectory {
 				velocity = vP + vD;
 				
 				omegaP = angleError * rkP;
-				omegaD = (angleError - angleLastError) * rkD;
+				omegaD = (angleError - angleLastError) * (rkD / kF);
 				omega = omegaP + omegaD;
 				
 				omega *= lor;
-				omega *= (Math.PI / 180.0);
 				omega *= halfTrackWidth;
 				
-				drive.setMotorSpeeds(velocity - omega, velocity + omega);
+				drive.setVelocity(velocity - omega, velocity + omega);
 				
 				angleLastError = angleError;
 				lastError = error;

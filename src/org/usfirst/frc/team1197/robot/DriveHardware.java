@@ -18,7 +18,10 @@ public class DriveHardware {
 	private final TalonSRX leftSlave2;
 	
 	private final Solenoid solenoid;
-	private static final double encoderTicksPerMeter = 999.84825; // (units: ticks per meter)
+	private final double encoderTicksPerMeter = 999.84825; // (units: ticks per meter)
+	
+	
+	
 	private double heading = 0.0;
 	
 	public DriveHardware() {
@@ -50,11 +53,16 @@ public class DriveHardware {
 		resetGyro();
 	}
 
+	public void setVelocity(double leftSpeed, double rightSpeed) {
+		leftMaster.set(ControlMode.Velocity, leftSpeed);
+		rightMaster.set(ControlMode.Velocity, rightSpeed);
+	}
+	
 	public void setMotorSpeeds(double rightSpeed, double leftSpeed) {
 		SetLeft(leftSpeed);
 		SetRight(rightSpeed);
 	}
-
+	
 	// Setting the left master Talon's speed to the given parameter
 	public void SetLeft(double speed) {
 		leftMaster.set(ControlMode.PercentOutput, speed);

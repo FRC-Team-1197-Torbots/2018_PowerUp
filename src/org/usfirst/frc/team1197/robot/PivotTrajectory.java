@@ -14,6 +14,7 @@ public class PivotTrajectory {
 	private long startTime;
 	private long relativeTime;
 	private long currentTime;
+	private final double kF = 0.005;
 	
 	private double startAngle;
 
@@ -88,14 +89,12 @@ public class PivotTrajectory {
 			case DECELERATE:
 				angleError = ((currentAngle - startAngle) * lor) - thisAngle;
 				omegaP = angleError * rkP;
-				omegaD = angleError = (angleError- angleLastError) * rkD;
+				omegaD = angleError = (angleError- angleLastError) * (rkD / kF);
 				speed = omegaP + omegaD;
 
 				speed *= lor;
-				speed *= (Math.PI / 180.0);
-				speed *= halfTrackWidth;
 				
-				drive.setMotorSpeeds(-speed, speed);
+				drive.setVelocity(-speed, speed);
 				
 				angleLastError = angleError;
 				if(Math.abs(((currentAngle - startAngle) * lor) - thisAngle) <= 4 || (currentTime - startTime > 1000)) {

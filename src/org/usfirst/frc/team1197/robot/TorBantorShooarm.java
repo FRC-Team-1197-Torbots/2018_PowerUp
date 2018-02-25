@@ -17,7 +17,6 @@ public class TorBantorShooarm {
 	private VictorSPX shootakeTalon2;
 	private AnalogPotentiometer fourtwenty;
 	private DigitalInput breakbeam;
-	private DigitalInput hittingDown;
 	private boolean isAlreadyTriggered = false;
 	private Solenoid Pusher;
 	private double scaleAngle;
@@ -36,7 +35,6 @@ public class TorBantorShooarm {
 	private boolean scaleEnable;
 	private boolean vaultContinue = false;
 	private long vaultLastTime;
-	private double scaleBackwardsAngle;
 	private final double threshold = 25.0;
 	private boolean alreadyHot = false;
 	private long burnEndTime;
@@ -108,7 +106,6 @@ public class TorBantorShooarm {
 	private int ioo = -1; // in or out variable. Change this to switch around the outtake and intake when it is up. Change it from 1 to -1 to make it so either shoots out or (not wanted) intakes up there
 	private double manualMax = 0.6; // POSITIVE. The controls on the speeds for the manual override.
 	private double manualMin = -0.2; // HAS TO BE NEGATIVE!
-	private double manualMaxAngle = 80;
 	
 	// Switch Variables
 	private long switchPos1Time = 300; // change this to make it go up higher during the switch
@@ -131,7 +128,6 @@ public class TorBantorShooarm {
 	private long extendTime = 300;//the time we give to the solenoid to extend and push the cube
 	private long revTime = 500;//the time we give for the motors to go from 0 to the speed and back
 	private double intakePower = 0.6;
-	private long shootTime = 3 * (extendTime + revTime);//3 times to make sure there is enough time to shoot it out
 	
 	// Hold PD Constants
 	private double holdkP = 0.05;
@@ -170,8 +166,7 @@ public class TorBantorShooarm {
 			DigitalInput breakbeam, AnalogPotentiometer fourtwenty, 
 			double scaleAngle, double switchAngle, double degreeTolerance, 
 			double kF, double kP, double kD, double holdAngle, 
-			Solenoid Pusher, double scaleBackwardsAngle,
-			DigitalInput hittingDown) {	
+			Solenoid Pusher) {	
 		this.player2 = player2;
 		this.armTalon1 = armTalon1;
 		this.armTalon2 = armTalon2;
@@ -188,8 +183,6 @@ public class TorBantorShooarm {
 		this.kP = kP;
 		this.kD = kD;
 		this.holdAngle = holdAngle;
-		this.scaleBackwardsAngle = scaleBackwardsAngle;
-		this.hittingDown = hittingDown;
 		pressingRightTrigger = false;
 		Pusher.set(false);
 	}

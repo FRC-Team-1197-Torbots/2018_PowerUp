@@ -27,7 +27,6 @@ public class Robot extends SampleRobot {
 	private TorDrive drive;
 	private TorBantorShooarm shooArm;
 	private DigitalInput breakBeam;
-	private DigitalInput hittingDown;
 	private AnalogPotentiometer fourtwenty;
 	private DriveHardware hardware;
 	private TorAuto TorAuto;
@@ -46,7 +45,6 @@ public class Robot extends SampleRobot {
 	private double switchAngle = 60;
 	private double degreeTolerance = 8;//the tolerance for the normal x + sin x up to get within the switch/scale angle before PID controls it
 	private double holdAngle = 10;
-	private double scaleBackwardsAngle = 120;
 	/*----------------------------------------------------------------------
 	*/
 	
@@ -56,8 +54,6 @@ public class Robot extends SampleRobot {
     	server.putVideo("BWENAN OPEN YOUR EYES", 640, 480);
     	
     	hardware = new DriveHardware();
-    	
-    	hittingDown = new DigitalInput(1);
     	
     	player1 = new Joystick(0); // Player 1 controller (Controls the drive)
     	player2 = new Joystick(1); // Player 2 controller (Controls the arm, shooter/intake)
@@ -69,7 +65,7 @@ public class Robot extends SampleRobot {
     	shootakeTalon1 = new VictorSPX(9);   // Intake/Shooter VictorSPX on the arm
     	shootakeTalon2 = new VictorSPX(10);  // Intake/Shooter VictorSPX on the arm
     	Pusher = new Solenoid(0, 0);         // Solenoid to shoot out the cube
-    	releaser = new Solenoid(0, 1);
+    	releaser = new Solenoid(0, 2);
     	puller1 = new VictorSPX(11);
     	puller2 = new VictorSPX(12);
     	
@@ -80,7 +76,7 @@ public class Robot extends SampleRobot {
 		
     	shooArm = new TorBantorShooarm(player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, 
     			breakBeam, fourtwenty, scaleAngle, switchAngle, degreeTolerance, kF, kP, kD, 
-    			holdAngle, Pusher, scaleBackwardsAngle, hittingDown); // TorBantorShooarm object used to enable the arm control + intake/shoot control of the robot
+    			holdAngle, Pusher); // TorBantorShooarm object used to enable the arm control + intake/shoot control of the robot
     	
     	TorAuto = new TorAuto(hardware, autoBox, shooArm);
 
