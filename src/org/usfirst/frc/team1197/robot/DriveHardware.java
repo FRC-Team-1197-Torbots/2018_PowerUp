@@ -19,6 +19,10 @@ public class DriveHardware {
 	
 	private final Solenoid solenoid;
 	private final double encoderTicksPerMeter = 999.84825; // (units: ticks per meter)
+	private final double approximateSensorSpeed = 924; // measured maximum (units: RPM)
+	private final double quadEncNativeUnits = 512.0; // (units: ticks per revolution)
+	
+	private final double kF = (1023.0) / ((approximateSensorSpeed * quadEncNativeUnits) / (600.0));
 	
 	
 	
@@ -35,6 +39,31 @@ public class DriveHardware {
 		rightMaster = new TalonSRX(4);
 		rightSlave1 = new TalonSRX(5);
 		rightSlave2 = new TalonSRX(6);
+		
+		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
+		rightMaster.configNominalOutputForward(+0.0f, 0);
+		rightMaster.configNominalOutputReverse(-0.0f, 0);
+		rightMaster.configPeakOutputForward(+12.0f, 0);
+		rightMaster.configPeakOutputReverse(-12.0f, 0);
+		rightMaster.selectProfileSlot(0, 0);
+		rightMaster.config_kF(0, kF, 0);
+		rightMaster.config_kP(0, kP, 0);
+		rightMaster.config_kI(0, kI, 0);
+		rightMaster.config_kD(0, kD, 0);
+
+		rightSlave1.follow(rightMaster);
+		rightSlave2.follow(rightMaster);
+
+		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
+		leftMaster.configNominalOutputForward(+0.0f, 0);
+		leftMaster.configNominalOutputReverse(-0.0f, 0);
+		leftMaster.configPeakOutputForward(+12.0f, 0);
+		leftMaster.configPeakOutputReverse(-12.0f, 0);
+		leftMaster.selectProfileSlot(0, 0);
+		leftMaster.config_kF(0, kF, 0);
+		leftMaster.config_kP(0, kP, 0);
+		leftMaster.config_kI(0, kI, 0);
+		leftMaster.config_kD(0, kD, 0);
 
 		leftSlave1.follow(leftMaster);
 		leftSlave2.follow(leftMaster);
