@@ -135,7 +135,7 @@ public class TorBantorShooarm {
 	
 	private double stallPower = 0.4;
 	
-	private int potSwitch = 1;//change this from 1 to 
+	private int potSwitch = -1;//change this from 1 to 
 //	-1 to control the pot. (pot might be mounted on backwards)
 	
 	private double vaultShootPower = 0.4;
@@ -175,7 +175,7 @@ public class TorBantorShooarm {
 		this.Pusher = Pusher;
 		this.breakbeam = breakbeam;
 		this.fourtwenty = fourtwenty;
-		startAngle = 49.7;//MAKE THIS WHEN THE ARM IS FLAT
+		startAngle = 211;//MAKE THIS WHEN THE ARM IS FLAT
 		this.scaleAngle = scaleAngle;
 		this.switchAngle = switchAngle;
 		this.degreeTolerance = degreeTolerance;
