@@ -23,7 +23,9 @@ public class DriveHardware {
 	private final double quadEncNativeUnits = 512.0; // (units: ticks per revolution)
 	
 	private final double kF = (1023.0) / ((approximateSensorSpeed * quadEncNativeUnits) / (600.0));
-	
+	private final double kP = 0.0; 
+	private final double kI = 0.0; 
+	private final double kD = 0.0; 
 	
 	
 	private double heading = 0.0;
