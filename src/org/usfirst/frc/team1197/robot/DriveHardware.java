@@ -18,7 +18,8 @@ public class DriveHardware {
 	private final TalonSRX leftSlave2;
 	
 	private final Solenoid solenoid;
-	private final double encoderTicksPerMeter = 999.84825; // (units: ticks per meter)
+//	private final double encoderTicksPerMeter = 999.84825; // (units: ticks per meter)
+	private final double encoderTicksPerMeter = 5; // (units: ticks per meter)
 	private final double approximateSensorSpeed = 924; // measured maximum (units: RPM)
 	private final double quadEncNativeUnits = 512.0; // (units: ticks per revolution)
 	
@@ -72,26 +73,34 @@ public class DriveHardware {
 		rightSlave1.follow(rightMaster);
 		rightSlave2.follow(rightMaster);
 		
-		leftMaster.setInverted(true); // Left master must be attached to the farthest CIM from the output shaft
-		leftSlave1.setInverted(false); 
-		leftSlave2.setInverted(false);
+		leftMaster.setInverted(false); // Left master must be attached to the farthest CIM from the output shaft
+		leftSlave1.setInverted(true); 
+		leftSlave2.setInverted(true);
 		
-		rightMaster.setInverted(false); // Right master must be attached to the farthest CIM from the output shaft
-		rightSlave1.setInverted(true); 
-		rightSlave2.setInverted(true);
+		rightMaster.setInverted(true); // Right master must be attached to the farthest CIM from the output shaft
+		rightSlave1.setInverted(false); 
+		rightSlave2.setInverted(false);
 		
 		resetEncoder();
 		resetGyro();
 	}
+	
+	public double getRightEncoder() {
+		return rightMaster.getSelectedSensorPosition(0);
+	}
+	
+	public double getLeftEncoder() {
+		return leftMaster.getSelectedSensorPosition(0);
+	}
 
 	public void setVelocity(double leftSpeed, double rightSpeed) {
-		leftMaster.set(ControlMode.Velocity, leftSpeed);
-		rightMaster.set(ControlMode.Velocity, rightSpeed);
+		leftMaster.set(ControlMode.Velocity, -leftSpeed);
+		rightMaster.set(ControlMode.Velocity, -rightSpeed);
 	}
 	
 	public void setMotorSpeeds(double rightSpeed, double leftSpeed) {
-		SetLeft(leftSpeed);
-		SetRight(rightSpeed);
+		SetLeft(-leftSpeed);
+		SetRight(-rightSpeed);
 	}
 	
 	// Setting the left master Talon's speed to the given parameter
@@ -128,12 +137,12 @@ public class DriveHardware {
 	
 	// Method to shift the drive to low gear
 	public void shiftToLowGear() {
-		solenoid.set(false);
+		solenoid.set(true);
 	}
 	
 	// Method to shift the drive to high gear
 	public void shiftToHighGear() {
-		solenoid.set(true);
+		solenoid.set(false);
 	}
 	
 	// Method to initialize 

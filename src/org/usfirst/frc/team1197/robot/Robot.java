@@ -34,6 +34,7 @@ public class Robot extends SampleRobot {
 	private VictorSPX puller1;
 	private VictorSPX puller2;
 	private Climber climber;
+	private LinearTrajectory Move1;
 	
 	/*----------------------------------------------------------------------
 	*  Tunable variables for the hold position of the arm
@@ -41,8 +42,8 @@ public class Robot extends SampleRobot {
 	private double kF = .005;
 	private double kP = 0.02;
 	private double kD = 0.000075;
-	private double scaleAngle = 75;
-	private double switchAngle = 60;
+	private double scaleAngle = 65;
+	private double switchAngle = 50;
 	private double degreeTolerance = 8;//the tolerance for the normal x + sin x up to get within the switch/scale angle before PID controls it
 	private double holdAngle = 10;
 	/*----------------------------------------------------------------------
@@ -79,7 +80,8 @@ public class Robot extends SampleRobot {
     			holdAngle, Pusher); // TorBantorShooarm object used to enable the arm control + intake/shoot control of the robot
     	
     	TorAuto = new TorAuto(hardware, autoBox, shooArm);
-
+    	Move1 = new LinearTrajectory(hardware, 1, 0.2, 4000);
+    	
 //		climber = new Climber(releaser, puller1, puller2, shooArm, autoBox);
     }
     
@@ -88,7 +90,8 @@ public class Robot extends SampleRobot {
     }
 
     public void autonomous() {
-    	TorAuto.run();
+//    	TorAuto.run();
+//    	Move1.run();
     }
 
     public void operatorControl() {
@@ -97,6 +100,8 @@ public class Robot extends SampleRobot {
     				getButtonA(), getButtonB(), getButtonX(), getButtonY()); // Enabling the drive ofthe robot
     		shooArm.TorBantorArmAndShooterUpdate(); // Enabling arm control
 //    		climber.update();
+    		SmartDashboard.putNumber("Right:", hardware.getRightEncoder());
+    		SmartDashboard.putNumber("Left:", hardware.getLeftEncoder());
     	}
     }
 

@@ -57,6 +57,9 @@ public class LinearTrajectory {
 			fob = -1;
 			thisdistance *= -1;
 		}
+		else {
+			fob = 1;
+		}
 		this.accelerateTime = accelerateTime;
 		
 		accelerateDistance = thisdistance * accelerationFraction;
@@ -86,18 +89,20 @@ public class LinearTrajectory {
 				speed = (x + Math.sin(x) + Math.PI) / (2 * Math.PI);
 				drive.setMotorSpeeds(speed * fob, speed * fob);
 				if(((currentDistance - lastDistance) * fob) >= accelerateDistance) {
+//				if(currentTime - startTime > 1500) {
+					drive.setMotorSpeeds(0, 0);
 					lastDistance = currentDistance;
 					runIt = run.COAST;
 				}
 				break;
 			case COAST:
-				if(((currentDistance - lastDistance) * fob) >= coastDistance) {
-					lastDistance = currentDistance;
-					startTime = currentTime;
-					angleLastError = currentAngle - firstAngle;
-					lastError = (currentDistance - startDistance) - thisdistance;
-					runIt = run.DECELERATE;
-				}
+//				if(((currentDistance - lastDistance) * fob) >= coastDistance) {
+//					lastDistance = currentDistance;
+//					startTime = currentTime;
+//					angleLastError = currentAngle - firstAngle;
+//					lastError = (currentDistance - startDistance) - thisdistance;
+				runIt = run.DECELERATE;
+//				}
 				break;
 			case DECELERATE:
 				angleError = currentAngle - firstAngle;
