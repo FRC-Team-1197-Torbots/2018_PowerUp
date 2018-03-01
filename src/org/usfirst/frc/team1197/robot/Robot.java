@@ -90,7 +90,7 @@ public class Robot extends SampleRobot {
     }
 
     public void autonomous() {
-//    	TorAuto.run();
+   	TorAuto.run();
 //    	Move1.run();
     }
 
@@ -100,8 +100,8 @@ public class Robot extends SampleRobot {
     				getButtonA(), getButtonB(), getButtonX(), getButtonY()); // Enabling the drive ofthe robot
     		shooArm.TorBantorArmAndShooterUpdate(); // Enabling arm control
 //    		climber.update();
-    		SmartDashboard.putNumber("Right:", hardware.getRightEncoder());
-    		SmartDashboard.putNumber("Left:", hardware.getLeftEncoder());
+//     		SmartDashboard.putNumber("Right:", hardware.getRightEncoder());
+//     		SmartDashboard.putNumber("Left:", hardware.getLeftEncoder());
     	}
     }
 
