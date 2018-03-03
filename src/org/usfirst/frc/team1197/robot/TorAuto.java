@@ -13,6 +13,7 @@ public class TorAuto {
 	private RightLeftRun RightLeftRun;
 	private Joystick autobox;
 	private String gameData;
+	private DriveHardware drive;
 	
 	// DriveHardware drive, double distance, double accelerationFraction, 
 	// long accelerateTime (in milliseconds)
@@ -20,6 +21,7 @@ public class TorAuto {
 	
 	public TorAuto(DriveHardware drive, Joystick autobox, TorBantorShooarm shooArm) {
 		this.autobox = autobox;
+		this.drive = drive;
 		CenterLeftRun = new CenterLeftRun(drive, shooArm);
 		CenterRightRun = new CenterRightRun(drive, shooArm);
 		LeftLeftRun = new LeftLeftRun(drive, shooArm);
@@ -29,6 +31,7 @@ public class TorAuto {
 	}
 	
 	public void run() {
+		drive.shiftToLowGear();
 		gameData = DriverStation.getInstance().getGameSpecificMessage(); // Obtaining the switch & scale colors from the FMS
 		SmartDashboard.putString("Game Data", gameData);
 		if(autobox.getRawButton(3)) { // Left trajectories

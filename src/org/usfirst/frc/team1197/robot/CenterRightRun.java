@@ -29,11 +29,11 @@ public class CenterRightRun {
 	
 	public CenterRightRun(DriveHardware drive, TorBantorShooarm shooArm) {
 		this.shooArm = shooArm;
-		Move1 = new LinearTrajectory(drive, 1.5, 0.7, 4000);
-		Move2 = new PivotTrajectory(drive, 90, 0.565, 2500);
-		Move3 = new LinearTrajectory(drive, 1.4, 0.7, 4000);
-		Move4 = new PivotTrajectory(drive, -90, 0.565, 2500);
-		Move5 = new LinearTrajectory(drive, 1.1, 0.7, 4000);
+		Move1 = new LinearTrajectory(drive, 1.5, shooArm);
+		Move2 = new PivotTrajectory(drive, 90, shooArm);
+		Move3 = new LinearTrajectory(drive, 1.4, shooArm);
+		Move4 = new PivotTrajectory(drive, -90, shooArm);
+		Move5 = new LinearTrajectory(drive, 1.1, shooArm);
 	}
 	
 	public void update() {
