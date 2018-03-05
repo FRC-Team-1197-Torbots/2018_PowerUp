@@ -98,8 +98,10 @@ public class Robot extends SampleRobot {
     		shooArm.TorBantorArmAndShooterUpdate(); // Enabling arm control
 //    		drive.buttonDrive(getButtonA(), getButtonB(), getButtonX(), getButtonY());
 //    		climber.update();
-     		SmartDashboard.putNumber("Right:", hardware.getRightEncoder());
-     		SmartDashboard.putNumber("Left:", hardware.getLeftEncoder());
+//    		System.out.println(breakBeam.get());
+//    		Timer.delay(0.1);
+//     		SmartDashboard.putNumber("Right:", hardware.getRightEncoder());
+//     		SmartDashboard.putNumber("Left:", hardware.getLeftEncoder());
     	}
     }
 

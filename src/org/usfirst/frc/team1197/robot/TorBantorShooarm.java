@@ -577,9 +577,9 @@ public class TorBantorShooarm {
 				shootakeTalon1.set(ControlMode.PercentOutput, -intakePower * ioo);
 				shootakeTalon2.set(ControlMode.PercentOutput, intakePower * ioo);
 			}
-			if((currentTime >= endTime) && (((player2.getRawButton(1)) || 
+			if(((currentTime >= endTime) && (((player2.getRawButton(1)) || 
 			((Math.abs(shootakeTalon1.getOutputCurrent()) > threshold) ||
-			(Math.abs(shootakeTalon2.getOutputCurrent()) > threshold))) || !breakbeam.get())) {
+			(Math.abs(shootakeTalon2.getOutputCurrent()) > threshold))))) || !breakbeam.get()) {
 				shootakeTalon1.set(ControlMode.PercentOutput, 0);
 				shootakeTalon2.set(ControlMode.PercentOutput, 0);
 				lastTime = currentTime;
@@ -1011,6 +1011,18 @@ public class TorBantorShooarm {
 	}
 	
 	public boolean isHold() {
-		return (Math.abs(fourtwenty.get() - holdAngle) <= (degreeTolerance * 0.1));
+		return (Math.abs(((fourtwenty.get() - startAngle) * potSwitch) - holdAngle) <= (degreeTolerance * 0.5));
+	}
+	
+	public void pressA() {
+		intakeIt = intake.POS0;
+	}
+	
+	public boolean isIntake() {
+		return (Math.abs(fourtwenty.get() - startAngle) <= (degreeTolerance * 0.5));
+	}
+	
+	public boolean isInside() {
+		return !breakbeam.get();
 	}
 }

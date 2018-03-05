@@ -3,7 +3,8 @@ package org.usfirst.frc.team1197.robot;
 public class RightRightRun {
 	private LinearTrajectory Move1;
 	private PivotTrajectory Move2;
-	private LinearTrajectory Move3;
+	private PivotTrajectory Move3;
+	private LinearTrajectory Move4;
 	private TorBantorShooarm shooArm;
 	private long currentTime;
 	private long endTime;
@@ -12,7 +13,7 @@ public class RightRightRun {
 	private boolean isFinished = false;
 	
 	public static enum run {
-		IDLE, SCALEUP, MOVE1, MOVE2, MOVE3, REVUP, FIRE, REVDOWN;
+		IDLE, SCALEUP, MOVE1, MOVE2, REVUP, FIRE, REVDOWN, COMEDOWN, MOVE3, INTAKE, MOVE4;
 		private run() {}
 	}
 	
@@ -28,9 +29,10 @@ public class RightRightRun {
 	
 	public RightRightRun(DriveHardware drive, TorBantorShooarm shooArm) {
 		this.shooArm = shooArm;
-		Move1 = new LinearTrajectory(drive, 3.8, shooArm);
-		Move2 = new PivotTrajectory(drive, -90, shooArm);
-		Move3 = new LinearTrajectory(drive, 0.55, shooArm);
+		Move1 = new LinearTrajectory(drive, 6.45, shooArm);
+		Move2 = new PivotTrajectory(drive, -65, shooArm);
+		Move3 = new PivotTrajectory(drive, -110, shooArm);
+		Move4 = new LinearTrajectory(drive, 1.85, shooArm);
 	}
 	
 	public void update() {
@@ -40,11 +42,11 @@ public class RightRightRun {
 		case IDLE:
 			break;
 		case SCALEUP:
-			shooArm.pressXStart();
+			shooArm.pressYStart();
 			runIt = run.MOVE1;
 			break;
 		case MOVE1:
-			if(shooArm.switchIsPID() && shooArm.inSwitch()) {
+			if(shooArm.scaleIsPID() && shooArm.inScale()) {
 				Move1.run();
 				runIt = run.MOVE2;
 			}
@@ -52,17 +54,11 @@ public class RightRightRun {
 		case MOVE2:
 			if(Move1.isDone()) {
 				Move2.run();
-				runIt = run.MOVE3;
-			}
-			break;
-		case MOVE3:
-			if(Move2.isDone()) {
-				Move3.run();
-				runIt = run.REVUP;	
+				runIt = run.REVUP;
 			}
 			break;
 		case REVUP:
-			if(Move3.isDone()) {
+			if(Move2.isDone()) {
 				shooArm.pressLeftTrigger();
 				endTime = currentTime + revTime + extendTime;
 				runIt = run.FIRE;				
@@ -78,10 +74,31 @@ public class RightRightRun {
 		case REVDOWN:
 			if(currentTime > endTime) {
 				shooArm.releaseLeftTrigger();
-				runIt = run.IDLE;
-				isFinished = true;
+				runIt = run.COMEDOWN;
 			}
 			break;
+		case COMEDOWN:
+			shooArm.pressY();
+			runIt = run.MOVE3;
+			break;
+		case MOVE3:
+			if(shooArm.isHold()) {
+				Move3.run();
+				runIt = run.INTAKE;
+			}
+			break;
+		case INTAKE:
+			if(Move3.isDone()) {
+				shooArm.pressA();
+				runIt = run.MOVE4;
+			}
+			break;
+		case MOVE4:
+			if(shooArm.isHold()) {
+				Move4.run();
+				isFinished = true;
+				runIt = run.IDLE;
+			}
 		}
 	}
 	

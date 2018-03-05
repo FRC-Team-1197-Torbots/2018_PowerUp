@@ -76,6 +76,7 @@ public class LinearTrajectory {
 		firstAngle = drive.getHeading();
 		lastDistance = drive.getPosition();
 		startDistance = drive.getPosition();
+		angleLastError = 0;
 		while(!isFinished) {
 			shooArm.TorBantorArmAndShooterUpdate();
 			currentAngle = drive.getHeading();
@@ -85,7 +86,19 @@ public class LinearTrajectory {
 			case IDLE:
 				break;
 			case ACCELERATE:
-				drive.setMotorSpeeds(autonomousSpeed * fob, autonomousSpeed * fob);
+				angleError = currentAngle - firstAngle;
+				
+				omegaP = angleError * rkP;
+				omegaD = (angleError - angleLastError) * (rkD / kF);
+				omega = omegaP + omegaD;
+				
+				omega *= lor;
+				omega *= halfTrackWidth;
+				omega *= 0.001;
+				
+				angleLastError = angleError;
+				
+				drive.setMotorSpeeds((autonomousSpeed * fob) + omega, (autonomousSpeed * fob) - omega);
 				if(((currentDistance - lastDistance) * fob) >= accelerateDistance) {
 					lastDistance = currentDistance;
 					y1 = drive.getPosition();

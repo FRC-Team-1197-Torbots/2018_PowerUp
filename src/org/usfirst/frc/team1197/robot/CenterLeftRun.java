@@ -29,9 +29,9 @@ public class CenterLeftRun {
 	
 	public CenterLeftRun(DriveHardware drive, TorBantorShooarm shooArm) {
 		this.shooArm = shooArm;
-		Move1 = new LinearTrajectory(drive, 1.5, shooArm);
+		Move1 = new LinearTrajectory(drive, 1.1, shooArm);
 		Move2 = new PivotTrajectory(drive, -90, shooArm);
-		Move3 = new LinearTrajectory(drive, 1.0, shooArm);
+		Move3 = new LinearTrajectory(drive, 1.6, shooArm);
 		Move4 = new PivotTrajectory(drive, 90, shooArm);
 		Move5 = new LinearTrajectory(drive, 1.25, shooArm);
 	}
