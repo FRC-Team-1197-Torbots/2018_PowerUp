@@ -31,7 +31,7 @@ public class LinearTrajectory {
 	
 	private double omega;
 	private double velocity;
-	private final double autonomousSpeed = 0.66;
+	private double autonomousSpeed = 0.66;
 	private final double decelerateDistance = 0.3;
 	
 	private double firstAngle;
@@ -44,6 +44,11 @@ public class LinearTrajectory {
 	private double lastTime;
 	private long currentTime;
 	private TorBantorShooarm shooArm;
+	
+	public void setSpeed(double speed) {
+		autonomousSpeed = speed;
+	}
+	
 	
 	public static enum run {
 		IDLE, ACCELERATE, DECELERATE;
@@ -94,7 +99,7 @@ public class LinearTrajectory {
 				
 				omega *= lor;
 				omega *= halfTrackWidth;
-				omega *= 0.001;
+				omega *= 0.002;
 				
 				angleLastError = angleError;
 				

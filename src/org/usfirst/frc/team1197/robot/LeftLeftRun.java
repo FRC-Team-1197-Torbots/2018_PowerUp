@@ -1,7 +1,5 @@
 package org.usfirst.frc.team1197.robot;
 
-import org.usfirst.frc.team1197.robot.RightRightRun.run;
-
 public class LeftLeftRun {
 	private LinearTrajectory Move1;
 	private PivotTrajectory Move2;
@@ -33,8 +31,8 @@ public class LeftLeftRun {
 		this.shooArm = shooArm;
 		Move1 = new LinearTrajectory(drive, 6.45, shooArm);
 		Move2 = new PivotTrajectory(drive, 65, shooArm);
-		Move3 = new PivotTrajectory(drive, 95, shooArm);
-		Move4 = new LinearTrajectory(drive, 1.524, shooArm);
+		Move3 = new PivotTrajectory(drive, 110, shooArm);
+		Move4 = new LinearTrajectory(drive, 1.85, shooArm);
 	}
 	
 	public void update() {
@@ -96,7 +94,7 @@ public class LeftLeftRun {
 			}
 			break;
 		case MOVE4:
-			if(shooArm.isIntake() && shooArm.isHold()) {
+			if(shooArm.isHold()) {
 				Move4.run();
 				isFinished = true;
 				runIt = run.IDLE;

@@ -92,6 +92,7 @@ public class Robot extends SampleRobot {
     }
 
     public void operatorControl() {
+    	shooArm.setAutoIntake(0.6);
     	while(isEnabled()){
     		drive.driving(getLeftY(), getLeftX(), getRightX(), getShiftButton(), getRightBumper(), 
     				getButtonA(), getButtonB(), getButtonX(), getButtonY()); // Enabling the drive ofthe robot

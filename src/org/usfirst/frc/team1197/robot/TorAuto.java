@@ -35,7 +35,7 @@ public class TorAuto {
 		gameData = DriverStation.getInstance().getGameSpecificMessage(); // Obtaining the switch & scale colors from the FMS
 		SmartDashboard.putString("Game Data", gameData);
 		if(autobox.getRawButton(3)) { // Left trajectories
-			if(gameData.charAt(0) == 'L') { // Left Left 
+			if(gameData.charAt(1) == 'L') { // Left Left 
 				SmartDashboard.putString("AUTO", "Left Left");
 				LeftLeftRun.run();
 			} 
@@ -45,8 +45,11 @@ public class TorAuto {
 			}
 		} 
 		else if(autobox.getRawButton(2)) { // Right trajectories
-			if(gameData.charAt(0) == 'R') { // Right Right
+			if(gameData.charAt(1) == 'R') { // Right Right
 				SmartDashboard.putString("AUTO", "Right Right");
+				if(gameData.charAt(0) == 'R') {
+					RightRightRun.switchRight();
+				}
 				RightRightRun.run();
 			} 
 			else { // Right Left

@@ -118,10 +118,10 @@ public class TorBantorShooarm {
 	// Scale Variables
 	private long scalePos1Time = 450;
 	private long scalePos2Time = 50;
-	private double scaleMaxSpeed = 1;
+	private double scaleMaxSpeed = .85;
 	private double scalePush = 0.23;
 	private double scaleCushion = -0.02;
-	private double scaleShootPower = 1;
+	private double scaleShootPower = .85;
 	
 	// Shooter & Intake Variables
 	private double shootPower = 0.2;//the power it shoots out at
@@ -988,11 +988,11 @@ public class TorBantorShooarm {
 	}
 	
 	public boolean inScale() {
-		return (Math.abs((((fourtwenty.get() - startAngle) * potSwitch) - scaleAngle)) <= degreeTolerance * .2);
+		return (Math.abs((((fourtwenty.get() - startAngle) * potSwitch) - scaleAngle)) <= degreeTolerance * 0.2);
 	}
 	
 	public boolean inSwitch() {
-		return (Math.abs((((fourtwenty.get() - startAngle) * potSwitch) - switchAngle)) <= degreeTolerance * .2);
+		return (Math.abs((((fourtwenty.get() - startAngle) * potSwitch) - switchAngle)) <= degreeTolerance);
 	}
 	
 	public void STOPPROCESS() {	
@@ -1011,15 +1011,23 @@ public class TorBantorShooarm {
 	}
 	
 	public boolean isHold() {
-		return (Math.abs(((fourtwenty.get() - startAngle) * potSwitch) - holdAngle) <= (degreeTolerance * 0.5));
+		return (Math.abs(((fourtwenty.get() - startAngle) * potSwitch) - holdAngle) <= (degreeTolerance * 0.4));
 	}
 	
 	public void pressA() {
 		intakeIt = intake.POS0;
 	}
 	
+	public void setAutoIntake(double power) {
+		intakePower = power;
+	}
+	
 	public boolean isIntake() {
-		return (Math.abs(fourtwenty.get() - startAngle) <= (degreeTolerance * 0.5));
+		return (Math.abs(fourtwenty.get() - startAngle) <= (degreeTolerance * 0.1));
+	}
+	
+	public boolean inHold() {
+		return (holdIt == holder.PD);
 	}
 	
 	public boolean isInside() {
