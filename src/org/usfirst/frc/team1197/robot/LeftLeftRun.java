@@ -5,15 +5,25 @@ public class LeftLeftRun {
 	private PivotTrajectory Move2;
 	private PivotTrajectory Move3;
 	private LinearTrajectory Move4;
+	private LinearTrajectory Move5;
+	private LinearTrajectory Move5L;
+	private PivotTrajectory Move6L;
 	private TorBantorShooarm shooArm;
 	private long currentTime;
 	private long endTime;
-	private long revTime = 700;
-	private long extendTime = 300;
+	private long revTime = 1400;
 	private boolean isFinished = false;
+	private boolean isLeft = false;
+	
+	public void switchLeft() {
+		isLeft = true;
+	}
 	
 	public static enum run {
-		IDLE, SCALEUP, MOVE1, MOVE2, REVUP, FIRE, REVDOWN, COMEDOWN, MOVE3, INTAKE, MOVE4;
+		IDLE, SCALEUP, MOVE1, MOVE2, FIRE, REVDOWN, COMEDOWN, SWITCHRIGHT, 
+		SWITCHLEFT, MOVE3, INTAKE, MOVE4, SWITCHFIRE1, 
+		SWITCHFIRE2, SWITCHFIRE3, SWITCHFIRE4, MOVE3R, INTAKER, MOVE4R, MOVE5R,
+		MOVE6R, FIRER, REVDOWNR;
 		private run() {}
 	}
 	
@@ -31,8 +41,11 @@ public class LeftLeftRun {
 		this.shooArm = shooArm;
 		Move1 = new LinearTrajectory(drive, 6.45, shooArm);
 		Move2 = new PivotTrajectory(drive, 65, shooArm);
-		Move3 = new PivotTrajectory(drive, 110, shooArm);
+		Move3 = new PivotTrajectory(drive, 102, shooArm);
 		Move4 = new LinearTrajectory(drive, 1.85, shooArm);
+		Move5 = new LinearTrajectory(drive, .6, shooArm);
+		Move5L = new LinearTrajectory(drive, -1.85, shooArm);
+		Move6L = new PivotTrajectory(drive, -102, shooArm);
 	}
 	
 	public void update() {
@@ -53,19 +66,12 @@ public class LeftLeftRun {
 			break;
 		case MOVE2:
 			if(Move1.isDone()) {
-				Move2.run();
-				runIt = run.REVUP;
-			}
-			break;
-		case REVUP:
-			if(Move2.isDone()) {
 				shooArm.pressLeftTrigger();
-				endTime = currentTime + revTime + extendTime;
-				runIt = run.FIRE;				
+				Move2.run();
+				runIt = run.FIRE;
 			}
-			break;
 		case FIRE:
-			if(currentTime >= endTime) {
+			if(Move2.isDone()) {
 				shooArm.autoFire();
 				endTime = currentTime + revTime;
 				runIt = run.REVDOWN;
@@ -79,7 +85,17 @@ public class LeftLeftRun {
 			break;
 		case COMEDOWN:
 			shooArm.pressY();
+			if(isLeft) {
+				runIt = run.SWITCHLEFT;
+			} else {
+				runIt = run.SWITCHRIGHT;
+			}
+			break;
+		case SWITCHLEFT:
 			runIt = run.MOVE3;
+			break;
+		case SWITCHRIGHT:
+			runIt = run.MOVE3R;
 			break;
 		case MOVE3:
 			if(shooArm.isHold()) {
@@ -89,16 +105,99 @@ public class LeftLeftRun {
 			break;
 		case INTAKE:
 			if(Move3.isDone()) {
+				shooArm.setAutoIntake(.7);
 				shooArm.pressA();
 				runIt = run.MOVE4;
 			}
 			break;
 		case MOVE4:
-			if(shooArm.isHold()) {
+			if(shooArm.isIntake()) {
+				Move4.setSpeed(.4);
 				Move4.run();
+				runIt = run.SWITCHFIRE1;
+			}
+			break;
+		case SWITCHFIRE1:
+			if(Move4.isDone() && shooArm.inHold()) {
+				shooArm.setAutoIntake(.6);
+				shooArm.pressX();
+				shooArm.switchShoot();
+				shooArm.pressLeftTrigger();
+				endTime = currentTime + revTime;
+				runIt = run.SWITCHFIRE2;
+			}
+			break;
+		case SWITCHFIRE2:
+			if(shooArm.switchIsPID() && shooArm.inSwitch()) {
+				Move5.run();
+				runIt = run.SWITCHFIRE3;
+			}
+			break;
+		case SWITCHFIRE3:
+			if(currentTime > endTime && Move5.isDone()) {
+				shooArm.autoFire();
+				endTime = currentTime + revTime;
+				runIt = run.SWITCHFIRE4;
+			}
+			break;
+		case SWITCHFIRE4:
+			if(currentTime > endTime) {
+				shooArm.releaseLeftTrigger();
 				isFinished = true;
 				runIt = run.IDLE;
 			}
+			break;
+		case MOVE3R:			
+			if(shooArm.isHold()) {
+				Move3.run();
+				runIt = run.INTAKER;
+			}
+			break;
+		case INTAKER:
+			if(Move3.isDone()) {
+				shooArm.setAutoIntake(.7);
+				shooArm.pressA();
+				runIt = run.MOVE4R;
+			}
+			break;
+		case MOVE4R:
+			if(shooArm.isIntake()) {
+				Move4.setSpeed(.4);
+				Move4.run();
+				runIt = run.MOVE5R;
+			}
+			break;
+		case MOVE5R:
+			if(Move4.isDone() && shooArm.inHold()) {
+				Move5L.run();
+				shooArm.setAutoIntake(.6);
+				shooArm.pressY();
+				shooArm.scaleShoot();
+				shooArm.pressLeftTrigger();
+				endTime = currentTime + revTime;
+				runIt = run.MOVE6R;
+			}
+			break;
+		case MOVE6R:
+			if(Move5.isDone()) {
+				Move6L.run();
+				runIt = run.FIRER;
+			}
+			break;
+		case FIRER:
+			if(Move6L.isDone() && currentTime > endTime) {
+				shooArm.autoFire();
+				currentTime = endTime + revTime;
+				runIt = run.REVDOWNR;
+			}
+			break;
+		case REVDOWNR:
+			if(currentTime > endTime) {
+				shooArm.releaseLeftTrigger();
+				isFinished = true;
+				runIt = run.IDLE;
+			}
+			break;
 		}
 	}
 	

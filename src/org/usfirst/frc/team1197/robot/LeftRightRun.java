@@ -2,12 +2,22 @@ package org.usfirst.frc.team1197.robot;
 
 public class LeftRightRun {
 	private LinearTrajectory Move1;
+	private LinearTrajectory Move1L;
+	private PivotTrajectory Move2L;
+	private LinearTrajectory Move3L;
 	private TorBantorShooarm shooArm;
 	private boolean isFinished = false;
+	private boolean switchLeft = false;
+	private long currentTime;
+	private long endTime;
+	private final long revTime = 1400;
 	
+	public void switchLeft() {
+		switchLeft = true;
+	}
 	
 	public static enum run {
-		IDLE, SWITCHUP, MOVE1;
+		IDLE, SWITCHUP, MOVE1, Move1R, Move2R, Move3R, FIRE, REVDOWN;
 		private run() {}
 	}
 	
@@ -24,6 +34,9 @@ public class LeftRightRun {
 	public LeftRightRun(DriveHardware drive, TorBantorShooarm shooArm) {
 		this.shooArm = shooArm;
 		Move1 = new LinearTrajectory(drive, 6, shooArm);
+		Move1L = new LinearTrajectory(drive, 3.8, shooArm);
+		Move2L = new PivotTrajectory(drive, 90, shooArm);
+		Move3L = new LinearTrajectory(drive, 0.55, shooArm);
 	}
 	
 	public void update() {
@@ -33,7 +46,11 @@ public class LeftRightRun {
 			break;
 		case SWITCHUP:
 			shooArm.pressXStart();
-			runIt = run.MOVE1;
+			if(switchLeft) {
+				runIt = run.Move1R;
+			} else {
+				runIt = run.MOVE1;
+			}
 			break;
 		case MOVE1:
 			if(shooArm.switchIsPID() && shooArm.inSwitch()) {
@@ -42,6 +59,37 @@ public class LeftRightRun {
 				runIt = run.IDLE;
 				break;
 			}
+		case Move1R:
+			if(shooArm.switchIsPID() && shooArm.inSwitch()) {
+				Move1L.run();
+				runIt = run.Move2R;
+			}
+			break;
+		case Move2R:
+			if(Move1.isDone()) {
+				shooArm.pressX();
+				shooArm.switchShoot();
+				Move2L.run();
+				runIt = run.Move3R;
+			}
+			break;
+		case Move3R:
+			if(Move2L.isDone()) {
+				Move3L.run();
+			}
+			break;
+		case FIRE:
+			if(Move3L.isDone()) {
+				shooArm.autoFire();
+				endTime = currentTime + revTime;
+				runIt = run.REVDOWN;
+			}
+			break;
+		case REVDOWN:
+			if(currentTime > endTime) {
+				shooArm.releaseLeftTrigger();
+			}
+			break;
 		}
 	}
 	

@@ -113,15 +113,15 @@ public class TorBantorShooarm {
 	private double switchMaxSpeed = 0.9; // the acceleration increment for the switch
 	private double switchPush = 0.17; // the extra speed to push to hit the degreeTolerance from just a proportional distance speed
 	private double switchCushion = 0; // NEGATIVE the extra cushion from a proportional down 
-	private double switchShootPower = 0.25;
+	private double switchShootPower = 0.32;
 
 	// Scale Variables
 	private long scalePos1Time = 450;
 	private long scalePos2Time = 50;
-	private double scaleMaxSpeed = .85;
+	private double scaleMaxSpeed = .9;
 	private double scalePush = 0.23;
 	private double scaleCushion = -0.02;
-	private double scaleShootPower = .85;
+	private double scaleShootPower = .9;
 	
 	// Shooter & Intake Variables
 	private double shootPower = 0.2;//the power it shoots out at
@@ -135,7 +135,7 @@ public class TorBantorShooarm {
 	
 	private double stallPower = 0.4;
 	
-	private int potSwitch = -1;//change this from 1 to 
+	private int potSwitch = 1;//change this from 1 to 
 //	-1 to control the pot. (pot might be mounted on backwards)
 	
 	private double vaultShootPower = 0.4;

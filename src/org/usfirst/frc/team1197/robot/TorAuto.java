@@ -37,10 +37,16 @@ public class TorAuto {
 		if(autobox.getRawButton(3)) { // Left trajectories
 			if(gameData.charAt(1) == 'L') { // Left Left 
 				SmartDashboard.putString("AUTO", "Left Left");
+				if(gameData.charAt(0) == 'L') {
+					LeftLeftRun.switchLeft();
+				}
 				LeftLeftRun.run();
 			} 
 			else { // Left Right
 				SmartDashboard.putString("AUTO", "Left Right");
+				if(gameData.charAt(0) == 'L') {
+					LeftRightRun.switchLeft();
+				}
 				LeftRightRun.run();
 			}
 		} 
@@ -54,6 +60,9 @@ public class TorAuto {
 			} 
 			else { // Right Left
 				SmartDashboard.putString("AUTO", "Right Left");
+				if(gameData.charAt(0) == 'R') {
+					RightLeftRun.switchRight();
+				}
 				RightLeftRun.run();
 			}
 		} 

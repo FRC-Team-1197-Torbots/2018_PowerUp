@@ -101,7 +101,7 @@ public class PivotTrajectory {
 				drive.setVelocity(-speed, speed);
 				
 				angleLastError = angleError;
-				if((Math.abs(angleError) <= 0.5 * (Math.PI / 180.0) && currentVelocity < 1) || (currentTime - startTime > 400)) {
+				if((Math.abs(angleError) <= (0.25 * (Math.PI / 180.0)) && currentVelocity < 0.5) || (currentTime - startTime > 400)) {
 					drive.setMotorSpeeds(0, 0);
 					isFinished = true;
 					runIt = run.IDLE;
