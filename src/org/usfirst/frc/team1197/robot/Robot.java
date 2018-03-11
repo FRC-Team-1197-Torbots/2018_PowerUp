@@ -30,6 +30,7 @@ public class Robot extends SampleRobot {
 	private AnalogPotentiometer fourtwenty;
 	private DriveHardware hardware;
 	private TorAuto TorAuto;
+	private final boolean test = true;
 	
 	/*----------------------------------------------------------------------
 	*  Tunable variables for the hold position of the arm
@@ -85,15 +86,18 @@ public class Robot extends SampleRobot {
     public void operatorControl() {
     	shooArm.setAutoIntake(0.6);
     	while(isEnabled()){
-    		drive.driving(getLeftY(), getLeftX(), getRightX(), getShiftButton(), getRightBumper(), 
-    				getButtonA(), getButtonB(), getButtonX(), getButtonY()); // Enabling the drive ofthe robot
-    		shooArm.TorBantorArmAndShooterUpdate(); // Enabling arm control
-//    		drive.buttonDrive(getButtonA(), getButtonB(), getButtonX(), getButtonY());
-//    		climber.update();
-//    		System.out.println(breakBeam.get());
-//    		Timer.delay(0.1);
-//     		SmartDashboard.putNumber("Right:", hardware.getRightEncoder());
-//     		SmartDashboard.putNumber("Left:", hardware.getLeftEncoder());
+    		if(test) {
+    			SmartDashboard.putNumber("POT VALUE:", (fourtwenty.get()));
+    			SmartDashboard.putNumber("RIGHT ENCODER:", hardware.getRightEncoder());
+    			SmartDashboard.putNumber("LEFT ENCODER:", hardware.getLeftEncoder());
+    			SmartDashboard.putBoolean("BREAKBEAM:", breakBeam.get());
+    			
+    		} else {
+        		drive.driving(getLeftY(), getLeftX(), getRightX(), getShiftButton(), getRightBumper(), 
+        				getButtonA(), getButtonB(), getButtonX(), getButtonY()); // Enabling the drive ofthe robot
+        		shooArm.TorBantorArmAndShooterUpdate(); // Enabling arm control
+    			
+    		}
     	}
     }
 

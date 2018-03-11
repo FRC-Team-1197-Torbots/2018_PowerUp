@@ -69,10 +69,16 @@ public class TorAuto {
 		else { // Center trajectories
 			if(gameData.charAt(0) == 'L') { // center left
 				SmartDashboard.putString("AUTO", "Center Left");
+				if(gameData.charAt(1) == 'L') {
+					CenterLeftRun.scaleLeft();
+				}
 				CenterLeftRun.run();
 			} 
 			else { // Center Right
 				SmartDashboard.putString("AUTO", "Center Right");
+				if(gameData.charAt(1) == 'R') {
+					CenterRightRun.scaleRight();
+				}
 				CenterRightRun.run();
 			}
 		}
