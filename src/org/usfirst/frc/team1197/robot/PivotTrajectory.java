@@ -18,7 +18,7 @@ public class PivotTrajectory {
 	private final double accelerateSpeed = 0.45;
 	private final double decelerateAngle = 31 * (Math.PI / 180.0);
 	
-	private final double rkP = .02 * (180 / Math.PI);//PD For rotation
+	private final double rkP = .025 * (180 / Math.PI);//PD For rotation
 	private final double rkD = 0.001 * (180 / Math.PI);
 
 	private int lor = 1;
