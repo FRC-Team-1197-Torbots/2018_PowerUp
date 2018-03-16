@@ -11,6 +11,7 @@ public class RightRightRun {
 	private LinearTrajectory Move5L;
 	private PivotTrajectory Move6L;
 	private TorBantorShooarm shooArm;
+	private double starttime;
 	private long currentTime;
 	private long endTime;
 	private long revTime = 1400;
@@ -61,14 +62,14 @@ public class RightRightRun {
 			break;
 		case MOVE1:
 			if(shooArm.scaleIsPID() && shooArm.inScale()) {
-				Move1.run();
+				Move1.run(starttime);
 				runIt = run.MOVE2;
 			}
 			break;
 		case MOVE2:
 			if(Move1.isDone()) {
 				shooArm.pressLeftTrigger();
-				Move2.run();
+				Move2.run(starttime);
 				runIt = run.FIRE;
 			}
 		case FIRE:
@@ -100,7 +101,7 @@ public class RightRightRun {
 			break;
 		case MOVE3:
 			if(shooArm.isHold()) {
-				Move3.run();
+				Move3.run(starttime);
 				runIt = run.INTAKE;
 			}
 			break;
@@ -114,7 +115,7 @@ public class RightRightRun {
 		case MOVE4:
 			if(shooArm.isIntake()) {
 				Move4.setSpeed(.4);
-				Move4.run();
+				Move4.run(starttime);
 				runIt = run.SWITCHFIRE1;
 			}
 			break;
@@ -130,7 +131,7 @@ public class RightRightRun {
 			break;
 		case SWITCHFIRE2:
 			if(shooArm.switchIsPID() && shooArm.inSwitch()) {
-				Move5.run();
+				Move5.run(starttime);
 				runIt = run.SWITCHFIRE3;
 			}
 			break;
@@ -150,7 +151,7 @@ public class RightRightRun {
 			break;
 		case MOVE3L:			
 			if(shooArm.isHold()) {
-				Move3.run();
+				Move3.run(starttime);
 				runIt = run.INTAKEL;
 			}
 			break;
@@ -164,13 +165,13 @@ public class RightRightRun {
 		case MOVE4L:
 			if(shooArm.isIntake()) {
 				Move4.setSpeed(.4);
-				Move4.run();
+				Move4.run(starttime);
 				runIt = run.MOVE5L;
 			}
 			break;
 		case MOVE5L:
 			if(Move4.isDone() && shooArm.inHold()) {
-				Move5L.run();
+				Move5L.run(starttime);
 				shooArm.setAutoIntake(.6);
 				shooArm.pressY();
 				shooArm.scaleShoot();
@@ -181,7 +182,7 @@ public class RightRightRun {
 			break;
 		case MOVE6L:
 			if(Move5.isDone()) {
-				Move6L.run();
+				Move6L.run(starttime);
 				runIt = run.FIREL;
 			}
 			break;
@@ -203,14 +204,14 @@ public class RightRightRun {
 	}
 	
 	
-	public void run() {
-		
+	public void run(double starttime) {
+		this.starttime = starttime;
 		runIt = run.SCALEUP;
 		while(!isFinished) {
 			update();
 			
 
-			if(Timer.getMatchTime() < 1) {
+			if(Timer.getFPGATimestamp() - starttime > 14) {
 				isFinished = true;
 			}
 		}

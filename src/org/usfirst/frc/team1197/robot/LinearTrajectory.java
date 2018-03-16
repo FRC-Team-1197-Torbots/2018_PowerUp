@@ -77,14 +77,14 @@ public class LinearTrajectory {
 		return isFinished;
 	}
 	
-	public void run() {
+	public void run(double starttime) {
 		isFinished = false;
 		runIt = run.ACCELERATE;
 		lastDistance = drive.getPosition();
 		startDistance = drive.getPosition();
 		angleLastError = 0;
 		while(!isFinished) {
-			if(Timer.getMatchTime() < 1) {
+			if(Timer.getFPGATimestamp() - starttime > 14) {
 				drive.setMotorSpeeds(0, 0);
 				break;
 			}

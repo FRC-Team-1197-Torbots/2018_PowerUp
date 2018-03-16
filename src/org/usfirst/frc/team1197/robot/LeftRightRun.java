@@ -13,6 +13,7 @@ public class LeftRightRun {
 	private long currentTime;
 	private long endTime;
 	private final long revTime = 1400;
+	private double starttime;
 	
 	public void switchLeft() {
 		switchLeft = true;
@@ -56,14 +57,14 @@ public class LeftRightRun {
 			break;
 		case MOVE1:
 			if(shooArm.switchIsPID() && shooArm.inSwitch()) {
-				Move1.run();
+				Move1.run(starttime);
 				isFinished = true;
 				runIt = run.IDLE;
 				break;
 			}
 		case Move1R:
 			if(shooArm.switchIsPID() && shooArm.inSwitch()) {
-				Move1L.run();
+				Move1L.run(starttime);
 				runIt = run.Move2R;
 			}
 			break;
@@ -71,13 +72,13 @@ public class LeftRightRun {
 			if(Move1.isDone()) {
 				shooArm.pressX();
 				shooArm.switchShoot();
-				Move2L.run();
+				Move2L.run(starttime);
 				runIt = run.Move3R;
 			}
 			break;
 		case Move3R:
 			if(Move2L.isDone()) {
-				Move3L.run();
+				Move3L.run(starttime);
 			}
 			break;
 		case FIRE:
@@ -96,14 +97,14 @@ public class LeftRightRun {
 	}
 	
 	
-	public void run() {
-		
+	public void run(double starttime) {
+		this.starttime = starttime;
 		runIt = run.SWITCHUP;
 		while(!isFinished) {
 			update();
 			
 
-			if(Timer.getMatchTime() < 1) {
+			if(Timer.getFPGATimestamp() - starttime > 14) {
 				isFinished = true;
 			}
 		}

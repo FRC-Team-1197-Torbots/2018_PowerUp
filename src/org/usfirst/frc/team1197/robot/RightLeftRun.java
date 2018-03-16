@@ -8,6 +8,7 @@ public class RightLeftRun {
 	private PivotTrajectory Move2R;
 	private LinearTrajectory Move3R;
 	private TorBantorShooarm shooArm;
+	private double starttime;
 	private boolean isFinished = false;
 	private boolean switchRight = false;
 	private long currentTime;
@@ -56,14 +57,14 @@ public class RightLeftRun {
 			break;
 		case MOVE1:
 			if(shooArm.switchIsPID() && shooArm.inSwitch()) {
-				Move1.run();
+				Move1.run(starttime);
 				isFinished = true;
 				runIt = run.IDLE;
 				break;
 			}
 		case Move1R:
 			if(shooArm.switchIsPID() && shooArm.inSwitch()) {
-				Move1R.run();
+				Move1R.run(starttime);
 				runIt = run.Move2R;
 			}
 			break;
@@ -71,13 +72,13 @@ public class RightLeftRun {
 			if(Move1.isDone()) {
 				shooArm.pressX();
 				shooArm.switchShoot();
-				Move2R.run();
+				Move2R.run(starttime);
 				runIt = run.Move3R;
 			}
 			break;
 		case Move3R:
 			if(Move2R.isDone()) {
-				Move3R.run();
+				Move3R.run(starttime);
 			}
 			break;
 		case FIRE:
@@ -96,14 +97,14 @@ public class RightLeftRun {
 	}
 	
 	
-	public void run() {
-		
+	public void run(double starttime) {
+		this.starttime = starttime;
 		runIt = run.SWITCHUP;
 		while(!isFinished) {
 			update();
 			
 
-			if(Timer.getMatchTime() < 1) {
+			if(Timer.getFPGATimestamp() - starttime > 14) {
 				isFinished = true;
 			}
 		}

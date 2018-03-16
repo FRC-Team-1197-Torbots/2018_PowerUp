@@ -34,6 +34,7 @@ public class CenterLeftRun {
 	private boolean isFinished = false;
 	private boolean isScaleLeft = false;
 	private DriveHardware drive;
+	private double starttime;
 	
 	public void scaleLeft() {
 		isScaleLeft = true;
@@ -100,25 +101,25 @@ public class CenterLeftRun {
 			break;
 		case MOVE1:
 			if(shooArm.switchIsPID() && shooArm.inSwitch()) {
-				Move1.run();
+				Move1.run(starttime);
 				runIt = run.MOVE2;
 			}
 			break;
 		case MOVE2:
 			if(Move1.isDone()) {
-				Move2.run();
+				Move2.run(starttime);
 				runIt = run.MOVE3;
 			}
 			break;
 		case MOVE3:
 			if(Move2.isDone()) {
-				Move3.run();
+				Move3.run(starttime);
 				runIt = run.MOVE4;
 			}
 			break;
 		case MOVE4:
 			if(Move3.isDone()) {
-				Move4.run();
+				Move4.run(starttime);
 				runIt = run.REVUP;
 			}
 			break;
@@ -129,7 +130,7 @@ public class CenterLeftRun {
 			}
 			break;
 		case MOVE5:
-			Move5.run();
+			Move5.run(starttime);
 			runIt = run.FIRE;
 			break;
 		case FIRE:
@@ -142,54 +143,56 @@ public class CenterLeftRun {
 		case REVDOWN:
 			if(currentTime > endTime) {
 				shooArm.releaseLeftTrigger();
-				runIt = run.MOVE6;
+				isFinished = true;
+				runIt = run.IDLE;
+//				runIt = run.MOVE6;
 			}
 			break;
 		case MOVE6:
-			Move6.run();
+			Move6.run(starttime);
 			runIt = run.MOVE7;
 			break;
 		case MOVE7:
 			if(Move6.isDone()) {
 				shooArm.pressX();
-				Move7.run();
+				Move7.run(starttime);
 				runIt = run.MOVE8;
 			}
 			break;
 		case MOVE8:
 			if(Move7.isDone()) {
-				Move8.run();
+				Move8.run(starttime);
 				runIt = run.MOVE9;
 			}
 			break;
 		case MOVE9:
 			if(Move8.isDone()) {
-				Move9.run();
+				Move9.run(starttime);
 				runIt = run.MOVE10;
 			}
 			break;
 		case MOVE10:
 			if(Move9.isDone()) {
-				Move10.run();
+				Move10.run(starttime);
 				runIt = run.MOVE11;
 			}
 			break;
 		case MOVE11:
 			if(Move10.isDone()) {
-				Move11.run();
+				Move11.run(starttime);
 				runIt = run.MOVE12;
 			}
 			break;
 		case MOVE12:
 			if(Move11.isDone()) {
-				Move12.run();
+				Move12.run(starttime);
 				runIt = run.MOVE13;
 			}
 			break;
 		case MOVE13:
 			if(Move12.isDone()) {
 				shooArm.pressA();
-				Move13.run();
+				Move13.run(starttime);
 				runIt = run.GOFORWARD;
 			}
 			break;
@@ -218,18 +221,18 @@ public class CenterLeftRun {
 			}
 			break;
 		case MOVE1L:
-			Move1L.run();
+			Move1L.run(starttime);
 			runIt = run.MOVE2L;
 			break;
 		case MOVE2L:
 			if(Move1L.isDone()) {
-				Move2L.run();
+				Move2L.run(starttime);
 				runIt = run.MOVE3L;
 			}
 			break;
 		case MOVE3L:
 			if(Move2L.isDone()) {
-				Move3L.run();
+				Move3L.run(starttime);
 				runIt = run.MOVE4L;
 			}
 			break;
@@ -237,13 +240,13 @@ public class CenterLeftRun {
 			if(Move3L.isDone()) {
 				shooArm.pressY();
 				shooArm.pressLeftTrigger();
-				Move4L.run();
+				Move4L.run(starttime);
 				runIt = run.MOVE5L;
 			}
 			break;
 		case MOVE5L:
 			if(Move4L.isDone()) {
-				Move5L.run();
+				Move5L.run(starttime);
 				runIt = run.FINISHL;
 			}
 			break;
@@ -258,18 +261,18 @@ public class CenterLeftRun {
 			
 			
 		case MOVE1R:
-			Move1R.run();
+			Move1R.run(starttime);
 			runIt = run.MOVE2R;
 			break;
 		case MOVE2R:
 			if(Move1R.isDone()) {
-				Move2R.run();
+				Move2R.run(starttime);
 				runIt = run.MOVE3R;
 			}
 			break;
 		case MOVE3R:
 			if(Move2R.isDone()) {
-				Move3R.run();
+				Move3R.run(starttime);
 				runIt = run.MOVE4R;
 			}
 			break;
@@ -277,13 +280,13 @@ public class CenterLeftRun {
 			if(Move3R.isDone()) {
 				shooArm.pressY();
 				shooArm.pressLeftTrigger();
-				Move4R.run();
+				Move4R.run(starttime);
 				runIt = run.MOVE5R;
 			}
 			break;
 		case MOVE5R:
 			if(Move4R.isDone()) {
-				Move5R.run();
+				Move5R.run(starttime);
 				runIt = run.FINISHR;
 			}
 			break;
@@ -314,13 +317,14 @@ public class CenterLeftRun {
 	}
 	
 	
-	public void run() {
+	public void run(double starttime) {
+		this.starttime = starttime;
 		runIt = run.SWITCHUP;
 		while(!isFinished) {
 			update();
 			
 
-			if(Timer.getMatchTime() < 1) {
+			if(Timer.getFPGATimestamp() - starttime > 14) {
 				isFinished = true;
 			}
 		}

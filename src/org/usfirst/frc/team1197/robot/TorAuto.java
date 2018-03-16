@@ -2,6 +2,7 @@ package org.usfirst.frc.team1197.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TorAuto {
@@ -14,6 +15,7 @@ public class TorAuto {
 	private Joystick autobox;
 	private String gameData;
 	private DriveHardware drive;
+	private double starttime;
 	
 	// DriveHardware drive, double distance, double accelerationFraction, 
 	// long accelerateTime (in milliseconds)
@@ -31,7 +33,7 @@ public class TorAuto {
 	}
 	
 	public void run() {
-		
+		starttime = Timer.getFPGATimestamp();
 		drive.shiftToLowGear();
 		gameData = DriverStation.getInstance().getGameSpecificMessage(); // Obtaining the switch & scale colors from the FMS
 		SmartDashboard.putString("Game Data", gameData);
@@ -41,14 +43,14 @@ public class TorAuto {
 				if(gameData.charAt(0) == 'L') {
 					LeftLeftRun.switchLeft();
 				}
-				LeftLeftRun.run();
+				LeftLeftRun.run(starttime);
 			} 
 			else { // Left Right
 				SmartDashboard.putString("AUTO", "Left Right");
 				if(gameData.charAt(0) == 'L') {
 					LeftRightRun.switchLeft();
 				}
-				LeftRightRun.run();
+				LeftRightRun.run(starttime);
 			}
 		} 
 		else if(autobox.getRawButton(2)) { // Right trajectories
@@ -57,14 +59,14 @@ public class TorAuto {
 				if(gameData.charAt(0) == 'R') {
 					RightRightRun.switchRight();
 				}
-				RightRightRun.run();
+				RightRightRun.run(starttime);
 			} 
 			else { // Right Left
 				SmartDashboard.putString("AUTO", "Right Left");
 				if(gameData.charAt(0) == 'R') {
 					RightLeftRun.switchRight();
 				}
-				RightLeftRun.run();
+				RightLeftRun.run(starttime);
 			}
 		} 
 		else { // Center trajectories
@@ -73,14 +75,14 @@ public class TorAuto {
 				if(gameData.charAt(1) == 'L') {
 					CenterLeftRun.scaleLeft();
 				}
-				CenterLeftRun.run();
+				CenterLeftRun.run(starttime);
 			} 
 			else { // Center Right
 				SmartDashboard.putString("AUTO", "Center Right");
 				if(gameData.charAt(1) == 'R') {
 					CenterRightRun.scaleRight();
 				}
-				CenterRightRun.run();
+				CenterRightRun.run(starttime);
 			}
 		}
 	}	

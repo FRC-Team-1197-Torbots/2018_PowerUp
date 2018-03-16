@@ -15,11 +15,11 @@ public class PivotTrajectory {
 	
 	private double startAngle;
 	
-	private final double accelerateSpeed = 0.45;
-	private final double decelerateAngle = 31 * (Math.PI / 180.0);
+	private final double accelerateSpeed = 0.225;
+	private final double decelerateAngle = 30 * (Math.PI / 180.0);
 	
 	private final double rkP = .025 * (180 / Math.PI);//PD For rotation
-	private final double rkD = 0.001 * (180 / Math.PI);
+	private final double rkD = 0.000005 * (180 / Math.PI);
 
 	private int lor = 1;
 	
@@ -60,13 +60,14 @@ public class PivotTrajectory {
 		return isFinished;
 	}
 	
-	public void run() {
+	public void run(double starttime) {
 		isFinished = false;
 		runIt = run.ACCELERATE;
 		startAngle = drive.getHeading();
 		lasttime = System.currentTimeMillis();
 		while(!isFinished) {
-			if(Timer.getMatchTime() < 1) {
+			if(Timer.getFPGATimestamp() - starttime > 14) {
+				drive.setMotorSpeeds(0, 0);
 				break;
 			}
 			
@@ -109,7 +110,9 @@ public class PivotTrajectory {
 				
 				if((Math.abs(angleError) <= (0.25 * (Math.PI / 180.0))
 						&& Math.abs(currentVelocity) < 0.5) || 
-						(currentTime - lasttime > 500)) {
+						(currentTime - lasttime > 1000)) {
+//				if((Math.abs(angleError) <= (0.25 * (Math.PI / 180.0))
+//						&& Math.abs(currentVelocity) < 0.5)) {
 					drive.setMotorSpeeds(0, 0);
 					isFinished = true;
 					runIt = run.IDLE;

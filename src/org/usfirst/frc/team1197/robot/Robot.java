@@ -30,7 +30,9 @@ public class Robot extends SampleRobot {
 	private AnalogPotentiometer fourtwenty;
 	private DriveHardware hardware;
 	private TorAuto TorAuto;
+	private PivotTrajectory Test;
 	private boolean test;
+	private boolean autoTest;
 	
 	/*----------------------------------------------------------------------
 	*  Tunable variables for the hold position of the arm
@@ -49,7 +51,6 @@ public class Robot extends SampleRobot {
     	CameraServer server = CameraServer.getInstance();
     	server.startAutomaticCapture("TorCam", 0);
     	server.putVideo("BWENAN OPEN YOUR EYES", 640, 480);
-    	
     	hardware = new DriveHardware();
     	
     	player1 = new Joystick(0); // Player 1 controller (Controls the drive)
@@ -73,6 +74,7 @@ public class Robot extends SampleRobot {
     			holdAngle, Pusher); // TorBantorShooarm object used to enable the arm control + intake/shoot control of the robot
     	
     	TorAuto = new TorAuto(hardware, autoBox, shooArm);
+    	Test = new PivotTrajectory(hardware, -90, shooArm);
     }
     
     public void robotInit() {
@@ -80,7 +82,14 @@ public class Robot extends SampleRobot {
     }
 
     public void autonomous() {
-    	TorAuto.run();
+    	autoTest = true;
+    	if(autoTest ) {
+        	Test.run(Timer.getFPGATimestamp());
+    		
+    	} else {
+        	TorAuto.run();
+    		
+    	}
     }
 
     public void operatorControl() {

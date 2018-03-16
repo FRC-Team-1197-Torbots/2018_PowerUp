@@ -16,6 +16,7 @@ public class LeftLeftRun {
 	private long revTime = 1400;
 	private boolean isFinished = false;
 	private boolean isLeft = false;
+	private double starttime;
 	
 	public void switchLeft() {
 		isLeft = true;
@@ -62,14 +63,14 @@ public class LeftLeftRun {
 			break;
 		case MOVE1:
 			if(shooArm.scaleIsPID() && shooArm.inScale()) {
-				Move1.run();
+				Move1.run(starttime);
 				runIt = run.MOVE2;
 			}
 			break;
 		case MOVE2:
 			if(Move1.isDone()) {
 				shooArm.pressLeftTrigger();
-				Move2.run();
+				Move2.run(starttime);
 				runIt = run.FIRE;
 			}
 		case FIRE:
@@ -101,7 +102,7 @@ public class LeftLeftRun {
 			break;
 		case MOVE3:
 			if(shooArm.isHold()) {
-				Move3.run();
+				Move3.run(starttime);
 				runIt = run.INTAKE;
 			}
 			break;
@@ -115,7 +116,7 @@ public class LeftLeftRun {
 		case MOVE4:
 			if(shooArm.isIntake()) {
 				Move4.setSpeed(.4);
-				Move4.run();
+				Move4.run(starttime);
 				runIt = run.SWITCHFIRE1;
 			}
 			break;
@@ -131,7 +132,7 @@ public class LeftLeftRun {
 			break;
 		case SWITCHFIRE2:
 			if(shooArm.switchIsPID() && shooArm.inSwitch()) {
-				Move5.run();
+				Move5.run(starttime);
 				runIt = run.SWITCHFIRE3;
 			}
 			break;
@@ -151,7 +152,7 @@ public class LeftLeftRun {
 			break;
 		case MOVE3R:			
 			if(shooArm.isHold()) {
-				Move3.run();
+				Move3.run(starttime);
 				runIt = run.INTAKER;
 			}
 			break;
@@ -165,13 +166,13 @@ public class LeftLeftRun {
 		case MOVE4R:
 			if(shooArm.isIntake()) {
 				Move4.setSpeed(.4);
-				Move4.run();
+				Move4.run(starttime);
 				runIt = run.MOVE5R;
 			}
 			break;
 		case MOVE5R:
 			if(Move4.isDone() && shooArm.inHold()) {
-				Move5L.run();
+				Move5L.run(starttime);
 				shooArm.setAutoIntake(.6);
 				shooArm.pressY();
 				shooArm.scaleShoot();
@@ -182,7 +183,7 @@ public class LeftLeftRun {
 			break;
 		case MOVE6R:
 			if(Move5.isDone()) {
-				Move6L.run();
+				Move6L.run(starttime);
 				runIt = run.FIRER;
 			}
 			break;
@@ -204,14 +205,14 @@ public class LeftLeftRun {
 	}
 	
 	
-	public void run() {
-		
+	public void run(double starttime) {
+		this.starttime = starttime;
 		runIt = run.SCALEUP;
 		while(!isFinished) {
 			update();
 			
 
-			if(Timer.getMatchTime() < 1) {
+			if(Timer.getFPGATimestamp() - starttime > 14) {
 				isFinished = true;
 			}
 		}
