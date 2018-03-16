@@ -17,9 +17,13 @@ public class DriveHardware {
 	private final TalonSRX leftSlave1;
 	private final TalonSRX leftSlave2;
 	
+	private final int rightEncoderFlipped = -1;
+	private final int leftEncoderFlipped = -1;//change from 1 to -1 to flip
+//	the values of the encoder
+	
 	private final Solenoid solenoid;
-//	private final double encoderTicksPerMeter = 999.84825; // (units: ticks per meter)
-	private final double encoderTicksPerMeter = 1037.5; // (units: ticks per meter)
+	private final double encoderTicksPerMeter = 1035.6; // (units: ticks per meter)
+//	private final double encoderTicksPerMeter = 1037.5; // (units: ticks per meter)
 	private final double approximateSensorSpeed = 924; // measured maximum (units: RPM)
 	private final double quadEncNativeUnits = 512.0; // (units: ticks per revolution)
 	
@@ -86,11 +90,11 @@ public class DriveHardware {
 	}
 	
 	public double getRightEncoder() {
-		return rightMaster.getSelectedSensorPosition(0);
+		return (rightMaster.getSelectedSensorPosition(0) * rightEncoderFlipped);
 	}
 	
 	public double getLeftEncoder() {
-		return leftMaster.getSelectedSensorPosition(0);
+		return (leftMaster.getSelectedSensorPosition(0) * leftEncoderFlipped);
 	}
 
 	public void setVelocity(double leftSpeed, double rightSpeed) {
@@ -115,7 +119,7 @@ public class DriveHardware {
 
 	// Getting the position from both encoders in meters
 	public double getPosition() {
-		return (rightMaster.getSelectedSensorPosition(0) + leftMaster.getSelectedSensorPosition(0)) * 0.5 / encoderTicksPerMeter; // [meters]
+		return ((rightMaster.getSelectedSensorPosition(0) * rightEncoderFlipped) + (leftMaster.getSelectedSensorPosition(0) * leftEncoderFlipped)) * 0.5 / encoderTicksPerMeter; // [meters]
 	}
 
 	// Getting the angle in radians from the spartan board
@@ -137,12 +141,12 @@ public class DriveHardware {
 	
 	// Method to shift the drive to low gear
 	public void shiftToLowGear() {
-		solenoid.set(true);
+		solenoid.set(false);
 	}
 	
 	// Method to shift the drive to high gear
 	public void shiftToHighGear() {
-		solenoid.set(false);
+		solenoid.set(true);
 	}
 	
 	// Method to initialize 

@@ -1,5 +1,7 @@
 package org.usfirst.frc.team1197.robot;
 
+import edu.wpi.first.wpilibj.Timer;
+
 public class CenterRightRun {
 	private LinearTrajectory Move1;
 	private PivotTrajectory Move2;
@@ -313,9 +315,15 @@ public class CenterRightRun {
 	
 	
 	public void run() {
+		
 		runIt = run.SWITCHUP;
 		while(!isFinished) {
 			update();
+			
+			if(Timer.getMatchTime() < 1) {
+				isFinished = true;
+			}
+			
 		}
 	}
 }

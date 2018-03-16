@@ -121,7 +121,7 @@ public class TorBantorShooarm {
 	private double scaleMaxSpeed = .9;
 	private double scalePush = 0.23;
 	private double scaleCushion = -0.02;
-	private double scaleShootPower = .9;
+	private double scaleShootPower = 1.0;
 	
 	// Shooter & Intake Variables
 	private double shootPower = 0.2;//the power it shoots out at
@@ -175,7 +175,7 @@ public class TorBantorShooarm {
 		this.Pusher = Pusher;
 		this.breakbeam = breakbeam;
 		this.fourtwenty = fourtwenty;
-		startAngle = 211;//MAKE THIS WHEN THE ARM IS FLAT
+		startAngle = 49.71;//MAKE THIS WHEN THE ARM IS FLAT
 		this.scaleAngle = scaleAngle;
 		this.switchAngle = switchAngle;
 		this.degreeTolerance = degreeTolerance;
@@ -328,6 +328,7 @@ public class TorBantorShooarm {
 			}
 			break;
 		case POS1:
+			shootPower = switchShootPower;
 			if(((fourtwenty.get() - startAngle) * potSwitch) > switchAngle) {
 				switchDo1 = switchDo.PID;
 			}
@@ -430,6 +431,7 @@ public class TorBantorShooarm {
 			}
 			break;
 		case POS1:
+			shootPower = scaleShootPower;
 			if(((fourtwenty.get() - startAngle) * potSwitch) > scaleAngle) {
 				scaleDo1 = scaleDo.PID;
 			}
@@ -579,7 +581,7 @@ public class TorBantorShooarm {
 			}
 			if(((currentTime >= endTime) && (((player2.getRawButton(1)) || 
 			((Math.abs(shootakeTalon1.getOutputCurrent()) > threshold) ||
-			(Math.abs(shootakeTalon2.getOutputCurrent()) > threshold))))) || !breakbeam.get()) {
+			(Math.abs(shootakeTalon2.getOutputCurrent()) > threshold))))) || breakbeam.get()) {
 				shootakeTalon1.set(ControlMode.PercentOutput, 0);
 				shootakeTalon2.set(ControlMode.PercentOutput, 0);
 				lastTime = currentTime;
@@ -1031,6 +1033,6 @@ public class TorBantorShooarm {
 	}
 	
 	public boolean isInside() {
-		return !breakbeam.get();
+		return breakbeam.get();
 	}
 }

@@ -1,5 +1,7 @@
 package org.usfirst.frc.team1197.robot;
 
+import edu.wpi.first.wpilibj.Timer;
+
 public class RightRightRun {
 	private LinearTrajectory Move1;
 	private PivotTrajectory Move2;
@@ -202,9 +204,15 @@ public class RightRightRun {
 	
 	
 	public void run() {
+		
 		runIt = run.SCALEUP;
 		while(!isFinished) {
 			update();
+			
+
+			if(Timer.getMatchTime() < 1) {
+				isFinished = true;
+			}
 		}
 	}
 }

@@ -1,5 +1,7 @@
 package org.usfirst.frc.team1197.robot;
 
+import edu.wpi.first.wpilibj.Timer;
+
 public class PivotTrajectory {
 	private DriveHardware drive;
 	private double currentAngle;
@@ -7,19 +9,17 @@ public class PivotTrajectory {
 	private boolean isFinished = false;
 	private double accelerateAngle;
 	private double thisAngle;
-	private long startTime;
+	private long lasttime;
 	private long currentTime;
 	private final double kF = 0.005;
 	
 	private double startAngle;
 	
-	private final double accelerateSpeed = 0.465;
-	private final double decelerateAngle = 30 * (Math.PI / 180.0);
-
-	private final double halfTrackWidth = .352425;//in meters
+	private final double accelerateSpeed = 0.45;
+	private final double decelerateAngle = 31 * (Math.PI / 180.0);
 	
-	private final double rkP = 1.5;//PD For rotation
-	private final double rkD = 0.01;
+	private final double rkP = .02 * (180 / Math.PI);//PD For rotation
+	private final double rkD = 0.001 * (180 / Math.PI);
 
 	private int lor = 1;
 	
@@ -64,8 +64,12 @@ public class PivotTrajectory {
 		isFinished = false;
 		runIt = run.ACCELERATE;
 		startAngle = drive.getHeading();
-		startTime = System.currentTimeMillis();
+		lasttime = System.currentTimeMillis();
 		while(!isFinished) {
+			if(Timer.getMatchTime() < 1) {
+				break;
+			}
+			
 			shooArm.TorBantorArmAndShooterUpdate();
 			currentAngle = drive.getHeading();
 			currentTime = System.currentTimeMillis();
@@ -75,7 +79,7 @@ public class PivotTrajectory {
 			case ACCELERATE:
 				drive.setMotorSpeeds(-accelerateSpeed * lor, accelerateSpeed * lor);
 				if(((currentAngle - startAngle) * lor) >= accelerateAngle) {
-					startTime = currentTime;
+					lasttime = currentTime;
 					y1 = drive.getHeading();
 					lastVelTime = currentTime;
 					angleLastError = ((currentAngle - startAngle) * lor) - thisAngle;
@@ -97,14 +101,15 @@ public class PivotTrajectory {
 				speed = omegaP + omegaD;
 
 				speed *= lor;
-				speed *= halfTrackWidth;
 				
-				drive.setVelocity(-speed, speed);
+				drive.setMotorSpeeds(speed, -speed);
+//				drive.setVelocity(-speed, speed);
 				
 				angleLastError = angleError;
+				
 				if((Math.abs(angleError) <= (0.25 * (Math.PI / 180.0))
-						&& currentVelocity < 0.5) || 
-						(currentTime - startTime > 400)) {
+						&& Math.abs(currentVelocity) < 0.5) || 
+						(currentTime - lasttime > 500)) {
 					drive.setMotorSpeeds(0, 0);
 					isFinished = true;
 					runIt = run.IDLE;

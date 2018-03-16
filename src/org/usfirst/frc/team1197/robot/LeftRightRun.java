@@ -1,5 +1,7 @@
 package org.usfirst.frc.team1197.robot;
 
+import edu.wpi.first.wpilibj.Timer;
+
 public class LeftRightRun {
 	private LinearTrajectory Move1;
 	private LinearTrajectory Move1L;
@@ -95,9 +97,15 @@ public class LeftRightRun {
 	
 	
 	public void run() {
+		
 		runIt = run.SWITCHUP;
 		while(!isFinished) {
 			update();
+			
+
+			if(Timer.getMatchTime() < 1) {
+				isFinished = true;
+			}
 		}
 	}
 }

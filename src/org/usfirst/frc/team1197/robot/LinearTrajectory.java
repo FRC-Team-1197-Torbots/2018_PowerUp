@@ -1,5 +1,7 @@
 package org.usfirst.frc.team1197.robot;
 
+import edu.wpi.first.wpilibj.Timer;
+
 public class LinearTrajectory {
 	private DriveHardware drive;
 	private double thisdistance;
@@ -78,11 +80,15 @@ public class LinearTrajectory {
 	public void run() {
 		isFinished = false;
 		runIt = run.ACCELERATE;
-		firstAngle = drive.getHeading();
 		lastDistance = drive.getPosition();
 		startDistance = drive.getPosition();
 		angleLastError = 0;
 		while(!isFinished) {
+			if(Timer.getMatchTime() < 1) {
+				drive.setMotorSpeeds(0, 0);
+				break;
+			}
+			
 			shooArm.TorBantorArmAndShooterUpdate();
 			currentAngle = drive.getHeading();
 			currentDistance = drive.getPosition();
@@ -139,9 +145,7 @@ public class LinearTrajectory {
 				angleLastError = angleError;
 				lastError = error;
 				
-				if(((Math.abs(error) <= 0.005 //0.2 meters is much more accurate than before
-						&& Math.abs(angleError) <= 0.5 * (Math.PI / 180.0))
-						&& currentVelocity < 0.005) || (currentTime - lastTime > 250)) {//4 degrees is not too much
+				if(((Math.abs(error) <= 0.005 && Math.abs(angleError) <= 0.5 * (Math.PI / 180.0)) && currentVelocity < 0.005) || (currentTime - lastTime > 250)) {//4 degrees is not too much
 					drive.setMotorSpeeds(0, 0);
 					isFinished = true;
 					runIt = run.IDLE;

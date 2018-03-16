@@ -30,7 +30,7 @@ public class Robot extends SampleRobot {
 	private AnalogPotentiometer fourtwenty;
 	private DriveHardware hardware;
 	private TorAuto TorAuto;
-	private final boolean test = true;
+	private boolean test;
 	
 	/*----------------------------------------------------------------------
 	*  Tunable variables for the hold position of the arm
@@ -38,7 +38,7 @@ public class Robot extends SampleRobot {
 	private double kF = .005;
 	private double kP = 0.02;
 	private double kD = 0.000075;
-	private double scaleAngle = 70;
+	private double scaleAngle = 85;
 	private double switchAngle = 50;
 	private double degreeTolerance = 8;//the tolerance for the normal x + sin x up to get within the switch/scale angle before PID controls it
 	private double holdAngle = 10;
@@ -85,17 +85,24 @@ public class Robot extends SampleRobot {
 
     public void operatorControl() {
     	shooArm.setAutoIntake(0.6);
+    	test = false;
     	while(isEnabled()){
     		if(test) {
     			SmartDashboard.putNumber("POT VALUE:", (fourtwenty.get()));
     			SmartDashboard.putNumber("RIGHT ENCODER:", hardware.getRightEncoder());
     			SmartDashboard.putNumber("LEFT ENCODER:", hardware.getLeftEncoder());
     			SmartDashboard.putBoolean("BREAKBEAM:", breakBeam.get());
+    			SmartDashboard.putNumber("GET POSITION", hardware.getPosition());
     			
     		} else {
         		drive.driving(getLeftY(), getLeftX(), getRightX(), getShiftButton(), getRightBumper(), 
         				getButtonA(), getButtonB(), getButtonX(), getButtonY()); // Enabling the drive ofthe robot
         		shooArm.TorBantorArmAndShooterUpdate(); // Enabling arm control
+        		SmartDashboard.putNumber("POT VALUE:", (fourtwenty.get()));
+    			SmartDashboard.putNumber("RIGHT ENCODER:", hardware.getRightEncoder());
+    			SmartDashboard.putNumber("LEFT ENCODER:", hardware.getLeftEncoder());
+    			SmartDashboard.putBoolean("BREAKBEAM:", breakBeam.get());
+    			SmartDashboard.putNumber("GET POSITION", hardware.getPosition());
     			
     		}
     	}

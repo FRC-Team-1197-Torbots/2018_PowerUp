@@ -31,6 +31,7 @@ public class TorAuto {
 	}
 	
 	public void run() {
+		
 		drive.shiftToLowGear();
 		gameData = DriverStation.getInstance().getGameSpecificMessage(); // Obtaining the switch & scale colors from the FMS
 		SmartDashboard.putString("Game Data", gameData);
