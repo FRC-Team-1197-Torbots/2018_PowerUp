@@ -19,7 +19,7 @@ public class PivotTrajectory {
 	private final double decelerateAngle = 30 * (Math.PI / 180.0);
 	
 	private final double rkP = .025 * (180 / Math.PI);//PD For rotation
-	private final double rkD = 0.000005 * (180 / Math.PI);
+	private final double rkD = 0.000000 * (180 / Math.PI);//0.000005
 
 	private int lor = 1;
 	
@@ -79,7 +79,7 @@ public class PivotTrajectory {
 				break;
 			case ACCELERATE:
 				drive.setMotorSpeeds(-accelerateSpeed * lor, accelerateSpeed * lor);
-				if(((currentAngle - startAngle) * lor) >= accelerateAngle) {
+				if((((currentAngle - startAngle) * lor) >= accelerateAngle) || (currentTime - lasttime > 2000)) {
 					lasttime = currentTime;
 					y1 = drive.getHeading();
 					lastVelTime = currentTime;
@@ -110,7 +110,7 @@ public class PivotTrajectory {
 				
 				if((Math.abs(angleError) <= (0.25 * (Math.PI / 180.0))
 						&& Math.abs(currentVelocity) < 0.5) || 
-						(currentTime - lasttime > 1000)) {
+						(currentTime - lasttime > 1)) {
 //				if((Math.abs(angleError) <= (0.25 * (Math.PI / 180.0))
 //						&& Math.abs(currentVelocity) < 0.5)) {
 					drive.setMotorSpeeds(0, 0);

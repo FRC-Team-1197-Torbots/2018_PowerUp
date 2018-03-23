@@ -1,6 +1,7 @@
 package org.usfirst.frc.team1197.robot;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class CenterLeftRun {
 	private LinearTrajectory Move1;
@@ -108,12 +109,14 @@ public class CenterLeftRun {
 		case MOVE2:
 			if(Move1.isDone()) {
 				Move2.run(starttime);
+				SmartDashboard.putBoolean("move 3 going:", false);
 				runIt = run.MOVE3;
 			}
 			break;
 		case MOVE3:
 			if(Move2.isDone()) {
 				Move3.run(starttime);
+				SmartDashboard.putBoolean("move 3 going:", true);
 				runIt = run.MOVE4;
 			}
 			break;

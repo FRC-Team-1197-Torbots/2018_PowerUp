@@ -113,7 +113,7 @@ public class TorBantorShooarm {
 	private double switchMaxSpeed = 0.9; // the acceleration increment for the switch
 	private double switchPush = 0.17; // the extra speed to push to hit the degreeTolerance from just a proportional distance speed
 	private double switchCushion = 0; // NEGATIVE the extra cushion from a proportional down 
-	private double switchShootPower = 0.32;
+	private double switchShootPower = 0.25;
 
 	// Scale Variables
 	private long scalePos1Time = 450;
@@ -122,6 +122,8 @@ public class TorBantorShooarm {
 	private double scalePush = 0.23;
 	private double scaleCushion = -0.02;
 	private double scaleShootPower = 1.0;
+	private final double scaleHighShootPower = 1.0;
+	private final double scaleLowShootPower = 0.85;
 	
 	// Shooter & Intake Variables
 	private double shootPower = 0.2;//the power it shoots out at
@@ -175,7 +177,7 @@ public class TorBantorShooarm {
 		this.Pusher = Pusher;
 		this.breakbeam = breakbeam;
 		this.fourtwenty = fourtwenty;
-		startAngle = 49.71;//MAKE THIS WHEN THE ARM IS FLAT
+		startAngle = 50.302;//MAKE THIS WHEN THE ARM IS FLAT
 		this.scaleAngle = scaleAngle;
 		this.switchAngle = switchAngle;
 		this.degreeTolerance = degreeTolerance;
@@ -467,6 +469,7 @@ public class TorBantorShooarm {
 				armTalon2.set(ControlMode.PercentOutput, 0);
 				lastError = 0;
 				scaleEnable = true;
+				scaleShootPower = scaleLowShootPower;
 				shootPower = scaleShootPower;
 				scaleDo1 = scaleDo.PID;
 			}
@@ -656,7 +659,7 @@ public class TorBantorShooarm {
 	}
 	
 	public void manualoverride() {
-		if(player2.getRawButton(5)) {
+		if(player2.getRawButton(6)) {
 			isAlreadyTriggered = true;
 			switchEnable = false;
 			scaleEnable = false;
@@ -822,8 +825,15 @@ public class TorBantorShooarm {
 		if(!(intakeIt == intake.MOTORIN)) {
 			if(Math.abs(player2.getRawAxis(2)) > 0.3) {
 				pressingRightTrigger = true;
+				
 				shootakeTalon1.set(ControlMode.PercentOutput, shootPower * ioo);
 				shootakeTalon2.set(ControlMode.PercentOutput, -shootPower * ioo);
+			} else if(player2.getRawButton(5)) {
+				pressingRightTrigger = true;
+				
+				shootakeTalon1.set(ControlMode.PercentOutput, scaleHighShootPower * ioo);
+				shootakeTalon2.set(ControlMode.PercentOutput, -scaleHighShootPower * ioo);
+				
 			} else if(pressingRightTrigger) {
 				shootakeTalon1.set(ControlMode.PercentOutput, 0);
 				shootakeTalon2.set(ControlMode.PercentOutput, 0);
@@ -986,7 +996,7 @@ public class TorBantorShooarm {
 	}
 	
 	public void scaleShoot() {
-		shootPower = switchShootPower;
+		shootPower = scaleHighShootPower;
 	}
 	
 	public boolean inScale() {
@@ -1011,6 +1021,7 @@ public class TorBantorShooarm {
 		shootakeTalon1.set(ControlMode.PercentOutput, 0);
 		shootakeTalon2.set(ControlMode.PercentOutput, 0);
 	}
+	
 	
 	public boolean isHold() {
 		return (Math.abs(((fourtwenty.get() - startAngle) * potSwitch) - holdAngle) <= (degreeTolerance * 0.4));
