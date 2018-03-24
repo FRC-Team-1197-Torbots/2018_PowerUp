@@ -230,42 +230,42 @@ public class TorBantorShooarm {
 
 		// Activate switch if button 'X' is pressed
 		if(!stop && player2.getRawButton(3)
-				&& (switchDo1 == switchDo.IDLE || switchDo1 == switchDo.PID) 
-				&& scaleDo1 == scaleDo.IDLE 
-				&& !player2.getRawButton(5) 
-				&& intakeIt == intake.IDLE 
-				&& shootIt == shoot.IDLE 
-				&& (vault1 == vault.IDLE)){
+				&& !player2.getRawButton(5)){
+			scaleDo1 = scaleDo.IDLE;
 			switchEnable = false;
 			holdContinue = false;
 			holdIt = holder.STOP;
+			intakeIt = intake.IDLE;
+			vault1 = vault.IDLE;
 			holdDown = intakeDown.IDLE;
+			shootIt = shoot.IDLE;
 			switchDo1 = switchDo.POS0;
 		}
 		
 		// Activate scale if button 'Y' is pressed
 		if(!stop && player2.getRawButton(4)
-				&& (scaleDo1 == scaleDo.IDLE || scaleDo1 == scaleDo.PID) 
-				&& (switchDo1 == switchDo.IDLE) 
-				&& !player2.getRawButton(5) 
-				&& intakeIt == intake.IDLE 
-				&& shootIt == shoot.IDLE
-				&& vault1 == vault.IDLE) {
+				&& !player2.getRawButton(5)) {
+			switchDo1 = switchDo.IDLE;
 			scaleEnable = false;
 			holdContinue = false;
 			holdIt = holder.STOP;
+			intakeIt = intake.IDLE;
+			vault1 = vault.IDLE;
 			holdDown = intakeDown.IDLE;
+			shootIt = shoot.IDLE;
 			scaleDo1 = 	scaleDo.POS0;
 		}
 		
 		// Activate intake if button 'A' is pressed
-		if(!stop && player2.getRawButton(1)
-				&& switchDo1 == switchDo.IDLE 
-				&& scaleDo1 == scaleDo.IDLE  
-				&& intakeIt == intake.IDLE 
-				&& shootIt == shoot.IDLE 
-				&& holdIt == holder.PD
-				&& (vault1 == vault.IDLE)) {
+		if(!stop && player2.getRawButton(1)) {
+			scaleEnable = false;
+			holdContinue = false;
+			switchDo1 = switchDo.IDLE;
+			scaleDo1 = scaleDo.IDLE;
+			intakeIt = intake.IDLE;
+			shootIt = shoot.IDLE;
+			holdIt = holder.STOP;
+			vault1 = vault.IDLE;
 			intakeIt = intake.POS0;
 		}
 		
@@ -276,14 +276,15 @@ public class TorBantorShooarm {
 			shootIt = shoot.POS0;
 		}
 
-		if(!stop && player2.getRawButton(2)
-				&& (switchDo1 == switchDo.IDLE)
-				&& (scaleDo1 == scaleDo.IDLE)
-				&& (intakeIt == intake.IDLE)
-				&& (shootIt == shoot.IDLE)
-				&& (holdIt == holder.PD)
-				&& (vault1 == vault.IDLE)
-				) {
+		if(!stop && player2.getRawButton(2)) {
+			scaleEnable = false;
+			holdContinue = false;
+			switchDo1 = switchDo.IDLE;
+			scaleDo1 = scaleDo.IDLE;
+			intakeIt = intake.IDLE;
+			shootIt = shoot.IDLE;
+			holdIt = holder.STOP;
+			intakeIt = intake.POS0;
 			vault1 = vault.START;
 		}
 		}
