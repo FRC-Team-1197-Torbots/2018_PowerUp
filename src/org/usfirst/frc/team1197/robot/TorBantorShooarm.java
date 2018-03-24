@@ -71,7 +71,7 @@ public class TorBantorShooarm {
 	}
 	
 	public static enum intakeDown {
-		IDLE, START, PD;
+		IDLE, START, PD, SWITCHPOS4, SWITCHPOS5, SCALEPOS4, SCALEPOS5;
 		private intakeDown() {}
 	}
 	
@@ -105,7 +105,7 @@ public class TorBantorShooarm {
 	private int uod = 1; // up or down for manual override. Change it from 1 to -1 to change the control on the arm with the right player y
 	private int ioo = -1; // in or out variable. Change this to switch around the outtake and intake when it is up. Change it from 1 to -1 to make it so either shoots out or (not wanted) intakes up there
 	private double manualMax = 0.6; // POSITIVE. The controls on the speeds for the manual override.
-	private double manualMin = -0.2; // HAS TO BE NEGATIVE!
+	private double manualMin = -0.45; // HAS TO BE NEGATIVE!
 	
 	// Switch Variables
 	private long switchPos1Time = 300; // change this to make it go up higher during the switch
@@ -141,6 +141,8 @@ public class TorBantorShooarm {
 //	-1 to control the pot. (pot might be mounted on backwards)
 	
 	private double vaultShootPower = 0.4;
+	private double switchCurrentRatio;
+	private double scaleCurrentRatio;
 	
 	/***********************************/
 
@@ -321,11 +323,15 @@ public class TorBantorShooarm {
 			speed = 0;
 			startTime = System.currentTimeMillis();
 			if(((fourtwenty.get() - startAngle) * potSwitch) > (scaleAngle - degreeTolerance)) {
-				switchDo1 = switchDo.IDLE;
+				switchDo1 = switchDo.PID;
+				//wants to go down from scale to switch
 			} else if(((fourtwenty.get() - startAngle) * potSwitch) > (switchAngle - 2 * degreeTolerance)) {
+				//is at switch and wants to go down
 				endTime = currentTime + switchPos1Time;
 				switchDo1 = switchDo.POS4;
 			} else {
+				//wants to go up to switch
+				switchCurrentRatio = (switchAngle - ((fourtwenty.get() - startAngle) * potSwitch)) / switchAngle;
 				endTime = currentTime + switchPos1Time;
 				switchDo1 = switchDo.POS1;
 			}
@@ -336,6 +342,7 @@ public class TorBantorShooarm {
 				switchDo1 = switchDo.PID;
 			}
 			speed = (x + Math.sin(x) + Math.PI) * switchMaxSpeed / (2 * Math.PI);
+			speed *= switchCurrentRatio;
 			armTalon1.set(ControlMode.PercentOutput, -speed * uod);
 			armTalon2.set(ControlMode.PercentOutput, speed * uod);
 			if(currentTime >= endTime) {
@@ -359,7 +366,7 @@ public class TorBantorShooarm {
 			if(((fourtwenty.get() - startAngle) * potSwitch) > switchAngle || currentTime > endTime) {
 				switchDo1 = switchDo.PID;
 			}
-			speed = (switchMaxSpeed * ((switchAngle - (((fourtwenty.get() - startAngle) * potSwitch))) / lastAngle)) + switchPush;
+			speed = (switchMaxSpeed * switchCurrentRatio * ((switchAngle - (((fourtwenty.get() - startAngle) * potSwitch))) / lastAngle)) + switchPush;
 			armTalon1.set(ControlMode.PercentOutput, -speed * uod);
 			armTalon2.set(ControlMode.PercentOutput, speed * uod);
 			if(Math.abs(((fourtwenty.get() - startAngle) * potSwitch) - switchAngle) <= degreeTolerance) {
@@ -425,10 +432,15 @@ public class TorBantorShooarm {
 			startTime = System.currentTimeMillis();
 			if((((fourtwenty.get() - startAngle) * potSwitch)) > (scaleAngle - (degreeTolerance))) {
 				endTime = currentTime + scalePos1Time;
+				//wants to go down from scale
 				scaleDo1 = scaleDo.POS4;
 			} else if((((fourtwenty.get() - startAngle) * potSwitch)) > (switchAngle - (2 * degreeTolerance))) {
-				scaleDo1 = scaleDo.IDLE;
+				//wants to go from switch to scale
+				scaleCurrentRatio = (scaleAngle - ((fourtwenty.get() - startAngle) * potSwitch)) / scaleAngle;
+				scaleDo1 = scaleDo.POS1;
 			} else {
+				//wants to go up to scale
+				scaleCurrentRatio = (scaleAngle - ((fourtwenty.get() - startAngle) * potSwitch)) / scaleAngle;
 				endTime = currentTime + scalePos1Time;
 				scaleDo1 = scaleDo.POS1;
 			}
@@ -439,6 +451,7 @@ public class TorBantorShooarm {
 				scaleDo1 = scaleDo.PID;
 			}
 			speed = (Math.sin(x) + x + Math.PI) * scaleMaxSpeed / (2 * Math.PI);
+			speed *= scaleCurrentRatio;
 			armTalon1.set(ControlMode.PercentOutput, -speed * uod);
 			armTalon2.set(ControlMode.PercentOutput, speed * uod);
 			if(currentTime >= endTime) {
@@ -462,7 +475,7 @@ public class TorBantorShooarm {
 			if(((fourtwenty.get() - startAngle) * potSwitch) > scaleAngle || currentTime > endTime) {
 				scaleDo1 = scaleDo.PID;
 			}
-			speed = (scaleMaxSpeed * (scaleAngle - (((fourtwenty.get() - startAngle) * potSwitch))) / lastAngle) + scalePush;
+			speed = (scaleMaxSpeed * scaleCurrentRatio * (scaleAngle - (((fourtwenty.get() - startAngle) * potSwitch))) / lastAngle) + scalePush;
 			armTalon1.set(ControlMode.PercentOutput, -speed * uod);
 			armTalon2.set(ControlMode.PercentOutput, speed * uod);
 			if(Math.abs((((fourtwenty.get() - startAngle) * potSwitch)) - scaleAngle) <= degreeTolerance) {
@@ -627,6 +640,9 @@ public class TorBantorShooarm {
 			holdIt = holder.PD;
 			break;
 		case PD:
+			if(scaleDo1 == scaleDo.IDLE && switchDo1 == switchDo.IDLE) {
+				shootPower = vaultShootPower;
+			}
 			if(holdContinue) {
 				HoldPIDGO();
 				holdIt = holder.PD;
@@ -788,14 +804,24 @@ public class TorBantorShooarm {
 			case START:
 				holdLastError = 0;
 				holdIt = holder.STOP;
-				holdDown = intakeDown.PD;
+				startTime = System.currentTimeMillis();
+				if(((fourtwenty.get() - startAngle) * potSwitch) > (scaleAngle - degreeTolerance)) {
+					endTime = currentTime + scalePos1Time;
+					holdDown = intakeDown.SCALEPOS4;
+				} else if(((fourtwenty.get() - startAngle) * potSwitch) > (switchAngle - degreeTolerance)) {
+					endTime = currentTime + switchPos1Time;
+					holdDown = intakeDown.SWITCHPOS4;
+				} else {
+					holdDown = intakeDown.PD;
+				}
+				
 				break;
 			case PD:
-//				if(hittingDown.get()) {
-//					armTalon1.set(ControlMode.PercentOutput, 0);
-//					armTalon2.set(ControlMode.PercentOutput, 0);
-//					holdDown = intakeDown.IDLE;
-//				} else {
+				if(Math.abs(startAngle - fourtwenty.get()) < 1) {
+					armTalon1.set(ControlMode.PercentOutput, 0);
+					armTalon2.set(ControlMode.PercentOutput, 0);
+					holdDown = intakeDown.IDLE;
+				} else {
 					holdError = ((startAngle - fourtwenty.get()) * potSwitch);
 					
 					holdProportional = holdError * holdkP;
@@ -812,8 +838,63 @@ public class TorBantorShooarm {
 					armTalon2.set(ControlMode.PercentOutput, holdVelocity * uod);
 					
 					holdLastError = holdError;
-//				}
+				}
 				
+				break;
+			case SWITCHPOS4:
+				currentTime = System.currentTimeMillis();
+				relativeTime = currentTime - startTime;
+				x = ((relativeTime * 2 * Math.PI) / switchPos1Time) - Math.PI;
+				
+
+				if(((fourtwenty.get() - startAngle) * potSwitch) < holdAngle) {
+					holdDown = intakeDown.PD;
+				}
+				speed = (Math.sin(x) + x + Math.PI) * switchMaxSpeed / (2 * Math.PI);
+				armTalon1.set(ControlMode.PercentOutput, speed * uod);
+				armTalon2.set(ControlMode.PercentOutput, -speed * uod);
+				if(currentTime >= endTime) {
+					endTime = currentTime + switchPos2Time;
+					lastAngle = ((fourtwenty.get() - startAngle) * potSwitch) - holdAngle;
+					holdDown = intakeDown.SWITCHPOS5;
+				}
+				break;
+			case SWITCHPOS5:
+				currentTime = System.currentTimeMillis();
+
+				armTalon1.set(ControlMode.PercentOutput, speed * uod);
+				armTalon2.set(ControlMode.PercentOutput, -speed * uod);
+				
+				if(currentTime > endTime) {
+					holdDown = intakeDown.PD;
+				}
+				break;
+			case SCALEPOS4:
+				currentTime = System.currentTimeMillis();
+				relativeTime = currentTime - startTime;
+				x = ((relativeTime * 2 * Math.PI) / scalePos1Time) - Math.PI;
+				
+				if(((fourtwenty.get() - startAngle) * potSwitch) < holdAngle) {
+					holdDown = intakeDown.PD;
+				}
+				speed = (Math.sin(x) + x + Math.PI) * scaleMaxSpeed / (2 * Math.PI);
+				armTalon1.set(ControlMode.PercentOutput, speed * uod);
+				armTalon2.set(ControlMode.PercentOutput, -speed * uod);
+				if(currentTime >= endTime) {
+					endTime = currentTime + scalePos2Time;
+					lastAngle = ((fourtwenty.get() - startAngle) * potSwitch) - holdAngle;
+					holdDown = intakeDown.SCALEPOS5;
+				}
+				break;
+			case SCALEPOS5:
+				currentTime = System.currentTimeMillis();
+
+				armTalon1.set(ControlMode.PercentOutput, speed * uod);
+				armTalon2.set(ControlMode.PercentOutput, -speed * uod);
+				
+				if(currentTime > endTime) {
+					holdDown = intakeDown.PD;
+				}
 				break;
 		}
 	}
