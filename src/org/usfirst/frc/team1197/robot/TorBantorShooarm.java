@@ -122,8 +122,8 @@ public class TorBantorShooarm {
 	private double scalePush = 0.23;
 	private double scaleCushion = -0.02;
 	private double scaleShootPower = 1.0;
-	private final double scaleHighShootPower = 1.0;
-	private final double scaleLowShootPower = 0.85;
+	private final double scaleHighShootPower = 0.85;
+	private final double scaleLowShootPower = 0.65;
 	
 	// Shooter & Intake Variables
 	private double shootPower = 0.2;//the power it shoots out at
@@ -179,7 +179,7 @@ public class TorBantorShooarm {
 		this.Pusher = Pusher;
 		this.breakbeam = breakbeam;
 		this.fourtwenty = fourtwenty;
-		startAngle = 50.302;//MAKE THIS WHEN THE ARM IS FLAT
+		startAngle = 51.81;//MAKE THIS WHEN THE ARM IS FLAT
 		this.scaleAngle = scaleAngle;
 		this.switchAngle = switchAngle;
 		this.degreeTolerance = degreeTolerance;
@@ -259,14 +259,12 @@ public class TorBantorShooarm {
 		}
 		
 		// Activate intake if button 'A' is pressed
-		if(!stop && player2.getRawButton(1)) {
+		if(!stop && player2.getRawButton(1) && intakeIt == intake.IDLE) {
 			scaleEnable = false;
-			holdContinue = false;
 			switchDo1 = switchDo.IDLE;
 			scaleDo1 = scaleDo.IDLE;
 			intakeIt = intake.IDLE;
 			shootIt = shoot.IDLE;
-			holdIt = holder.STOP;
 			vault1 = vault.IDLE;
 			intakeIt = intake.POS0;
 		}
@@ -320,9 +318,13 @@ public class TorBantorShooarm {
 		case IDLE:
 			break;
 		case POS0:
+			shootakeTalon1.set(ControlMode.PercentOutput, 0);
+			shootakeTalon2.set(ControlMode.PercentOutput, 0);
 			speed = 0;
 			startTime = System.currentTimeMillis();
+			
 			if(((fourtwenty.get() - startAngle) * potSwitch) > (scaleAngle - degreeTolerance)) {
+				switchEnable = true;
 				switchDo1 = switchDo.PID;
 				//wants to go down from scale to switch
 			} else if(((fourtwenty.get() - startAngle) * potSwitch) > (switchAngle - 2 * degreeTolerance)) {
@@ -428,6 +430,8 @@ public class TorBantorShooarm {
 		case IDLE:
 			break;
 		case POS0:
+			shootakeTalon1.set(ControlMode.PercentOutput, 0);
+			shootakeTalon2.set(ControlMode.PercentOutput, 0);
 			speed = 0;
 			startTime = System.currentTimeMillis();
 			if((((fourtwenty.get() - startAngle) * potSwitch)) > (scaleAngle - (degreeTolerance))) {
@@ -567,7 +571,7 @@ public class TorBantorShooarm {
 		case POS0:
 			currentTime = System.currentTimeMillis();
 			endTime = currentTime + 1;
-			if(currentTime - lastTime >= 400) {
+			if(currentTime - lastTime >= 1000) {
 				holdIt = holder.STOP;
 				holdDown = intakeDown.START;
 				intakeIt = intake.START;	
@@ -586,7 +590,7 @@ public class TorBantorShooarm {
 			currentTime = System.currentTimeMillis();
 			Pusher.set(false);
 			if(currentTime >= endTime) {
-				endTime = currentTime + revTime;
+				endTime = currentTime + 500;
 				intakeIt = intake.MOTORIN;
 			}
 			break;
@@ -596,9 +600,7 @@ public class TorBantorShooarm {
 				shootakeTalon1.set(ControlMode.PercentOutput, -intakePower * ioo);
 				shootakeTalon2.set(ControlMode.PercentOutput, intakePower * ioo);
 			}
-			if(((currentTime >= endTime) && (((player2.getRawButton(1)) || 
-			((Math.abs(shootakeTalon1.getOutputCurrent()) > threshold) ||
-			(Math.abs(shootakeTalon2.getOutputCurrent()) > threshold))))) || breakbeam.get()) {
+			if(((currentTime >= endTime) && (player2.getRawButton(1))) || breakbeam.get()) {
 				shootakeTalon1.set(ControlMode.PercentOutput, 0);
 				shootakeTalon2.set(ControlMode.PercentOutput, 0);
 				lastTime = currentTime;
@@ -851,6 +853,9 @@ public class TorBantorShooarm {
 					holdDown = intakeDown.PD;
 				}
 				speed = (Math.sin(x) + x + Math.PI) * switchMaxSpeed / (2 * Math.PI);
+				if(speed < manualMin) {
+					speed = manualMin;
+				}
 				armTalon1.set(ControlMode.PercentOutput, speed * uod);
 				armTalon2.set(ControlMode.PercentOutput, -speed * uod);
 				if(currentTime >= endTime) {
@@ -878,6 +883,9 @@ public class TorBantorShooarm {
 					holdDown = intakeDown.PD;
 				}
 				speed = (Math.sin(x) + x + Math.PI) * scaleMaxSpeed / (2 * Math.PI);
+				if(speed < manualMin) {
+					speed = manualMin;
+				}
 				armTalon1.set(ControlMode.PercentOutput, speed * uod);
 				armTalon2.set(ControlMode.PercentOutput, -speed * uod);
 				if(currentTime >= endTime) {

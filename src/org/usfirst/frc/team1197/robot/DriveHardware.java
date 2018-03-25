@@ -141,12 +141,12 @@ public class DriveHardware {
 	
 	// Method to shift the drive to low gear
 	public void shiftToLowGear() {
-		solenoid.set(false);
+		solenoid.set(true);
 	}
 	
 	// Method to shift the drive to high gear
 	public void shiftToHighGear() {
-		solenoid.set(true);
+		solenoid.set(false);
 	}
 	
 	// Method to initialize 
