@@ -1,7 +1,5 @@
 package org.usfirst.frc.team1197.robot;
 
-import org.usfirst.frc.team1197.robot.CenterLeftRun.run;
-
 import edu.wpi.first.wpilibj.Timer;
 
 public class CenterRightRun {

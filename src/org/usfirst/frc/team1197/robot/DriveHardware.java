@@ -16,7 +16,7 @@ public class DriveHardware {
 	private final TalonSRX leftMaster;
 	private final TalonSRX leftSlave1;
 	private final TalonSRX leftSlave2;
-	
+	//on the real one both are -1
 	private final int rightEncoderFlipped = -1;
 	private final int leftEncoderFlipped = -1;//change from 1 to -1 to flip
 //	the values of the encoder
@@ -57,9 +57,6 @@ public class DriveHardware {
 		rightMaster.config_kP(0, kP, 0);
 		rightMaster.config_kI(0, kI, 0);
 		rightMaster.config_kD(0, kD, 0);
-
-		rightSlave1.follow(rightMaster);
-		rightSlave2.follow(rightMaster);
 
 		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
 		leftMaster.configNominalOutputForward(+0.0f, 0);
@@ -141,12 +138,12 @@ public class DriveHardware {
 	
 	// Method to shift the drive to low gear
 	public void shiftToLowGear() {
-		solenoid.set(true);
+		solenoid.set(false);
 	}
 	
 	// Method to shift the drive to high gear
 	public void shiftToHighGear() {
-		solenoid.set(false);
+		solenoid.set(true);
 	}
 	
 	// Method to initialize 

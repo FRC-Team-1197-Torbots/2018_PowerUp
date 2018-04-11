@@ -17,17 +17,17 @@ public class TorDrive
 			ArcadeDrive(throttleAxis, arcadeSteerAxis);
 			
 			// When you hold down the shiftButton (left bumper), then shift to low gear.
-			if (shiftButton) {
+			if (!shiftButton) {
 				isHighGear = false;
-				hardware.shiftToLowGear();
+				hardware.shiftToHighGear();
 			}
 		} else {
 			ArcadeDrive(throttleAxis, arcadeSteerAxis);
 			
 			// When you release the shiftButton (left bumper), then shift to high gear.
-			if (!shiftButton) {
+			if (shiftButton) {
 				isHighGear = true;
-				hardware.shiftToHighGear();
+				hardware.shiftToLowGear();
 			}
 		}
 	}
