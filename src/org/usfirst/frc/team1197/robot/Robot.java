@@ -73,7 +73,7 @@ public class Robot extends SampleRobot {
 	private static enum autoRightSwitch {
 		IDLE, MOVE1, MOVE2, MOVE3, FIRE, REVDOWN;
 	}
-	
+
 	/*----------------------------------------------------------------------
 	 *  Tunable variables for the hold position of the arm
 	 */
@@ -100,17 +100,17 @@ public class Robot extends SampleRobot {
 		CvSink cvsink1 = new CvSink("Intake Cam");
 		cvsink1.setSource(intakeCam);
 		cvsink1.setEnabled(true);
-		
-		
+
+
 		UsbCamera shootCam = CameraServer.getInstance().startAutomaticCapture(1);
 		shootCam.setBrightness(0);
 		shootCam.setFPS(15);
 		CvSink cvsink2 = new CvSink("Shoot Cam");
 		cvsink2.setSource(shootCam);
 		cvsink2.setEnabled(true);
-		
-		
-		
+
+
+
 		hardware = new DriveHardware();
 
 		player1 = new Joystick(0); // Player 1 controller (Controls the drive)
@@ -132,7 +132,7 @@ public class Robot extends SampleRobot {
 		shooArm = new TorBantorShooarm(player1, player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, 
 				breakBeam, fourtwenty, scaleAngle, switchAngle, degreeTolerance, kF, kP, kD, 
 				holdAngle, Pusher, scalekI); // TorBantorShooarm object used to enable the arm control + intake/shoot control of the robot
-															
+
 		LinearTest = new LinearTrajectory(hardware, -90, shooArm);
 		PivotTest = new PivotTrajectory(hardware, 1, shooArm);
 	}
@@ -142,303 +142,107 @@ public class Robot extends SampleRobot {
 	}
 
 	public void autonomous() {	
-		startAngle = hardware.getHeading();
-		shooArm.shootIdle();
-		Timer.delay(5);
-//		gameData = DriverStation.getInstance().getGameSpecificMessage(); // Obtaining the switch & scale colors from the FMS
-//		SmartDashboard.putString("Game Data", gameData);
-//		while(gameData.length() == 0 && isAutonomous()) {
-//			gameData = DriverStation.getInstance().getGameSpecificMessage();
-//		}
-//		
-//			if(!autoBox.getRawButton(2) && !autoBox.getRawButton(3)) {
-//				if(gameData.charAt(0) == 'L') {
-//					autoRun = auto.FORWARDL;	
-//				} 
-//				else {
-//					autoRun = auto.FORWARDR;
-//				}
-//				simpleCenterAutoRun();
-//			} else {//LEFT OR RIGHT SCALE AUTO'S
-//				shooArm.scaleShoot();
-//				if(autoBox.getRawButton(2)) {//THE RIGHT TRAJECTORIES
-////					if(gameData.charAt(1) == 'L') {
-//						if(gameData.charAt(0) == 'R') {
-////							//right to right switch
-//							autoRightSwitchRun = autoRightSwitch.MOVE1;
-//							currentPosition = hardware.getPosition();
-//							lastPosition = currentPosition;
-//							currentAngle = hardware.getHeading();
-//							lastAngle = currentAngle;
-//							hardware.shiftToLowGear();		
-//							while(isAutonomous()) {
-//								currentAngle = hardware.getHeading();
-//								angleError = currentAngle - startAngle;
-//								currentTime = System.currentTimeMillis();
-//								shooArm.TorBantorArmAndShooterUpdate();
-//								currentPosition = hardware.getPosition();
-//								currentAngle = hardware.getHeading();
-//								switch(autoRightSwitchRun) {
-//								case IDLE:
-//									break;
-//								case MOVE1:
-//									shooArm.shootIdle();
-//									shooArm.pressXStart();
-//									shooArm.switchShoot();
-//									hardware.setMotorSpeeds(0.5, 0.5);//right left
-//									lastPosition = currentPosition;
-//									angleLastError = angleError;
-//									startAngle = currentAngle;
-//									autoRightSwitchRun = autoRightSwitch.MOVE2;
-//									break;
-//								case MOVE2:
-//									omegaP = angleError * rkP;
-//									omegaD = (angleError - angleLastError) * (rkD / kF);
-//									angleLastError = angleError;
-//									omega = omegaP + omegaD;
-//									omega *= -1;
-//									hardware.setMotorSpeeds((0.5 - omega), (0.5 + omega));
-//									if(currentPosition - lastPosition > (2.78 - 0.3)) {
-//										hardware.setMotorSpeeds(0, 0);
-//										Timer.delay(0.3);
-//										hardware.setMotorSpeeds(0.35, -0.35);
-//										lastAngle = currentAngle;
-//										autoRightSwitchRun = autoRightSwitch.MOVE3;
-//									}
-//									break;
-//								case MOVE3:
-//									if(Math.abs((currentAngle - lastAngle) * (180 / Math.PI)) > (90 - 5)) {
-//										hardware.setMotorSpeeds(0, 0);
-//										Timer.delay(0.3);
-//										hardware.setMotorSpeeds(0.3, 0.3);
-//										lastPosition = currentPosition;
-//										shooArm.pressLeftTrigger();
-//										autoRightSwitchRun = autoRightSwitch.FIRE;
-//									}
-//									break;
-//								case FIRE:
-//									if(currentPosition - lastPosition > (0.125)) {//NEED TO GET THIS VALUE
-//										hardware.setMotorSpeeds(0, 0);
-//										shooArm.autoFire();
-//										endTime = currentTime + shootTime;
-//										autoRightSwitchRun = autoRightSwitch.REVDOWN;
-//									}
-//									break;
-//								case REVDOWN:
-//									if(currentTime > endTime) {
-//										shooArm.releaseLeftTrigger();
-//										hardware.setMotorSpeeds(0, 0);
-//										autoRightSwitchRun = autoRightSwitch.IDLE;
-//									}
-//									break;
-//								}
-//								
-//							}
-//						} else {
-//							autoRightRun = autoRight.IDLE;
+		//startAngle = hardware.getHeading();
+		//shooArm.shootIdle();
+		gameData = DriverStation.getInstance().getGameSpecificMessage(); // Obtaining the switch & scale colors from the FMS
+		SmartDashboard.putString("Game Data", gameData);
+		if(autoBox != null) { // Checking if the hardware required for auto is connected 
+			while(gameData.length() == 0 && isAutonomous()) {
+				gameData = DriverStation.getInstance().getGameSpecificMessage();
+				if(!autoBox.getRawButton(2) && !autoBox.getRawButton(3)) {
+					if(gameData.charAt(0) == 'L') {
+						autoRun = auto.FORWARDL;	
+					} 
+					else {
+						autoRun = auto.FORWARDR;
+					}
+					simpleCenterAutoRun();
+				} 
+				else {//LEFT OR RIGHT SCALE AUTO'S
+					shooArm.scaleShoot();
+					if(autoBox.getRawButton(2)) {//THE RIGHT TRAJECTORIES
+						if(gameData.charAt(0) == 'R') {
+							autoRightSwitchRun = autoRightSwitch.MOVE1;
+							currentPosition = hardware.getPosition();
+							lastPosition = currentPosition;
+							currentAngle = hardware.getHeading();
+							lastAngle = currentAngle;
+							hardware.shiftToLowGear();		
+							while(isAutonomous()) {
+								currentAngle = hardware.getHeading();
+								angleError = currentAngle - startAngle;
+								currentTime = System.currentTimeMillis();
+								shooArm.TorBantorArmAndShooterUpdate();
+								currentPosition = hardware.getPosition();
+								currentAngle = hardware.getHeading();
+								switch(autoRightSwitchRun) {
+								case IDLE:
+									break;
+								case MOVE1:
+									shooArm.shootIdle();
+									shooArm.pressXStart();
+									shooArm.switchShoot();
+									hardware.setMotorSpeeds(0.5, 0.5);//right left
+									lastPosition = currentPosition;
+									angleLastError = angleError;
+									startAngle = currentAngle;
+									autoRightSwitchRun = autoRightSwitch.MOVE2;
+									break;
+								case MOVE2:
+									omegaP = angleError * rkP;
+									omegaD = (angleError - angleLastError) * (rkD / kF);
+									angleLastError = angleError;
+									omega = omegaP + omegaD;
+									omega *= -1;
+									hardware.setMotorSpeeds((0.5 - omega), (0.5 + omega));
+									if(currentPosition - lastPosition > (2.78 - 0.3)) {
+										hardware.setMotorSpeeds(0, 0);
+										Timer.delay(0.3);
+										hardware.setMotorSpeeds(0.35, -0.35);
+										lastAngle = currentAngle;
+										autoRightSwitchRun = autoRightSwitch.MOVE3;
+									}
+									break;
+								case MOVE3:
+									if(Math.abs((currentAngle - lastAngle) * (180 / Math.PI)) > (90 - 5)) {
+										hardware.setMotorSpeeds(0, 0);
+										Timer.delay(0.3);
+										hardware.setMotorSpeeds(0.3, 0.3);
+										lastPosition = currentPosition;
+										shooArm.pressLeftTrigger();
+										autoRightSwitchRun = autoRightSwitch.FIRE;
+									}
+									break;
+								case FIRE:
+									if(currentPosition - lastPosition > (0.125)) {//NEED TO GET THIS VALUE
+										hardware.setMotorSpeeds(0, 0);
+										shooArm.autoFire();
+										endTime = currentTime + shootTime;
+										autoRightSwitchRun = autoRightSwitch.REVDOWN;
+									}
+									break;
+								case REVDOWN:
+									if(currentTime > endTime) {
+										shooArm.releaseLeftTrigger();
+										hardware.setMotorSpeeds(0, 0);
+										autoRightSwitchRun = autoRightSwitch.IDLE;
+									}
+									break;
+								}
+
+							}
+						} 
+						else {
+							autoRightRun = autoRight.IDLE;
 							hardware.setMotorSpeeds(0.75, 0.75);
 							Timer.delay(2);
 							hardware.setMotorSpeeds(0, 0);
-							
-//						}	
-						
-//					} else {
-//						autoRightRun = autoRight.FORWARDR;
-//						currentPosition = hardware.getPosition();
-//						lastPosition = currentPosition;
-//						currentAngle = hardware.getHeading();
-//						lastAngle = currentAngle;
-//						hardware.shiftToLowGear();													
-//						while(isAutonomous()) {
-//							currentAngle = hardware.getHeading();
-//							angleError = currentAngle - startAngle;
-//							currentTime = System.currentTimeMillis();
-//							shooArm.TorBantorArmAndShooterUpdate();
-//							currentPosition = hardware.getPosition();
-//							currentAngle = hardware.getHeading();
-//							switch(autoRightRun) {
-//							case IDLE:
-//								break;
-//							case FORWARDR:
-//								shooArm.shootIdle();
-//								shooArm.pressYStart();
-//								hardware.setMotorSpeeds(0.5, 0.5);//right, left
-//								lastPosition = currentPosition;
-//								angleLastError = angleError;
-//								autoRightRun = autoRight.TURNR;
-//								break;
-//							case TURNR:
-//								omegaP = angleError * rkP;
-//								omegaD = (angleError - angleLastError) * (rkD / kF);
-//								angleLastError = angleError;
-//								omega = omegaP + omegaD;
-//								omega *= -1;
-//								hardware.setMotorSpeeds((0.5 - omega), (0.5 + omega));
-//								if(currentPosition - lastPosition > (7.4 - 0.3)) {
-//									shooArm.pressLeftTrigger();
-//									hardware.setMotorSpeeds(0.35, -0.35);
-//									lastAngle = currentAngle;
-//									autoRightRun = autoRight.FIRE;
-//								}
-//								break;
-//							case FIRE:
-//								if(Math.abs((currentAngle - lastAngle) * (180 / Math.PI)) > (90 - 5)) {
-//									hardware.setMotorSpeeds(0, 0);
-//									Timer.delay(0.3);
-//									shooArm.autoFire();
-//									lastTime = currentTime;
-//									autoRightRun = autoRight.REVDOWN;
-//								}	
-//							break;
-//							case REVDOWN:
-//								if(currentTime - lastTime > revTime) {
-//									shooArm.releaseLeftTrigger();
-//									autoRightRun = autoRight.IDLE;
-//								}
-//								break;
-//							}
-//						}
-//					}
-//					
-//					
-//				} else {
-//					if(gameData.charAt(1) == 'L') {//LEFT
-//						autoLeftRun = autoLeft.FORWARDL;
-//						currentPosition = hardware.getPosition();
-//						lastPosition = currentPosition;
-//						currentAngle = hardware.getHeading();
-//						lastAngle = currentAngle;
-//						hardware.shiftToLowGear();													
-//						while(isAutonomous()) {
-//							currentAngle = hardware.getHeading();
-//							angleError = currentAngle - startAngle;
-//							currentTime = System.currentTimeMillis();
-//							shooArm.TorBantorArmAndShooterUpdate();//THE LEFT TRAJECTORIES
-//							currentPosition = hardware.getPosition();
-//							currentAngle = hardware.getHeading();
-//							switch(autoLeftRun) {
-//							case IDLE:
-//								break;
-//							case FORWARDL:
-//								shooArm.shootIdle();
-//								shooArm.pressYStart();
-//								hardware.setMotorSpeeds(0.5, 0.5);//right, left
-//								lastPosition = currentPosition;
-//								angleLastError = angleError;
-//								autoLeftRun = autoLeft.TURNL;
-//								break;
-//							case TURNL:
-//								omegaP = angleError * rkP;
-//								omegaD = (angleError - angleLastError) * (rkD / kF);
-//								angleLastError = angleError;
-//								omega = omegaP + omegaD;
-//								omega *= -1;
-//								hardware.setMotorSpeeds((0.5 - omega), (0.5 + omega));
-//								if(currentPosition - lastPosition > (7.4 - 0.3)) {
-//									shooArm.pressLeftTrigger();
-//									hardware.setMotorSpeeds(-0.35, 0.35);
-//									lastAngle = currentAngle;
-//									autoLeftRun = autoLeft.FIRE;
-//								}
-//								break;
-//							case FIRE:
-//								if(Math.abs((currentAngle - lastAngle) * (180 / Math.PI)) > (90 - 5)) {
-//									hardware.setMotorSpeeds(0, 0);
-//									Timer.delay(0.3);
-//									shooArm.autoFire();
-//									lastTime = currentTime;
-//									autoLeftRun = autoLeft.REVDOWN;
-//								}
-//								break;
-//							case REVDOWN:
-//								if(currentTime - lastTime > revTime) {
-//									shooArm.releaseLeftTrigger();
-//									autoLeftRun = autoLeft.IDLE;
-//								}
-//								break;
-//							}
-//						}
-//						
-//					} else {
-//						if(gameData.charAt(0) == 'L') {
-//							//Left to left switch
-//							autoLeftSwitchRun = autoLeftSwitch.MOVE1;
-//							currentPosition = hardware.getPosition();
-//							lastPosition = currentPosition;
-//							currentAngle = hardware.getHeading();
-//							lastAngle = currentAngle;
-//							hardware.shiftToLowGear();		
-//							while(isAutonomous()) {
-//								currentAngle = hardware.getHeading();
-//								angleError = currentAngle - startAngle;
-//								currentTime = System.currentTimeMillis();
-//								shooArm.TorBantorArmAndShooterUpdate();
-//								currentPosition = hardware.getPosition();
-//								currentAngle = hardware.getHeading();
-//								switch(autoLeftSwitchRun) {
-//								case IDLE:
-//									break;
-//								case MOVE1:
-//									shooArm.shootIdle();
-//									shooArm.pressXStart();
-//									shooArm.switchShoot();
-//									hardware.setMotorSpeeds(0.5, 0.5);//left left
-//									lastPosition = currentPosition;
-//									angleLastError = angleError;
-//									startAngle = currentAngle;
-//									autoLeftSwitchRun = autoLeftSwitch.MOVE2;
-//									break;
-//								case MOVE2:
-//									omegaP = angleError * rkP;
-//									omegaD = (angleError - angleLastError) * (rkD / kF);
-//									angleLastError = angleError;
-//									omega = omegaP + omegaD;
-//									omega *= -1;
-//									hardware.setMotorSpeeds((0.5 - omega), (0.5 + omega));
-//									if(currentPosition - lastPosition > (2.78 - 0.3)) {
-//										hardware.setMotorSpeeds(0, 0);
-//										Timer.delay(0.3);
-//										hardware.setMotorSpeeds(-0.35, 0.35);
-//										lastAngle = currentAngle;
-//										autoLeftSwitchRun = autoLeftSwitch.MOVE3;
-//									}
-//									break;
-//								case MOVE3:
-//									if(Math.abs((currentAngle - lastAngle) * (180 / Math.PI)) > (90 - 5)) {
-//										hardware.setMotorSpeeds(0, 0);
-//										Timer.delay(0.3);
-//										hardware.setMotorSpeeds(0.3, 0.3);
-//										lastPosition = currentPosition;
-//										shooArm.pressLeftTrigger();
-//										autoLeftSwitchRun = autoLeftSwitch.FIRE;
-//									}
-//									break;
-//								case FIRE:
-//									if(currentPosition - lastPosition > (0.125)) {//NEED TO GET THIS VALUE
-//										hardware.setMotorSpeeds(0, 0);
-//										shooArm.autoFire();
-//										endTime = currentTime + shootTime;
-//										autoLeftSwitchRun = autoLeftSwitch.REVDOWN;
-//									}
-//									break;
-//								case REVDOWN:
-//									if(currentTime > endTime) {
-//										shooArm.releaseLeftTrigger();
-//										hardware.setMotorSpeeds(0, 0);
-//										autoLeftSwitchRun = autoLeftSwitch.IDLE;
-//									}
-//									break;
-//								}
-//								
-//							} 
-//						} else {
-//							autoLeftRun = autoLeft.IDLE;
-//							hardware.setMotorSpeeds(0.75, 0.75);
-//							Timer.delay(2);
-//							hardware.setMotorSpeeds(0, 0);
-//						}
-//					}
+						}	
+					} 
+				}
+			}
 		}
+	}
 
 	public void operatorControl() {
 		shooArm.setAutoIntake(0.6);
@@ -451,7 +255,7 @@ public class Robot extends SampleRobot {
 				SmartDashboard.putNumber("LEFT ENCODER:", hardware.getLeftEncoder());
 				SmartDashboard.putBoolean("BREAKBEAM:", breakBeam.get());
 				SmartDashboard.putNumber("GET POSITION", hardware.getPosition());
-				
+
 			} else {
 				drive.driving(getLeftY(), getLeftX(), getRightX(), getShiftButton(), getRightBumper(), 
 						getButtonA(), getButtonB(), getButtonX(), getButtonY()); // Enabling the drive ofthe robot
@@ -461,7 +265,7 @@ public class Robot extends SampleRobot {
 				SmartDashboard.putNumber("LEFT ENCODER:", hardware.getLeftEncoder());
 				SmartDashboard.putBoolean("BREAKBEAM:", breakBeam.get());
 				SmartDashboard.putNumber("GET POSITION", hardware.getPosition());
-				
+
 			}
 		}
 	}
@@ -522,7 +326,7 @@ public class Robot extends SampleRobot {
 	public boolean getButtonY(){
 		return player1.getRawButton(4);
 	}
-	
+
 	public void simpleCenterAutoRun() {
 		currentPosition = hardware.getPosition();
 		lastPosition = currentPosition;
@@ -643,5 +447,4 @@ public class Robot extends SampleRobot {
 	}
 }
 
-	
-	
+

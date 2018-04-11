@@ -202,6 +202,14 @@ public class TorBantorShooarm {
 			shootakeTalon1.set(ControlMode.PercentOutput, 0);
 			shootakeTalon2.set(ControlMode.PercentOutput, 0);
 		} else {
+			SmartDashboard.putBoolean("Potentiometer", potAlive());
+			SmartDashboard.putBoolean("Break beam", breakbeamAlive());
+			SmartDashboard.putBoolean("Pusher", pusherAlive());
+			SmartDashboard.putBoolean("armTalon1", arm1Alive());
+			SmartDashboard.putBoolean("armTalon2", arm2Alive());
+			SmartDashboard.putBoolean("shootakeTalon1", shootake1Alive());
+			SmartDashboard.putBoolean("shootakeTalon2", shootake2Alive());
+			
 			switchDo(); 	  // Update for the switch
 			scaleDo(); 		  // Update for the scale
 			shoot(); 		  // Update for the shooter
@@ -223,8 +231,7 @@ public class TorBantorShooarm {
 
 		// Activate switch if button 'X' is pressed
 		if(!stop && player2.getRawButton(3)
-				&& !player2.getRawButton(5)
-				 && (switchDo1 == switchDo.IDLE || switchDo1 == switchDo.PID)){
+				&& !player2.getRawButton(5)){
 			scaleDo1 = scaleDo.IDLE;
 			switchEnable = false;
 			holdContinue = false;
@@ -237,7 +244,7 @@ public class TorBantorShooarm {
 		
 		// Activate scale if button 'Y' is pressed
 		if(!stop && player2.getRawButton(4)
-				&& !player2.getRawButton(5) && (scaleDo1 == scaleDo.IDLE || scaleDo1 == scaleDo.PID)) {
+				&& !player2.getRawButton(5)) {
 			switchDo1 = switchDo.IDLE;
 			scaleEnable = false;
 			holdContinue = false;
@@ -1062,7 +1069,36 @@ public class TorBantorShooarm {
 	public boolean isInside() {
 		return breakbeam.get();
 	}
+	
 	public void shootIdle() {
 		shootIt = shoot.IDLE;
+	}
+	
+	public boolean potAlive() {
+		return (fourtwenty == null);
+	}
+	
+	public boolean breakbeamAlive() {
+		return (breakbeam == null);
+	}
+	
+	public boolean shootake1Alive() {
+		return (shootakeTalon1 == null);
+	}
+	
+	public boolean shootake2Alive() {
+		return (shootakeTalon2 == null);
+	}
+	
+	public boolean arm1Alive() {
+		return (armTalon1 == null);
+	}
+	
+	public boolean arm2Alive() {
+		return (armTalon2 == null);
+	}
+	
+	public boolean pusherAlive() {
+		return (Pusher == null);
 	}
 }

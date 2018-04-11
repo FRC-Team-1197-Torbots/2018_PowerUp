@@ -32,7 +32,6 @@ public class DriveHardware {
 	private final double kI = 0.0; 
 	private final double kD = 0.0; 
 	
-	
 	private double heading = 0.0;
 	
 	public DriveHardware() {
@@ -152,5 +151,9 @@ public class DriveHardware {
 			gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 		}
 		gyro.calibrate();
+	}
+	
+	public boolean autoCheck() {
+		return (gyro == null);
 	}
 }
