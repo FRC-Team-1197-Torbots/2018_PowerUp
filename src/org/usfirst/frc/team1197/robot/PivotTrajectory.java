@@ -74,7 +74,18 @@ public class PivotTrajectory {
 			angleError = (thisAngle * lor) - ((currentAngle - startAngle));
 			omegaI += angleError;
 			omegaP = angleError * rkP;
-			
+			if(omegaI > (0.7 / (rkI * kF))) {
+				omegaI = (0.7 / (rkI * kF));
+			}
+			if(omegaI < -(0.7 / (rkI * kF))) {
+				omegaI = -(0.7 / (rkI * kF));
+			}
+			if(omegaP > 0.7) {
+				omegaP = 0.7;
+			}
+			if(omegaD < -0.7) {
+				omegaD = -0.7;
+			}
 			currentVelocity = derivative.estimate(drive.getHeading());//radians per second
 			currentVelocity *= (180 / Math.PI);//degrees per second
 			omegaD = (currentVelocity * rkD * -1);
@@ -84,7 +95,7 @@ public class PivotTrajectory {
 			drive.setMotorSpeeds(speed, -speed);
 				
 			if((Math.abs(angleError) <= (0.25 * (Math.PI / 180.0))
-					&& Math.abs(currentVelocity) < 0.5) || 
+					&& Math.abs(currentVelocity) < 0.125) || 
 					(currentTime - lasttime > 1)) {
 				drive.setMotorSpeeds(0, 0);
 				isFinished = true;
