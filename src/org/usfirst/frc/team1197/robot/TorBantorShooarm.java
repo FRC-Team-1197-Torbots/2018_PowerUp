@@ -228,7 +228,7 @@ public class TorBantorShooarm {
 			SmartDashboard.putNumber("left output current:", armTalon1.getOutputCurrent());
 			SmartDashboard.putNumber("right output current:", armTalon2.getOutputCurrent());
 //		}
-
+																																																																																									
 		// Activate switch if button 'X' is pressed
 		if(!stop && player2.getRawButton(3)
 				&& !player2.getRawButton(5)){

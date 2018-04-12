@@ -9,22 +9,22 @@ public class PivotTrajectory {
 	private boolean isFinished = false;
 	private double thisAngle;
 	private double lasttime;
-	private long currentTime;
+	private double currentTime;
 	private final double kF = 0.005;
 	
 	private double startAngle;
 	
-	private final double rkP = .025 * (180 / Math.PI);//PD For rotation
-	private final double rkD = 0.000005 * (180 / Math.PI);//0.000005
-	private final double rkI = 0.00001 * (180 / Math.PI);
+	private final double rkP = .1;//PD For rotation
+	private final double rkD = 0.01;//0.000005
+	private final double rkI = 0.001;
 	
 	private int lor = 1;
 	
 	private double omegaP;//turning proportional
 	private double omegaD;//turning derivative
+	private double omegaI;
 	
 	private double angleError;
-	private double angleLastError;
 	
 	private double currentVelocity;
 	
@@ -48,58 +48,49 @@ public class PivotTrajectory {
 		}
 		thisAngle *= (Math.PI / 180.0);
 		this.shooArm = shooArm;
-		derivative = new TorDerivative(drive.getHeading());
+		derivative = new TorDerivative(kF);
 	}
 
 	public boolean isDone() {
 		return isFinished;
 	}
 	
-	public void run(double starttime) {
+	public void init() {
 		isFinished = false;
 		runIt = run.GO;
 		startAngle = drive.getHeading();
+		derivative.resetValue(drive.getHeading());
 		lasttime = Timer.getFPGATimestamp();
-		while(!isFinished) {
-			if(Timer.getFPGATimestamp() - starttime > 14) {
-				drive.setMotorSpeeds(0, 0);
-				break;
-			}
+	}
+	
+	public void run(double starttime) {			
+		shooArm.TorBantorArmAndShooterUpdate();
+		currentAngle = drive.getHeading();
+		currentTime = Timer.getFPGATimestamp();
+		switch(runIt) {
+		case IDLE:
+			break;
+		case GO:
+			angleError = (thisAngle * lor) - ((currentAngle - startAngle));
+			omegaI += angleError;
+			omegaP = angleError * rkP;
 			
-			shooArm.TorBantorArmAndShooterUpdate();
-			currentAngle = drive.getHeading();
-			currentTime = System.currentTimeMillis();
-			switch(runIt) {
-			case IDLE:
-				break;
-			case GO:
-				angleError = ((currentAngle - startAngle) * lor) - thisAngle;
-				omegaP = angleError * rkP;
-				omegaD = angleError = (angleError - angleLastError) * (rkD / kF);
-				speed = omegaP + omegaD;
-
-				currentVelocity = derivative.estimate(angleError);//radians per milisecond
-				currentVelocity *= 1000;//radians per second
-				currentVelocity *= (180.0 / Math.PI);//degrees per second
+			currentVelocity = derivative.estimate(angleError);//radians per second
+			currentVelocity *= (180 / Math.PI);//degrees per second
+			omegaD = (currentVelocity * rkD * -1);
+			
+			speed = omegaP + omegaD + (omegaI * rkI * kF);
+			
+			drive.setMotorSpeeds(speed, -speed);
 				
-				speed *= lor;
-				
-				drive.setMotorSpeeds(speed, -speed);
-//				drive.setVelocity(-speed, speed);
-				
-				angleLastError = angleError;
-				
-				if((Math.abs(angleError) <= (0.25 * (Math.PI / 180.0))
-						&& Math.abs(currentVelocity) < 0.5) || 
-						(currentTime - lasttime > 1)) {
-//				if((Math.abs(angleError) <= (0.25 * (Math.PI / 180.0))
-//						&& Math.abs(currentVelocity) < 0.5)) {
-					drive.setMotorSpeeds(0, 0);
-					isFinished = true;
-					runIt = run.IDLE;
-				}
-				break;
+			if((Math.abs(angleError) <= (0.25 * (Math.PI / 180.0))
+					&& Math.abs(currentVelocity) < 0.5) || 
+					(currentTime - lasttime > 1)) {
+				drive.setMotorSpeeds(0, 0);
+				isFinished = true;
+				runIt = run.IDLE;
 			}
+			break;
 		}
 	}
 }

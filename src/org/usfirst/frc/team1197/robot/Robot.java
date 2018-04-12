@@ -149,124 +149,65 @@ public class Robot extends SampleRobot {
 		if(autoBox != null) { // Checking if the hardware required for auto is connected 
 			while(gameData.length() == 0 && isAutonomous()) {
 				gameData = DriverStation.getInstance().getGameSpecificMessage();
-				if(!autoBox.getRawButton(2) && !autoBox.getRawButton(3)) {
-					if(gameData.charAt(0) == 'L') {
-						autoRun = auto.FORWARDL;	
-					} 
-					else {
-						autoRun = auto.FORWARDR;
-					}
-					simpleCenterAutoRun();
-				} 
-				else {//LEFT OR RIGHT SCALE AUTO'S
-					shooArm.scaleShoot();
-					if(autoBox.getRawButton(2)) {//THE RIGHT TRAJECTORIES
-						if(gameData.charAt(0) == 'R') {
-							autoRightSwitchRun = autoRightSwitch.MOVE1;
-							currentPosition = hardware.getPosition();
-							lastPosition = currentPosition;
-							currentAngle = hardware.getHeading();
-							lastAngle = currentAngle;
-							hardware.shiftToLowGear();		
-							while(isAutonomous()) {
-								currentAngle = hardware.getHeading();
-								angleError = currentAngle - startAngle;
-								currentTime = System.currentTimeMillis();
-								shooArm.TorBantorArmAndShooterUpdate();
-								currentPosition = hardware.getPosition();
-								currentAngle = hardware.getHeading();
-								switch(autoRightSwitchRun) {
-								case IDLE:
-									break;
-								case MOVE1:
-									shooArm.shootIdle();
-									shooArm.pressXStart();
-									shooArm.switchShoot();
-									hardware.setMotorSpeeds(0.5, 0.5);//right left
-									lastPosition = currentPosition;
-									angleLastError = angleError;
-									startAngle = currentAngle;
-									autoRightSwitchRun = autoRightSwitch.MOVE2;
-									break;
-								case MOVE2:
-									omegaP = angleError * rkP;
-									omegaD = (angleError - angleLastError) * (rkD / kF);
-									angleLastError = angleError;
-									omega = omegaP + omegaD;
-									omega *= -1;
-									hardware.setMotorSpeeds((0.5 - omega), (0.5 + omega));
-									if(currentPosition - lastPosition > (2.78 - 0.3)) {
-										hardware.setMotorSpeeds(0, 0);
-										Timer.delay(0.3);
-										hardware.setMotorSpeeds(0.35, -0.35);
-										lastAngle = currentAngle;
-										autoRightSwitchRun = autoRightSwitch.MOVE3;
-									}
-									break;
-								case MOVE3:
-									if(Math.abs((currentAngle - lastAngle) * (180 / Math.PI)) > (90 - 5)) {
-										hardware.setMotorSpeeds(0, 0);
-										Timer.delay(0.3);
-										hardware.setMotorSpeeds(0.3, 0.3);
-										lastPosition = currentPosition;
-										shooArm.pressLeftTrigger();
-										autoRightSwitchRun = autoRightSwitch.FIRE;
-									}
-									break;
-								case FIRE:
-									if(currentPosition - lastPosition > (0.125)) {//NEED TO GET THIS VALUE
-										hardware.setMotorSpeeds(0, 0);
-										shooArm.autoFire();
-										endTime = currentTime + shootTime;
-										autoRightSwitchRun = autoRightSwitch.REVDOWN;
-									}
-									break;
-								case REVDOWN:
-									if(currentTime > endTime) {
-										shooArm.releaseLeftTrigger();
-										hardware.setMotorSpeeds(0, 0);
-										autoRightSwitchRun = autoRightSwitch.IDLE;
-									}
-									break;
-								}
-
-							}
-						} 
-						else {
-							autoRightRun = autoRight.IDLE;
-							hardware.setMotorSpeeds(0.75, 0.75);
-							Timer.delay(2);
-							hardware.setMotorSpeeds(0, 0);
-						}	
-					} 
-				}
 			}
+			if(!autoBox.getRawButton(2) && !autoBox.getRawButton(3)) {
+				//center
+				if(gameData.charAt(0) == 'L') {
+					//center left
+					
+					
+					
+					
+				} else {
+					//center right
+					
+					
+					
+					
+					
+					
+				}
+				
+			} else if(autoBox.getRawButton(2)) {
+				//right
+			} else {
+				//left
+			}
+			
+			
+			
+			
+			
+			
 		}
 	}
 
 	public void operatorControl() {
-		shooArm.setAutoIntake(0.6);
-		test = false;
-		while(isEnabled()){
-			if(test) {
-				//compressor.start
-				SmartDashboard.putNumber("POT VALUE:", (fourtwenty.get()));
-				SmartDashboard.putNumber("RIGHT ENCODER:", hardware.getRightEncoder());
-				SmartDashboard.putNumber("LEFT ENCODER:", hardware.getLeftEncoder());
-				SmartDashboard.putBoolean("BREAKBEAM:", breakBeam.get());
-				SmartDashboard.putNumber("GET POSITION", hardware.getPosition());
-
-			} else {
-				drive.driving(getLeftY(), getLeftX(), getRightX(), getShiftButton(), getRightBumper(), 
-						getButtonA(), getButtonB(), getButtonX(), getButtonY()); // Enabling the drive ofthe robot
-				shooArm.TorBantorArmAndShooterUpdate(); // Enabling arm control
-				SmartDashboard.putNumber("POT VALUE:", (fourtwenty.get()));
-				SmartDashboard.putNumber("RIGHT ENCODER:", hardware.getRightEncoder());
-				SmartDashboard.putNumber("LEFT ENCODER:", hardware.getLeftEncoder());
-				SmartDashboard.putBoolean("BREAKBEAM:", breakBeam.get());
-				SmartDashboard.putNumber("GET POSITION", hardware.getPosition());
-
-			}
+//		shooArm.setAutoIntake(0.6);
+//		test = false;
+//		while(isEnabled()){
+//			if(test) {
+//				SmartDashboard.putNumber("POT VALUE:", (fourtwenty.get()));
+//				SmartDashboard.putNumber("RIGHT ENCODER:", hardware.getRightEncoder());
+//				SmartDashboard.putNumber("LEFT ENCODER:", hardware.getLeftEncoder());
+//				SmartDashboard.putBoolean("BREAKBEAM:", breakBeam.get());
+//				SmartDashboard.putNumber("GET POSITION", hardware.getPosition());
+//
+//			} else {
+//				drive.driving(getLeftY(), getLeftX(), getRightX(), getShiftButton(), getRightBumper(), 
+//						getButtonA(), getButtonB(), getButtonX(), getButtonY()); // Enabling the drive ofthe robot
+//				shooArm.TorBantorArmAndShooterUpdate(); // Enabling arm control
+//				SmartDashboard.putNumber("POT VALUE:", (fourtwenty.get()));
+//				SmartDashboard.putNumber("RIGHT ENCODER:", hardware.getRightEncoder());
+//				SmartDashboard.putNumber("LEFT ENCODER:", hardware.getLeftEncoder());
+//				SmartDashboard.putBoolean("BREAKBEAM:", breakBeam.get());
+//				SmartDashboard.putNumber("GET POSITION", hardware.getPosition());
+//
+//			}
+//		}
+		LinearTest.init();
+		while(!LinearTest.isDone()) {
+			LinearTest.run();
 		}
 	}
 
@@ -278,8 +219,6 @@ public class Robot extends SampleRobot {
 			SmartDashboard.putNumber("LEFT ENCODER:", hardware.getLeftEncoder());
 			SmartDashboard.putBoolean("BREAKBEAM:", breakBeam.get());
 			SmartDashboard.putNumber("GET POSITION", hardware.getPosition());
-			LinearTest.run(Timer.getFPGATimestamp());
-			PivotTest.run(Timer.getFPGATimestamp());
 		}
 	}
 
