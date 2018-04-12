@@ -75,7 +75,7 @@ public class PivotTrajectory {
 			omegaI += angleError;
 			omegaP = angleError * rkP;
 			
-			currentVelocity = derivative.estimate(angleError);//radians per second
+			currentVelocity = derivative.estimate(drive.getHeading());//radians per second
 			currentVelocity *= (180 / Math.PI);//degrees per second
 			omegaD = (currentVelocity * rkD * -1);
 			
