@@ -14,7 +14,7 @@ public class TorBantorShooarm {
 	private Joystick player2;
 	private TalonSRX armTalon1;
 	private TalonSRX armTalon2;
-	private VictorSPX shootakeTalon1;
+	private TalonSRX shootakeTalon1;
 	private VictorSPX shootakeTalon2;
 	private AnalogPotentiometer fourtwenty;
 	private DigitalInput breakbeam;
@@ -105,10 +105,10 @@ public class TorBantorShooarm {
 	// Scale Variables
 	private long scalePos1Time = 350;
 	private long scalePos2Time = 25;
-	private double scaleMaxSpeed = 1;
+	private double scaleMaxSpeed = 0.7;
 	private double scaleCushion = -0.02;
 	private double scaleShootPower = 1.0;
-	private final double scaleHighShootPower = 0.9				;
+	private final double scaleHighShootPower = 1.0;
 	private final double scaleMediumShootPower = 0.75;
 	private final double scaleLowShootPower = 0.65;
 	
@@ -155,7 +155,7 @@ public class TorBantorShooarm {
 	private double scaleIntegral = 0;
 
 	public TorBantorShooarm(Joystick player1, Joystick player2, TalonSRX armTalon1, TalonSRX armTalon2, 
-			VictorSPX shootakeTalon1, VictorSPX shootakeTalon2, 
+			TalonSRX shootakeTalon1, VictorSPX shootakeTalon2, 
 			DigitalInput breakbeam, AnalogPotentiometer fourtwenty, 
 			double scaleAngle, double switchAngle, double degreeTolerance, 
 			double kF, double kP, double kD, double holdAngle, 
@@ -169,7 +169,7 @@ public class TorBantorShooarm {
 		this.Pusher = Pusher;
 		this.breakbeam = breakbeam;
 		this.fourtwenty = fourtwenty;
-		startAngle = 76.76956404;//MAKE THIS WHEN THE ARM IS FLAT
+		startAngle = 78.14779548295432;//MAKE THIS WHEN THE ARM IS FLAT
 		this.scaleAngle = scaleAngle;
 		this.switchAngle = switchAngle;
 		this.degreeTolerance = degreeTolerance;
@@ -589,7 +589,7 @@ public class TorBantorShooarm {
 					
 				}
 			}
-			if(((currentTime >= endTime) && (player2.getRawButton(1))) || breakbeam.get()) {
+			if(((currentTime >= endTime) && (player2.getRawButton(1)))) {// || breakbeam.get()) {
 				shootakeTalon1.set(ControlMode.PercentOutput, 0);
 				shootakeTalon2.set(ControlMode.PercentOutput, 0);
 				lastTime = currentTime;

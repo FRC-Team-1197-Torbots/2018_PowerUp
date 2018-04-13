@@ -17,13 +17,12 @@ public class DriveHardware {
 	private final TalonSRX leftSlave1;
 	private final TalonSRX leftSlave2;
 	//on the real one both are -1
-	private final int rightEncoderFlipped = -1;
-	private final int leftEncoderFlipped = -1;//change from 1 to -1 to flip
+	private final int rightEncoderFlipped = 1;
+	private final int leftEncoderFlipped = 1;//change from 1 to -1 to flip
 //	the values of the encoder
 	
 	private final Solenoid solenoid;
-	private final double encoderTicksPerMeter = 1035.6; // (units: ticks per meter)
-//	private final double encoderTicksPerMeter = 1037.5; // (units: ticks per meter)
+	private final double encoderTicksPerMeter = 1174.5; // (units: ticks per meter)1035.6
 	private final double approximateSensorSpeed = 924; // measured maximum (units: RPM)
 	private final double quadEncNativeUnits = 512.0; // (units: ticks per revolution)
 	

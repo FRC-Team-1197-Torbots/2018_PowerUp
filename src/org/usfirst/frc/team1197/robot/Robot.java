@@ -25,7 +25,7 @@ public class Robot extends SampleRobot {
 	private Joystick player2;
 	private Joystick autoBox;
 	private Solenoid Pusher;			
-	private VictorSPX shootakeTalon1;   
+	private TalonSRX shootakeTalon1;   
 	private VictorSPX shootakeTalon2;   
 	private TalonSRX armTalon1; 
 	private TalonSRX armTalon2; 
@@ -60,19 +60,6 @@ public class Robot extends SampleRobot {
 		IDLE, FORWARDL, TURNL, FORWARDL2, TURNL2, FORWARDL3, FORWARDR, TURNR, FORWARDR2, TURNR2, FORWARDR3, FIRE, REVDOWN;
 		private auto() {}
 	}
-	public static enum autoLeft {
-		IDLE, FORWARDL, TURNL, FIRE, REVDOWN;
-	}
-	public static enum autoRight {
-		IDLE, FORWARDR, TURNR, FIRE, REVDOWN;
-	}
-
-	private static enum autoLeftSwitch {
-		IDLE, MOVE1, MOVE2, MOVE3, FIRE, REVDOWN;
-	}
-	private static enum autoRightSwitch {
-		IDLE, MOVE1, MOVE2, MOVE3, FIRE, REVDOWN;
-	}
 
 	/*----------------------------------------------------------------------
 	 *  Tunable variables for the hold position of the arm
@@ -85,31 +72,26 @@ public class Robot extends SampleRobot {
 	private double switchAngle = 50;
 	private double degreeTolerance = 8;//the tolerance for the normal x + sin x up to get within the switch/scale angle before PID controls it
 	private double holdAngle = 10;
-	private auto autoRun = auto.IDLE;
-	private autoLeft autoLeftRun = autoLeft.IDLE;
-	private autoRight autoRightRun = autoRight.IDLE;
-	private autoLeftSwitch autoLeftSwitchRun = autoLeftSwitch.IDLE;
-	private autoRightSwitch autoRightSwitchRun = autoRightSwitch.IDLE;
 	/*----------------------------------------------------------------------
 	 */
 
 	public Robot() {
-		UsbCamera intakeCam = CameraServer.getInstance().startAutomaticCapture(0);
-		intakeCam.setBrightness(50);
-		intakeCam.setFPS(15);
-		CvSink cvsink1 = new CvSink("Intake Cam");
-		cvsink1.setSource(intakeCam);
-		cvsink1.setEnabled(true);
-
-
-		UsbCamera shootCam = CameraServer.getInstance().startAutomaticCapture(1);
-		shootCam.setBrightness(0);
-		shootCam.setFPS(15);
-		CvSink cvsink2 = new CvSink("Shoot Cam");
-		cvsink2.setSource(shootCam);
-		cvsink2.setEnabled(true);
-
-
+//		UsbCamera intakeCam = CameraServer.getInstance().startAutomaticCapture(0);
+//		intakeCam.setBrightness(50);
+//		intakeCam.setFPS(15);
+//		CvSink cvsink1 = new CvSink("Intake Cam");
+//		cvsink1.setSource(intakeCam);
+//		cvsink1.setEnabled(true);
+//
+//
+//		UsbCamera shootCam = CameraServer.getInstance().startAutomaticCapture(1);
+//		shootCam.setBrightness(0);
+//		shootCam.setFPS(15);
+//		CvSink cvsink2 = new CvSink("Shoot Cam");
+//		cvsink2.setSource(shootCam);
+//		cvsink2.setEnabled(true);
+//
+//
 
 		hardware = new DriveHardware();
 
@@ -120,21 +102,22 @@ public class Robot extends SampleRobot {
 		armTalon1 = new TalonSRX(7); 		 // TalonSRX to move the arm
 		armTalon2 = new TalonSRX(8); 		 // TalonSRX to move the arm
 		breakBeam = new DigitalInput(0);     // Breakbeam to stop the intake when the cube is sucked in
-		shootakeTalon1 = new VictorSPX(9);   // Intake/Shooter VictorSPX on the arm
+//		shootakeTalon1 = new VictorSPX(9);   // Intake/Shooter VictorSPX on the arm
+		shootakeTalon1 = new TalonSRX(9);
 		shootakeTalon2 = new VictorSPX(10);  // Intake/Shooter VictorSPX on the arm
 		Pusher = new Solenoid(0, 0);         // Solenoid to shoot out the cube
 
 		drive = new TorDrive(player1, autoBox, hardware); // TorDrive object used to enable the drive of the robot
 
 		fourtwenty = new AnalogPotentiometer(0, 360, 0); // Analog Potentiometer to control the position of the arm
-		// Analog number, how much the value changes as it goes over the 0 to 5 voltage range, the initial value of the degree of the potentiometer
-
+//		// Analog number, how much the value changes as it goes over the 0 to 5 voltage range, the initial value of the degree of the potentiometer
+//
 		shooArm = new TorBantorShooarm(player1, player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, 
 				breakBeam, fourtwenty, scaleAngle, switchAngle, degreeTolerance, kF, kP, kD, 
 				holdAngle, Pusher, scalekI); // TorBantorShooarm object used to enable the arm control + intake/shoot control of the robot
 
-		LinearTest = new LinearTrajectory(hardware, -90, shooArm);
-		PivotTest = new PivotTrajectory(hardware, 1, shooArm);
+		LinearTest = new LinearTrajectory(hardware, -1, shooArm);
+		PivotTest = new PivotTrajectory(hardware, 90, shooArm);
 	}
 
 	public void robotInit() {
@@ -183,32 +166,43 @@ public class Robot extends SampleRobot {
 	}
 
 	public void operatorControl() {
-//		shooArm.setAutoIntake(0.6);
-//		test = false;
-//		while(isEnabled()){
-//			if(test) {
-//				SmartDashboard.putNumber("POT VALUE:", (fourtwenty.get()));
-//				SmartDashboard.putNumber("RIGHT ENCODER:", hardware.getRightEncoder());
-//				SmartDashboard.putNumber("LEFT ENCODER:", hardware.getLeftEncoder());
-//				SmartDashboard.putBoolean("BREAKBEAM:", breakBeam.get());
-//				SmartDashboard.putNumber("GET POSITION", hardware.getPosition());
-//
-//			} else {
-//				drive.driving(getLeftY(), getLeftX(), getRightX(), getShiftButton(), getRightBumper(), 
-//						getButtonA(), getButtonB(), getButtonX(), getButtonY()); // Enabling the drive ofthe robot
-//				shooArm.TorBantorArmAndShooterUpdate(); // Enabling arm control
-//				SmartDashboard.putNumber("POT VALUE:", (fourtwenty.get()));
-//				SmartDashboard.putNumber("RIGHT ENCODER:", hardware.getRightEncoder());
-//				SmartDashboard.putNumber("LEFT ENCODER:", hardware.getLeftEncoder());
-//				SmartDashboard.putBoolean("BREAKBEAM:", breakBeam.get());
-//				SmartDashboard.putNumber("GET POSITION", hardware.getPosition());
-//
-//			}
-//		}
-		LinearTest.init();
-		while(!LinearTest.isDone()) {
-			LinearTest.run();
+		hardware.shiftToLowGear();
+		boolean linearTest = true;
+		test = false;
+		if(!linearTest) {
+			while(isEnabled()){
+				if(test) {
+//					SmartDashboard.putNumber("POT VALUE:", (fourtwenty.get()));
+					SmartDashboard.putNumber("RIGHT ENCODER:", hardware.getRightEncoder());
+					SmartDashboard.putNumber("LEFT ENCODER:", hardware.getLeftEncoder());
+//					SmartDashboard.putBoolean("BREAKBEAM:", breakBeam.get());
+					SmartDashboard.putNumber("GET POSITION", hardware.getPosition());
+					SmartDashboard.putNumber("Get Heading", hardware.getHeading());
+				} else {
+					shooArm.setAutoIntake(0.6);
+//					drive.driving(getLeftY(), getLeftX(), getRightX(), getShiftButton(), getRightBumper(), 
+//							getButtonA(), getButtonB(), getButtonX(), getButtonY()); // Enabling the drive ofthe robot
+					shooArm.TorBantorArmAndShooterUpdate(); // Enabling arm control
+//					SmartDashboard.putNumber("POT VALUE:", (fourtwenty.get()));
+					SmartDashboard.putNumber("RIGHT ENCODER:", hardware.getRightEncoder());
+					SmartDashboard.putNumber("LEFT ENCODER:", hardware.getLeftEncoder());
+//					SmartDashboard.putBoolean("BREAKBEAM:", breakBeam.get());
+					SmartDashboard.putNumber("GET POSITION", hardware.getPosition());
+
+				}
+			}
+		} else {
+			LinearTest.init();
+			while(!LinearTest.isDone()) {
+				SmartDashboard.putNumber("GET POSITION", hardware.getPosition());
+				SmartDashboard.putNumber("Get Heading", hardware.getHeading());
+				SmartDashboard.putNumber("RIGHT ENCODER:", hardware.getRightEncoder());
+				SmartDashboard.putNumber("LEFT ENCODER:", hardware.getLeftEncoder());
+				LinearTest.run();
+			}
+			
 		}
+
 	}
 
 	public void test() {
@@ -265,125 +259,4 @@ public class Robot extends SampleRobot {
 	public boolean getButtonY(){
 		return player1.getRawButton(4);
 	}
-
-	public void simpleCenterAutoRun() {
-		currentPosition = hardware.getPosition();
-		lastPosition = currentPosition;
-		currentAngle = hardware.getHeading();
-		lastAngle = currentAngle;
-		hardware.shiftToLowGear();
-		shooArm.shootIdle();													
-		while(isAutonomous()) {
-			currentTime = System.currentTimeMillis();
-			shooArm.TorBantorArmAndShooterUpdate();
-			currentPosition = hardware.getPosition();
-			currentAngle = hardware.getHeading();
-			switch(autoRun) {
-			case IDLE:
-				break;
-			case FORWARDL:
-				shooArm.pressXStart();
-				shooArm.shootIdle();
-				hardware.setMotorSpeeds(0.3, 0.3);
-				autoRun = auto.TURNL;
-				break;
-			case TURNL:
-				if((currentPosition - lastPosition) > 1.2) {
-					hardware.setMotorSpeeds(0, 0);
-					Timer.delay(0.3);
-					hardware.setMotorSpeeds(0.35, -0.35);//rightSpeed, leftSpeed
-					lastAngle = currentAngle;
-					autoRun = auto.FORWARDL2;
-				}
-				break;
-			case FORWARDL2:
-				if(Math.abs((currentAngle - lastAngle) * (180 / Math.PI)) > 85) {
-					hardware.setMotorSpeeds(0, 0);
-					Timer.delay(0.3);
-					lastPosition = currentPosition;
-					hardware.setMotorSpeeds(0.3, 0.3);
-					autoRun = auto.TURNL2;
-				}
-				break;
-			case TURNL2:
-				if((currentPosition - lastPosition) > 1.2) {
-					hardware.setMotorSpeeds(0, 0);
-					Timer.delay(0.3);
-					lastAngle = currentAngle;
-					hardware.setMotorSpeeds(-0.35, 0.35);
-					autoRun = auto.FORWARDL3;
-				}
-				break;
-			case FORWARDL3:
-				if(Math.abs((currentAngle - lastAngle) * (180 / Math.PI)) > 85) {
-					hardware.setMotorSpeeds(0, 0);
-					Timer.delay(0.3);
-					shooArm.pressLeftTrigger();
-					lastPosition = currentPosition;
-					hardware.setMotorSpeeds(0.3, 0.3);
-					autoRun = auto.FIRE;
-				}
-				break;
-			case FORWARDR:
-				shooArm.pressXStart();
-				shooArm.shootIdle();
-				hardware.setMotorSpeeds(0.3, 0.3);
-				autoRun = auto.TURNR;
-				break;
-			case TURNR:
-				if((currentPosition - lastPosition) > 1.2) {
-					hardware.setMotorSpeeds(0, 0);
-					Timer.delay(0.3);
-					hardware.setMotorSpeeds(-0.35, 0.35);//rightSpeed, leftSpeed
-					lastAngle = currentAngle;
-					autoRun = auto.FORWARDR2;
-				}
-				break;
-			case FORWARDR2:
-				if(Math.abs((currentAngle - lastAngle) * (180 / Math.PI)) > 85) {
-					hardware.setMotorSpeeds(0, 0);
-					Timer.delay(0.3);
-					lastPosition = currentPosition;
-					hardware.setMotorSpeeds(0.3, 0.3);
-					autoRun = auto.TURNR2;
-				}
-				break;
-			case TURNR2:
-				if(currentPosition - lastPosition > 1.2) {
-					hardware.setMotorSpeeds(0, 0);
-					Timer.delay(0.3);
-					lastAngle = currentAngle;
-					hardware.setMotorSpeeds(0.35, -0.35);
-					autoRun = auto.FORWARDR3;
-				}
-				break;
-			case FORWARDR3:
-				if(Math.abs((currentAngle - lastAngle) * (180 / Math.PI)) > 85) {
-					hardware.setMotorSpeeds(0, 0);
-					Timer.delay(0.3);
-					shooArm.pressLeftTrigger();
-					lastPosition = currentPosition;
-					hardware.setMotorSpeeds(0.3, 0.3);
-					autoRun = auto.FIRE;
-				}
-				break;
-			case FIRE:
-				if((currentPosition - lastPosition) > 1.35) {
-					hardware.setMotorSpeeds(0.0, 0.0);
-					shooArm.autoFire();
-					lastTime = currentTime;
-					autoRun = auto.REVDOWN;
-				}
-				break;
-			case REVDOWN:
-				if((currentTime - lastTime) > revTime) {
-					shooArm.releaseLeftTrigger();
-					autoRun = auto.IDLE;
-				}
-				break;
-			}
-		}  			
-	}
 }
-
-
