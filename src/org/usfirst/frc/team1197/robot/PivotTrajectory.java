@@ -18,8 +18,6 @@ public class PivotTrajectory {
 	private final double rkD = 0.01;//0.000005
 	private final double rkI = 0.001;
 	
-	private int lor = 1;
-	
 	private double omegaP;//turning proportional
 	private double omegaD;//turning derivative
 	private double omegaI;
@@ -42,11 +40,7 @@ public class PivotTrajectory {
 	public PivotTrajectory(DriveHardware drive, double angle, TorBantorShooarm shooArm) {
 		this.drive = drive;
 		this.thisAngle = angle;
-		if(thisAngle < 0) {
-			lor = -1;
-			thisAngle *= -1;
-		}
-		thisAngle *= (Math.PI / 180.0);
+		thisAngle *= (Math.PI / 180.0);//degrees to radians
 		this.shooArm = shooArm;
 		derivative = new TorDerivative(kF);
 	}
@@ -71,9 +65,12 @@ public class PivotTrajectory {
 		case IDLE:
 			break;
 		case GO:
-			angleError = (thisAngle * lor) - ((currentAngle - startAngle));
+			angleError = (thisAngle) - ((currentAngle - startAngle));
 			omegaI += angleError;
 			omegaP = angleError * rkP;
+			if(Math.abs(angleError) < 0.5) {
+				omegaI = 0;
+			}
 			if(omegaI > (0.7 / (rkI * kF))) {
 				omegaI = (0.7 / (rkI * kF));
 			}
@@ -87,16 +84,16 @@ public class PivotTrajectory {
 				omegaD = -0.7;
 			}
 			currentVelocity = derivative.estimate(drive.getHeading());//radians per second
+			omegaD = (currentVelocity * rkD);
 			currentVelocity *= (180 / Math.PI);//degrees per second
-			omegaD = (currentVelocity * rkD * -1);
 			
 			speed = omegaP + omegaD + (omegaI * rkI * kF);
 			
 			drive.setMotorSpeeds(speed, -speed);
 				
-			if((Math.abs(angleError) <= (0.25 * (Math.PI / 180.0))
+			if((Math.abs(angleError) <= (1 * (Math.PI / 180.0))
 					&& Math.abs(currentVelocity) < 0.125) || 
-					(currentTime - lasttime > 1)) {
+					(currentTime - lasttime > 2)) {
 				drive.setMotorSpeeds(0, 0);
 				isFinished = true;
 				runIt = run.IDLE;

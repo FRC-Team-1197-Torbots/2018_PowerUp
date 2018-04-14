@@ -12,12 +12,14 @@ public class LinearTrajectory {
 	private final double tkI = 0.005;//.0003
 	private final double rkP = 10;//PD For rotation
 	private final double rkD = .05;//.05
+	private final double rkI = 0.002;
 	private final double kF = 0.005;
 	private final int lor = 1;
 	private double currentVelocity;
 	
 	private double omegaP;//turning proportional
 	private double omegaD;//turning derivative
+	private double omegaI = 0;
 	
 	private double vP;//velocity proportional
 	private double vD;//velocity derivative
@@ -105,15 +107,25 @@ public class LinearTrajectory {
 			velocity = vP + vD + (vI * tkI * kF);
 			//velocity is good
 			omegaP = angleError * rkP;
-			omegaD = (angleDerivative.estimate(drive.getHeading())) * (rkD) * -1;
-			omega = omegaP + omegaD;
+			omegaI += angleError;
+			if(Math.abs(angleError) < 0.5) {
+				omegaI = 0;
+			}
+			if(omegaI > ((0.5) / (rkI * kF))) {
+				omegaI = ((0.5) / (rkI * kF));
+			}
+			if(omegaI < -((0.5) / (rkI * kF))) {
+				omegaI = -((0.5) / (rkI * kF));
+			}
+			omegaD = (angleDerivative.estimate(drive.getHeading())) * rkD;
+			omega = omegaP + omegaD + (omegaI * rkI * kF);
 			omega *= lor;
 			
 			drive.setMotorSpeeds(velocity + omega, velocity - omega);//right, left	
 				if((Math.abs(error) <= 0.0015//1.5 cm
 						&& Math.abs(angleError) <= 1 * (Math.PI / 180.0)//0.5 degrees
 						&& Math.abs(currentVelocity) < .0015)
-						|| (currentTime - lastTime > 5000))//1.5 cm per second
+						|| (currentTime - lastTime > 5))//1.5 cm per second
 			//time out) {
 				{
 					drive.setMotorSpeeds(0, 0);
