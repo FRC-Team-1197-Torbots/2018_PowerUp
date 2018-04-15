@@ -959,19 +959,24 @@ public class TorBantorShooarm {
 	}
 	
 	public void pressX() {
-		System.out.println("PRESS X");
+		scaleDo1 = scaleDo.IDLE;
+		switchEnable = false;
 		holdContinue = false;
 		holdIt = holder.STOP;
-		switchEnable = true;
-		scaleEnable = false;
+		intakeIt = intake.IDLE;
+		holdDown = intakeDown.IDLE;
+		shootIt = shoot.IDLE;
 		switchDo1 = switchDo.POS0;
 	}
 	
 	public void pressY() {
+		switchDo1 = switchDo.IDLE;
+		scaleEnable = false;
 		holdContinue = false;
 		holdIt = holder.STOP;
-		switchEnable = false;
-		scaleEnable = true;
+		intakeIt = intake.IDLE;
+		holdDown = intakeDown.IDLE;
+		shootIt = shoot.IDLE;
 		scaleDo1 = 	scaleDo.POS0;
 	}
 	
@@ -1051,7 +1056,14 @@ public class TorBantorShooarm {
 	}
 	
 	public void pressA() {
-		intakeIt = intake.POS0;
+		if(intakeIt == intake.IDLE) {
+			scaleEnable = false;
+			switchDo1 = switchDo.IDLE;
+			scaleDo1 = scaleDo.IDLE;
+			intakeIt = intake.IDLE;
+			shootIt = shoot.IDLE;
+			intakeIt = intake.POS0;
+		}
 	}
 	
 	public void setAutoIntake(double power) {

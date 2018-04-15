@@ -57,7 +57,7 @@ public class PivotTrajectory {
 		lasttime = Timer.getFPGATimestamp();
 	}
 	
-	public void run(double starttime) {			
+	public void run() {			
 		shooArm.TorBantorArmAndShooterUpdate();
 		currentAngle = drive.getHeading();
 		currentTime = Timer.getFPGATimestamp();

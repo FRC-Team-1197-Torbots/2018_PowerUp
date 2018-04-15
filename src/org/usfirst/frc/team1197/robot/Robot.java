@@ -55,6 +55,7 @@ public class Robot extends SampleRobot {
 	private final double rkD = 0.0002;
 	private double endTime;
 	private final double shootTime = 2000;
+	private CenterLeftDoubleSwitch CenterLeftDoubleSwitch;
 
 	public static enum auto {
 		IDLE, FORWARDL, TURNL, FORWARDL2, TURNL2, FORWARDL3, FORWARDR, TURNR, FORWARDR2, TURNR2, FORWARDR3, FIRE, REVDOWN;
@@ -118,6 +119,7 @@ public class Robot extends SampleRobot {
 
 		LinearTest = new LinearTrajectory(hardware, -1, shooArm);
 		PivotTest = new PivotTrajectory(hardware, 90, shooArm);
+		CenterLeftDoubleSwitch = new CenterLeftDoubleSwitch(hardware, shooArm);
 	}
 
 	public void robotInit() {
@@ -137,10 +139,9 @@ public class Robot extends SampleRobot {
 				//center
 				if(gameData.charAt(0) == 'L') {
 					//center left
-					
-					
-					
-					
+					while(isAutonomous()) {
+						CenterLeftDoubleSwitch.run();
+					}
 				} else {
 					//center right
 					
