@@ -14,13 +14,14 @@ public class PivotTrajectory {
 	
 	private double startAngle;
 	
-	private final double rkP = .1;//PD For rotation
-	private final double rkD = 0.01;//0.000005
-	private final double rkI = 0.001;
+	private final double rkP = 5;//PD For rotation
+	private final double rkD = 0.05;//0.000005
+	private final double rkI = 0.01;
 	
 	private double omegaP;//turning proportional
 	private double omegaD;//turning derivative
 	private double omegaI;
+	private final double lor = -1;
 	
 	private double angleError;
 	
@@ -88,6 +89,7 @@ public class PivotTrajectory {
 			currentVelocity *= (180 / Math.PI);//degrees per second
 			
 			speed = omegaP + omegaD + (omegaI * rkI * kF);
+			speed *= lor;
 			
 			drive.setMotorSpeeds(speed, -speed);
 				
