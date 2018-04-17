@@ -7,12 +7,12 @@ public class LinearTrajectory {
 	private double thisdistance;
 	private double currentDistance;
 	private boolean isFinished = false;
-	private final double tkP = 3;//PID for translation
+	private final double tkP = 10;//PID for translation
 	private final double tkD = 0.01;
-	private final double tkI = 0.005;//.0003
-	private final double rkP = 10;//PD For rotation
+	private final double tkI = 0.03;//.0003
+	private final double rkP = 5;//PD For rotation
 	private final double rkD = .05;//.05
-	private final double rkI = 0.002;
+	private final double rkI = 0.01;
 	private final double kF = 0.005;
 	private final int lor = 1;
 	private double currentVelocity;
@@ -125,7 +125,7 @@ public class LinearTrajectory {
 				if((Math.abs(error) <= 0.0015//1.5 cm
 						&& Math.abs(angleError) <= 1 * (Math.PI / 180.0)//0.5 degrees
 						&& Math.abs(currentVelocity) < .0015)
-						|| (currentTime - lastTime > 5))//1.5 cm per second
+						|| (currentTime - lastTime > 4))//1.5 cm per second
 			//time out) {
 				{
 					drive.setMotorSpeeds(0, 0);
