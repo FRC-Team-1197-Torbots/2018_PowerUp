@@ -173,21 +173,21 @@ public class Robot extends SampleRobot {
 		if(!linearTest) {
 			while(isEnabled()){
 				if(test) {
-//					SmartDashboard.putNumber("POT VALUE:", (fourtwenty.get()));
+					SmartDashboard.putNumber("POT VALUE:", (fourtwenty.get()));
 					SmartDashboard.putNumber("RIGHT ENCODER:", hardware.getRightEncoder());
 					SmartDashboard.putNumber("LEFT ENCODER:", hardware.getLeftEncoder());
-//					SmartDashboard.putBoolean("BREAKBEAM:", breakBeam.get());
+					SmartDashboard.putBoolean("BREAKBEAM:", breakBeam.get());
 					SmartDashboard.putNumber("GET POSITION", hardware.getPosition());
 					SmartDashboard.putNumber("Get Heading", hardware.getHeading());
 				} else {
 					shooArm.setAutoIntake(0.6);
-//					drive.driving(getLeftY(), getLeftX(), getRightX(), getShiftButton(), getRightBumper(), 
-//							getButtonA(), getButtonB(), getButtonX(), getButtonY()); // Enabling the drive ofthe robot
+					drive.driving(getLeftY(), getLeftX(), getRightX(), getShiftButton(), getRightBumper(), 
+							getButtonA(), getButtonB(), getButtonX(), getButtonY()); // Enabling the drive ofthe robot
 					shooArm.TorBantorArmAndShooterUpdate(); // Enabling arm control
-//					SmartDashboard.putNumber("POT VALUE:", (fourtwenty.get()));
+					SmartDashboard.putNumber("POT VALUE:", (fourtwenty.get()));
 					SmartDashboard.putNumber("RIGHT ENCODER:", hardware.getRightEncoder());
 					SmartDashboard.putNumber("LEFT ENCODER:", hardware.getLeftEncoder());
-//					SmartDashboard.putBoolean("BREAKBEAM:", breakBeam.get());
+					SmartDashboard.putBoolean("BREAKBEAM:", breakBeam.get());
 					SmartDashboard.putNumber("GET POSITION", hardware.getPosition());
 
 				}
@@ -199,8 +199,27 @@ public class Robot extends SampleRobot {
 				SmartDashboard.putNumber("Get Heading", hardware.getHeading());
 				SmartDashboard.putNumber("RIGHT ENCODER:", hardware.getRightEncoder());
 				SmartDashboard.putNumber("LEFT ENCODER:", hardware.getLeftEncoder());
+				SmartDashboard.putBoolean("Linear Finished?:", LinearTest.isDone());
+				SmartDashboard.putBoolean("Pivot Test Finished?:", PivotTest.isDone());
 				LinearTest.run();
 			}
+			SmartDashboard.putBoolean("Linear Finished?:", LinearTest.isDone());
+			SmartDashboard.putBoolean("Pivot Test Finished?:", PivotTest.isDone());
+			PivotTest.init();
+			while(!PivotTest.isDone()) {
+				SmartDashboard.putBoolean("Linear Finished?:", LinearTest.isDone());
+				SmartDashboard.putBoolean("Pivot Test Finished?:", PivotTest.isDone());
+				SmartDashboard.putNumber("GET POSITION", hardware.getPosition());
+				SmartDashboard.putNumber("Get Heading", hardware.getHeading());
+				SmartDashboard.putNumber("RIGHT ENCODER:", hardware.getRightEncoder());
+				SmartDashboard.putNumber("LEFT ENCODER:", hardware.getLeftEncoder());
+				PivotTest.run();
+			}
+			SmartDashboard.putBoolean("Linear Finished?:", LinearTest.isDone());
+			SmartDashboard.putBoolean("Pivot Test Finished?:", PivotTest.isDone());
+			shooArm.pressX();
+			
+		}
 			
 		}
 
