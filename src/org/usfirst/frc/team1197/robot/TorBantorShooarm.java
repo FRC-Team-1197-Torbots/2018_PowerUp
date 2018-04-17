@@ -22,6 +22,7 @@ public class TorBantorShooarm {
 	private Solenoid Pusher;
 	private double scaleAngle;
 	private double switchAngle;
+	private double humanAngle;
 	private double degreeTolerance;
 	private double kF;
 	private double kP;
@@ -34,11 +35,18 @@ public class TorBantorShooarm {
 	private double currentAngle;
 	private boolean switchEnable;
 	private boolean scaleEnable;
+	private boolean humanEnable;
 	private final double threshold = 25.0;
 	private boolean alreadyHot = false;
 	private long burnEndTime;
 	private TorDerivative scaleDerivative;
 	private TorDerivative switchDerivative;
+	private TorDerivative humanDerivative;
+	
+	public static enum humanDo {
+		IDLE, POS0, POS1, POS2, PID, POS4, POS5;
+		private humanDo() {}
+	}
 	
 	public static enum switchDo {
 		IDLE, POS0, POS1, POS2, PID, POS4, POS5;
@@ -75,6 +83,7 @@ public class TorBantorShooarm {
 		private intakeDown() {}
 	}
 	
+	public humanDo humanDo1 = humanDo.IDLE;
 	public switchDo switchDo1 = switchDo.IDLE;
 	public scaleDo scaleDo1 = scaleDo.IDLE;
 	public shoot shootIt = shoot.IDLE;
@@ -95,6 +104,13 @@ public class TorBantorShooarm {
 	private double manualMax = 0.6; // POSITIVE. The controls on the speeds for the manual override.
 	private double manualMin = -0.45; // HAS TO BE NEGATIVE!
 	
+	// Human Variables
+	private long humanPos1Time = 300;
+	private long humanPos2Time = 100;
+	private double humanMaxSpeed = 0.5;
+	private double humanCushion = 0;
+	private double humanShootPower = 0.25;
+	
 	// Switch Variables
 	private long switchPos1Time = 300; // change this to make it go up higher during the switch
 	private long switchPos2Time = 100; // this is the time it is at the max speed
@@ -103,7 +119,7 @@ public class TorBantorShooarm {
 	private double switchShootPower = 0.25;
 
 	// Scale Variables
-	private long scalePos1Time = 350;
+	private long scalePos1Time = 320;
 	private long scalePos2Time = 25;
 	private double scaleMaxSpeed = 0.7;
 	private double scaleCushion = -0.02;
@@ -115,7 +131,7 @@ public class TorBantorShooarm {
 	// Shooter & Intake Variables
 	private double shootPower = 0.2;//the power it shoots out at
 	private long extendTime = 300;//the time we give to the solenoid to extend and push the cube
-	private double intakePower = 0.6;
+	private double intakePower = 0.75;//0.6
 	private double downCushion = 0.3;
 	
 	// Hold PD Constants
@@ -130,6 +146,7 @@ public class TorBantorShooarm {
 	private double vaultShootPower = 0.8;
 	private double switchCurrentRatio;
 	private double scaleCurrentRatio;
+	private double humanCurrentRatio;
 	
 	/***********************************/
 
@@ -157,7 +174,7 @@ public class TorBantorShooarm {
 	public TorBantorShooarm(Joystick player1, Joystick player2, TalonSRX armTalon1, TalonSRX armTalon2, 
 			TalonSRX shootakeTalon1, VictorSPX shootakeTalon2, 
 			DigitalInput breakbeam, AnalogPotentiometer fourtwenty, 
-			double scaleAngle, double switchAngle, double degreeTolerance, 
+			double scaleAngle, double switchAngle, double humanAngle, double degreeTolerance, 
 			double kF, double kP, double kD, double holdAngle, 
 			Solenoid Pusher, double scalekI) {	
 		this.player1 = player1;
@@ -172,6 +189,7 @@ public class TorBantorShooarm {
 		startAngle = 78.14779548295432;//MAKE THIS WHEN THE ARM IS FLAT
 		this.scaleAngle = scaleAngle;
 		this.switchAngle = switchAngle;
+		this.humanAngle = humanAngle;
 		this.degreeTolerance = degreeTolerance;
 		this.kF = kF;
 		this.kP = kP;
@@ -182,6 +200,7 @@ public class TorBantorShooarm {
 		Pusher.set(false);
 		scaleDerivative = new TorDerivative(0.005);
 		switchDerivative = new TorDerivative(0.005);
+		humanDerivative = new TorDerivative(0.005);
 	}
 	
 	/*** PLAYER 2 BUTTON CONFIGURATION FOR THE ARM ***
@@ -210,6 +229,7 @@ public class TorBantorShooarm {
 			SmartDashboard.putBoolean("shootakeTalon1", shootake1Alive());
 			SmartDashboard.putBoolean("shootakeTalon2", shootake2Alive());
 			
+			humanDo();
 			switchDo(); 	  // Update for the switch
 			scaleDo(); 		  // Update for the scale
 			shoot(); 		  // Update for the shooter
@@ -233,6 +253,7 @@ public class TorBantorShooarm {
 		if(!stop && player2.getRawButton(3)
 				&& !player2.getRawButton(5)){
 			scaleDo1 = scaleDo.IDLE;
+			humanEnable = false;
 			switchEnable = false;
 			holdContinue = false;
 			holdIt = holder.STOP;
@@ -242,10 +263,24 @@ public class TorBantorShooarm {
 			switchDo1 = switchDo.POS0;
 		}
 		
+		if(!stop && player2.getRawButton(2)
+				&& !player2.getRawButton(5)){
+			scaleDo1 = scaleDo.IDLE;
+			humanEnable = false;
+			switchEnable = false;
+			holdContinue = false;
+			holdIt = holder.STOP;
+			intakeIt = intake.IDLE;
+			holdDown = intakeDown.IDLE;
+			shootIt = shoot.IDLE;
+			humanDo1 = humanDo.POS0;
+		}
+		
 		// Activate scale if button 'Y' is pressed
 		if(!stop && player2.getRawButton(4)
 				&& !player2.getRawButton(5)) {
 			switchDo1 = switchDo.IDLE;
+			humanDo1 = humanDo.IDLE;
 			scaleEnable = false;
 			holdContinue = false;
 			holdIt = holder.STOP;
@@ -258,6 +293,7 @@ public class TorBantorShooarm {
 		// Activate intake if button 'A' is pressed
 		if(!stop && player2.getRawButton(1) && intakeIt == intake.IDLE) {
 			scaleEnable = false;
+			humanDo1 = humanDo.IDLE;
 			switchDo1 = switchDo.IDLE;
 			scaleDo1 = scaleDo.IDLE;
 			intakeIt = intake.IDLE;
@@ -268,6 +304,7 @@ public class TorBantorShooarm {
 		if(!stop && 
 				(Math.abs(player1.getRawAxis(3)) > 0.2) || Math.abs(player2.getRawAxis(3)) > .2
 				&& (switchDo1 == switchDo.IDLE || switchDo1 == switchDo.PID) 
+				&& (humanDo1 == humanDo.IDLE || humanDo1 == humanDo.PID)
 				&& (scaleDo1 == scaleDo.IDLE || scaleDo1 == scaleDo.PID)
 				&& shootIt == shoot.IDLE) {
 			shootIt = shoot.POS0;
@@ -279,6 +316,7 @@ public class TorBantorShooarm {
 	public void stop(double angleToHold) {
 		switchDo1 = switchDo.IDLE;
 		scaleDo1 = scaleDo.IDLE;
+		humanDo1 = humanDo.IDLE;
 		shootIt = shoot.IDLE;
 		intakeIt = intake.IDLE;
 		holdIt = holder.STOP;
@@ -292,6 +330,115 @@ public class TorBantorShooarm {
 		lastError = 0;
 		while(true) {
 			stop1(angleToHold);
+		}
+	}
+	
+	public void humanDo() {
+		currentTime = System.currentTimeMillis();
+		relativeTime = currentTime - startTime;
+		x = ((relativeTime * 2 * Math.PI) / humanPos1Time) - Math.PI;
+		switch(humanDo1) {
+		case IDLE:
+			break;
+		case POS0:
+			shootakeTalon1.set(ControlMode.PercentOutput, 0);
+			shootakeTalon2.set(ControlMode.PercentOutput, 0);
+			speed = 0;
+			startTime = System.currentTimeMillis();
+			
+			if(((fourtwenty.get() - startAngle) * potSwitch) > (scaleAngle - degreeTolerance)) {
+				lastError = 0;
+				humanEnable = true;
+				shootPower = humanShootPower;
+				humanDerivative.resetValue(humanAngle - ((fourtwenty.get() - startAngle) * potSwitch));
+				humanDo1 = humanDo.PID;
+				//wants to go down from scale to switch
+			} else if(((fourtwenty.get() - startAngle) * potSwitch) > (humanAngle - 2 * degreeTolerance)) {
+				//is at human and wants to go down
+				endTime = currentTime + humanPos1Time;
+				humanDo1 = humanDo.POS4;
+			} else {
+				//wants to go up to human
+				humanCurrentRatio = (humanAngle - ((fourtwenty.get() - startAngle) * potSwitch)) / humanAngle;
+				endTime = currentTime + humanPos1Time;
+				humanDo1 = humanDo.POS1;
+			}
+			break;
+		case POS1:
+			shootPower = humanShootPower;
+			if(((fourtwenty.get() - startAngle) * potSwitch) > humanAngle) {
+				lastError = 0;
+				humanEnable = true;
+				shootPower = humanShootPower;
+				humanDerivative.resetValue(humanAngle - ((fourtwenty.get() - startAngle) * potSwitch));
+				humanDo1 = humanDo.PID;
+			}
+			speed = (x + Math.sin(x) + Math.PI) * humanMaxSpeed / (2 * Math.PI);
+			speed *= humanCurrentRatio;
+			armTalon1.set(ControlMode.PercentOutput, -speed * uod);
+			armTalon2.set(ControlMode.PercentOutput, speed * uod);
+			if(currentTime >= endTime) {
+				endTime = currentTime + humanPos2Time;
+				humanDo1 = humanDo.POS2;
+			}
+			break;
+		case POS2:
+			if(((fourtwenty.get() - startAngle) * potSwitch) > humanAngle) {
+				lastError = 0;
+				humanEnable = true;
+				shootPower = humanShootPower;
+				humanDerivative.resetValue(humanAngle - ((fourtwenty.get() - startAngle) * potSwitch));
+				humanDo1 = humanDo.PID;
+			}
+			armTalon1.set(ControlMode.PercentOutput, -speed * uod);
+			armTalon2.set(ControlMode.PercentOutput, speed * uod);
+			if(currentTime >= endTime) {
+				lastError = 0;
+				humanEnable = true;
+				shootPower = humanShootPower;
+				humanDerivative.resetValue(humanAngle - ((fourtwenty.get() - startAngle) * potSwitch));
+				humanDo1 = humanDo.PID;
+			}
+			break;
+		case PID:
+			if(humanEnable) {
+			shootPower = humanShootPower;
+				humanPIDGO();
+				humanDo1 = humanDo.PID;
+			} else {
+				startTime = System.currentTimeMillis();
+				endTime = currentTime + humanPos1Time;
+				humanDo1 = humanDo.IDLE;
+			}
+			break;
+		case POS4:
+			if(((fourtwenty.get() - startAngle) * potSwitch) < holdAngle) {
+				humanDo1 = humanDo.IDLE;
+				holdIt = holder.START;
+			}
+			speed = (Math.sin(x) + x + Math.PI) * humanMaxSpeed / (2 * Math.PI);
+			armTalon1.set(ControlMode.PercentOutput, speed * uod);
+			armTalon2.set(ControlMode.PercentOutput, -speed * uod);
+			if(currentTime >= endTime) {
+				endTime = currentTime + humanPos2Time;
+				lastAngle = ((fourtwenty.get() - startAngle) * potSwitch) - holdAngle;
+				humanDo1 = humanDo.POS5;
+			}
+			break;
+		case POS5:
+			if(((fourtwenty.get() - startAngle) * potSwitch) < holdAngle) {
+				humanDo1 = humanDo.IDLE;
+				holdIt = holder.START;
+			}
+			humanEnable = false;
+			speed = (humanMaxSpeed * ((((fourtwenty.get() - startAngle) * potSwitch) - holdAngle) / lastAngle)) + humanCushion;
+			armTalon1.set(ControlMode.PercentOutput, speed * uod);
+			armTalon2.set(ControlMode.PercentOutput, -speed * uod);
+			if(Math.abs(((fourtwenty.get() - startAngle) * potSwitch) - holdAngle) <= degreeTolerance) {
+				holdIt = holder.START;
+				humanDo1 = humanDo.IDLE;
+			}
+			break;
 		}
 	}
 
@@ -611,6 +758,17 @@ public class TorBantorShooarm {
 		armTalon2.set(ControlMode.PercentOutput, velocity * uod);
 		lastError = error;
 	}
+	
+	public void humanPIDGO() {
+		currentAngle = (((fourtwenty.get() - startAngle) * potSwitch));
+		error = humanAngle - currentAngle;
+		proportional = kP * error;
+		derivative = kD * humanDerivative.estimate(error);
+		velocity = proportional + derivative;
+		armTalon1.set(ControlMode.PercentOutput, -velocity * uod);
+		armTalon2.set(ControlMode.PercentOutput, velocity * uod);
+		lastError = error;
+	}
 
 	public void scalePIDGO() {
 		currentAngle = (((fourtwenty.get() - startAngle) * potSwitch));
@@ -906,7 +1064,12 @@ public class TorBantorShooarm {
 	
 	public void shootTake() {
 		if(!(intakeIt == intake.MOTORIN)) {
-			if(Math.abs(player2.getRawAxis(2)) > 0.3) {
+			if(Math.abs(player2.getRawAxis(2)) > 0.3 && humanDo1 == humanDo.PID) {
+				pressingRightTrigger = true;
+				
+				shootakeTalon1.set(ControlMode.PercentOutput, 0.5);
+				shootakeTalon2.set(ControlMode.PercentOutput, -0.5);
+			} else if(Math.abs(player2.getRawAxis(2)) > 0.3) {
 				pressingRightTrigger = true;
 				
 				shootakeTalon1.set(ControlMode.PercentOutput, shootPower * ioo);
@@ -957,26 +1120,24 @@ public class TorBantorShooarm {
 	public boolean scaleIsPID() {
 		return (scaleDo1 == scaleDo.PID);
 	}
+	public boolean humanIsPID() {
+		return (humanDo1 == humanDo.PID);
+	}
 	
 	public void pressX() {
-		scaleDo1 = scaleDo.IDLE;
-		switchEnable = false;
+		System.out.println("PRESS X");
 		holdContinue = false;
 		holdIt = holder.STOP;
-		intakeIt = intake.IDLE;
-		holdDown = intakeDown.IDLE;
-		shootIt = shoot.IDLE;
+		switchEnable = true;
+		scaleEnable = false;
 		switchDo1 = switchDo.POS0;
 	}
 	
 	public void pressY() {
-		switchDo1 = switchDo.IDLE;
-		scaleEnable = false;
 		holdContinue = false;
 		holdIt = holder.STOP;
-		intakeIt = intake.IDLE;
-		holdDown = intakeDown.IDLE;
-		shootIt = shoot.IDLE;
+		switchEnable = false;
+		scaleEnable = true;
 		scaleDo1 = 	scaleDo.POS0;
 	}
 	
@@ -1029,6 +1190,10 @@ public class TorBantorShooarm {
 		shootPower = scaleHighShootPower;
 	}
 	
+	public void humanShoot() {
+		shootPower = humanShootPower;
+	}
+	
 	public boolean inScale() {
 		return (Math.abs((((fourtwenty.get() - startAngle) * potSwitch) - scaleAngle)) <= degreeTolerance * 0.2);
 	}
@@ -1037,9 +1202,14 @@ public class TorBantorShooarm {
 		return (Math.abs((((fourtwenty.get() - startAngle) * potSwitch) - switchAngle)) <= degreeTolerance);
 	}
 	
+	public boolean inHuman() {
+		return (Math.abs((((fourtwenty.get() - startAngle) * potSwitch) - humanAngle)) <= degreeTolerance);
+	}
+	
 	public void STOPPROCESS() {	
 		switchDo1 = switchDo.IDLE;
 		scaleDo1 = scaleDo.IDLE;
+		humanDo1 = humanDo.IDLE;
 		intakeIt = intake.IDLE;
 		holdIt = holder.STOP;
 		manualGo = manual.IDLE;
@@ -1056,14 +1226,7 @@ public class TorBantorShooarm {
 	}
 	
 	public void pressA() {
-		if(intakeIt == intake.IDLE) {
-			scaleEnable = false;
-			switchDo1 = switchDo.IDLE;
-			scaleDo1 = scaleDo.IDLE;
-			intakeIt = intake.IDLE;
-			shootIt = shoot.IDLE;
-			intakeIt = intake.POS0;
-		}
+		intakeIt = intake.POS0;
 	}
 	
 	public void setAutoIntake(double power) {
