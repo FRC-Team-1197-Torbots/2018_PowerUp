@@ -71,6 +71,7 @@ public class Robot extends SampleRobot {
 	private double scalekI = .00005;
 	private double scaleAngle = 76;
 	private double switchAngle = 50;
+	private double humanAngle = 33;
 	private double degreeTolerance = 8;//the tolerance for the normal x + sin x up to get within the switch/scale angle before PID controls it
 	private double holdAngle = 10;
 	/*----------------------------------------------------------------------
@@ -114,7 +115,7 @@ public class Robot extends SampleRobot {
 //		// Analog number, how much the value changes as it goes over the 0 to 5 voltage range, the initial value of the degree of the potentiometer
 //
 		shooArm = new TorBantorShooarm(player1, player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, 
-				breakBeam, fourtwenty, scaleAngle, switchAngle, degreeTolerance, kF, kP, kD, 
+				breakBeam, fourtwenty, scaleAngle, switchAngle, humanAngle, degreeTolerance, kF, kP, kD, 
 				holdAngle, Pusher, scalekI); // TorBantorShooarm object used to enable the arm control + intake/shoot control of the robot
 
 		LinearTest = new LinearTrajectory(hardware, -1, shooArm);
