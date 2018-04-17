@@ -222,9 +222,9 @@ public class Robot extends SampleRobot {
 			
 		}
 			
-		}
-
 	}
+
+	
 
 	public void test() {
 		while(isEnabled()) {
