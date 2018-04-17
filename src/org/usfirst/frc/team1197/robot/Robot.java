@@ -219,7 +219,9 @@ public class Robot extends SampleRobot {
 			SmartDashboard.putBoolean("Linear Finished?:", LinearTest.isDone());
 			SmartDashboard.putBoolean("Pivot Test Finished?:", PivotTest.isDone());
 			shooArm.pressX();
-			
+			while(isEnabled()) {
+				shooArm.TorBantorArmAndShooterUpdate();
+			}
 		}
 			
 	}
