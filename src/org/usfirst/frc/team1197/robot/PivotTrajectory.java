@@ -14,7 +14,7 @@ public class PivotTrajectory {
 	
 	private double startAngle;
 	
-	private final double rkP = 5;//PD For rotation
+	private final double rkP = 3;//PD For rotation
 	private final double rkD = 0.05;//0.000005
 	private final double rkI = 0.01;
 	

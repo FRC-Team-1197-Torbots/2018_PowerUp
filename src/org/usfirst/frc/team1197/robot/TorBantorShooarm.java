@@ -14,7 +14,7 @@ public class TorBantorShooarm {
 	private Joystick player2;
 	private TalonSRX armTalon1;
 	private TalonSRX armTalon2;
-	private TalonSRX shootakeTalon1;
+	private VictorSPX shootakeTalon1;
 	private VictorSPX shootakeTalon2;
 	private AnalogPotentiometer fourtwenty;
 	private DigitalInput breakbeam;
@@ -172,7 +172,7 @@ public class TorBantorShooarm {
 	private double scaleIntegral = 0;
 
 	public TorBantorShooarm(Joystick player1, Joystick player2, TalonSRX armTalon1, TalonSRX armTalon2, 
-			TalonSRX shootakeTalon1, VictorSPX shootakeTalon2, 
+			VictorSPX shootakeTalon1, VictorSPX shootakeTalon2, 
 			DigitalInput breakbeam, AnalogPotentiometer fourtwenty, 
 			double scaleAngle, double switchAngle, double humanAngle, double degreeTolerance, 
 			double kF, double kP, double kD, double holdAngle, 
@@ -186,7 +186,7 @@ public class TorBantorShooarm {
 		this.Pusher = Pusher;
 		this.breakbeam = breakbeam;
 		this.fourtwenty = fourtwenty;
-		startAngle = 78.14779548295432;//MAKE THIS WHEN THE ARM IS FLAT
+		startAngle = 79.13330695172291;//MAKE THIS WHEN THE ARM IS FLAT
 		this.scaleAngle = scaleAngle;
 		this.switchAngle = switchAngle;
 		this.humanAngle = humanAngle;

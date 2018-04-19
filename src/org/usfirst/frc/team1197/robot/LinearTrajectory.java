@@ -8,9 +8,9 @@ public class LinearTrajectory {
 	private double currentDistance;
 	private boolean isFinished = false;
 	private final double tkP = 10;//PID for translation
-	private final double tkD = 0.01;
+	private final double tkD = 0.005;
 	private final double tkI = 0.03;//.0003
-	private final double rkP = 5;//PD For rotation
+	private final double rkP = 3;//PD For rotation
 	private final double rkD = .05;//.05
 	private final double rkI = 0.01;
 	private final double kF = 0.005;
@@ -93,11 +93,11 @@ public class LinearTrajectory {
 				vI = -(0.7 / (tkI * kF));
 			}
 			vP = error * tkP;
-			if(vP > 0.7) {
-				vP = 0.7;
+			if(vP > 0.8) {
+				vP = 0.8;
 			}
-			if(vP < -0.7) {
-				vP = -0.7;
+			if(vP < -0.8) {
+				vP = -0.8;
 			}
 			currentVelocity = derivative.estimate(drive.getPosition());//almost always positive
 			//has to be multiplied by -1 so that if it is approaching the target to fast
@@ -125,7 +125,7 @@ public class LinearTrajectory {
 				if((Math.abs(error) <= 0.0015//1.5 cm
 						&& Math.abs(angleError) <= 1 * (Math.PI / 180.0)//0.5 degrees
 						&& Math.abs(currentVelocity) < .0015)
-						|| (currentTime - lastTime > 4))//1.5 cm per second
+						|| (currentTime - lastTime > 1.5))//1.5 cm per second
 			//time out) {
 				{
 					drive.setMotorSpeeds(0, 0);
