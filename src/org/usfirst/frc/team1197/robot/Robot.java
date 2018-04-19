@@ -243,6 +243,7 @@ public class Robot extends SampleRobot {
 						 * RIGHT SWITCH AUTO
 						 */
 						//----------------------------------------------------------------------------------------------------------
+//						if(gameData.charAt(0) == 'R') {
 //						autoRightSwitchRun = autoRightSwitch.MOVE1;
 //						currentPosition = hardware.getPosition();
 //						lastPosition = currentPosition;
@@ -387,6 +388,7 @@ public class Robot extends SampleRobot {
 					 * LEFT SWITCH AUTO
 					 */
 					//----------------------------------------------------------------------------------------------------------
+//					if(gameData.charAt(0) == 'L') {
 //					autoLeftSwitchRun = autoLeftSwitch.MOVE1;
 //					currentPosition = hardware.getPosition();
 //					lastPosition = currentPosition;
