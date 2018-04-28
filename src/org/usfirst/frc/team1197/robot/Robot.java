@@ -55,7 +55,8 @@ public class Robot extends SampleRobot {
 	private final double rkD = 0.0002;
 	private double endTime;
 	private final double shootTime = 500;
-
+	private double currentTimeDouble;
+	private double lastTimeDouble;
 	public static enum auto {
 		IDLE, FORWARDL, TURNL, FORWARDL2, TURNL2, FORWARDL3, FORWARDR, TURNR, FORWARDR2, TURNR2, FORWARDR3, FIRE, REVDOWN;
 		private auto() {}
@@ -524,6 +525,7 @@ public class Robot extends SampleRobot {
 		hardware.shiftToLowGear();
 		shooArm.shootIdle();													
 		while(isAutonomous()) {
+			currentTimeDouble = Timer.getFPGATimestamp();
 			currentTime = System.currentTimeMillis();
 			shooArm.TorBantorArmAndShooterUpdate();
 			currentPosition = hardware.getPosition();
@@ -571,7 +573,7 @@ public class Robot extends SampleRobot {
 					shooArm.pressLeftTrigger();
 					lastPosition = currentPosition;
 					hardware.setMotorSpeeds(0.3, 0.3);
-					lastTime = currentTime;
+					lastTimeDouble = currentTimeDouble;
 					autoRun = auto.FIRE;
 				}
 				break;
@@ -615,12 +617,12 @@ public class Robot extends SampleRobot {
 					shooArm.pressLeftTrigger();
 					lastPosition = currentPosition;
 					hardware.setMotorSpeeds(0.3, 0.3);
-					lastTime = currentTime;
+					lastTimeDouble = currentTimeDouble;
 					autoRun = auto.FIRE;
 				}
 				break;
 			case FIRE:
-				if((currentPosition - lastPosition) > 1.5) {
+				if((currentPosition - lastPosition) > 1.5 || (currentTimeDouble - lastTimeDouble > 6)) {
 					hardware.setMotorSpeeds(0.0, 0.0);
 					shooArm.autoFire();
 					lastTime = currentTime;
