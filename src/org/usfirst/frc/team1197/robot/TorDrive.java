@@ -78,6 +78,6 @@ public class TorDrive
 			}
 		}
 		
-		hardware.setMotorSpeeds(-rightMotorSpeed, -leftMotorSpeed);
+		hardware.setMotorSpeeds(-rightMotorSpeed * .75, -leftMotorSpeed * .75);
 	}
 }

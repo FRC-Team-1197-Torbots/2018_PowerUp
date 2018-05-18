@@ -25,6 +25,7 @@ public class Robot extends SampleRobot {
 	private Joystick player2;
 	private Joystick autoBox;
 	private Solenoid Pusher;			
+	private Solenoid activeIntake;
 	private VictorSPX shootakeTalon1;   
 	private VictorSPX shootakeTalon2;   
 	private TalonSRX armTalon1; 
@@ -121,8 +122,9 @@ public class Robot extends SampleRobot {
 		breakBeam = new DigitalInput(0);     // Breakbeam to stop the intake when the cube is sucked in
 		shootakeTalon1 = new VictorSPX(9);   // Intake/Shooter VictorSPX on the arm
 		shootakeTalon2 = new VictorSPX(10);  // Intake/Shooter VictorSPX on the arm
-		Pusher = new Solenoid(0, 0);         // Solenoid to shoot out the cube
-
+		Pusher = new Solenoid(5);         // Solenoid to shoot out the cube
+		activeIntake = new Solenoid(4);
+		
 		drive = new TorDrive(player1, autoBox, hardware); // TorDrive object used to enable the drive of the robot
 
 		fourtwenty = new AnalogPotentiometer(0, 360, 0); // Analog Potentiometer to control the position of the arm
@@ -130,7 +132,7 @@ public class Robot extends SampleRobot {
 
 		shooArm = new TorBantorShooarm(player1, player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, 
 				breakBeam, fourtwenty, scaleAngle, switchAngle, degreeTolerance, kF, kP, kD, 
-				holdAngle, Pusher, scalekI); // TorBantorShooarm object used to enable the arm control + intake/shoot control of the robot
+				holdAngle, Pusher, activeIntake,																				 scalekI); // TorBantorShooarm object used to enable the arm control + intake/shoot control of the robot
 
 		LinearTest = new LinearTrajectory(hardware, -90, shooArm);
 		PivotTest = new PivotTrajectory(hardware, 1, shooArm);

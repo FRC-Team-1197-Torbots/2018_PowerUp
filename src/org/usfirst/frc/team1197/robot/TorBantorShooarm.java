@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.DigitalInput;//is the breakbeam
 
 public class TorBantorShooarm {
+	private Solenoid activeIntake;
 	private Joystick player1;
 	private Joystick player2;
 	private TalonSRX armTalon1;
@@ -108,9 +109,9 @@ public class TorBantorShooarm {
 	private double scaleMaxSpeed = 1;
 	private double scaleCushion = -0.02;
 	private double scaleShootPower = 1.0;
-	private final double scaleHighShootPower = 0.95;
-	private final double scaleMediumShootPower = 0.75;
-	private final double scaleLowShootPower = 0.65;
+	private final double scaleHighShootPower = 0.85;//0.95
+	private final double scaleMediumShootPower = 0.65;//0.75
+	private final double scaleLowShootPower = 0.5;//0.6
 
 	// Shooter & Intake Variables
 	private double shootPower = 0.2;//the power it shoots out at
@@ -159,7 +160,7 @@ public class TorBantorShooarm {
 			DigitalInput breakbeam, AnalogPotentiometer fourtwenty, 
 			double scaleAngle, double switchAngle, double degreeTolerance, 
 			double kF, double kP, double kD, double holdAngle, 
-			Solenoid Pusher, double scalekI) {	
+			Solenoid Pusher, Solenoid activeIntake, double scalekI) {	
 		this.player1 = player1;
 		this.player2 = player2;
 		this.armTalon1 = armTalon1;
@@ -178,6 +179,7 @@ public class TorBantorShooarm {
 		this.kD = kD;
 		this.scalekI = scalekI;
 		this.holdAngle = holdAngle;
+		this.activeIntake = activeIntake;
 		pressingRightTrigger = false;
 		Pusher.set(false);
 		scaleDerivative = new TorDerivative(0.005);
@@ -215,6 +217,13 @@ public class TorBantorShooarm {
 			holdDownUpdate(); // Update for the hold down
 			shootTake();
 			burnUpdate();
+			
+			//for the active intake
+			if((switchDo1 == switchDo.IDLE && scaleDo1 == scaleDo.IDLE && !(holdIt == holder.PD) && !breakbeam.get()) && !player2.getRawButton(2)) {
+				activeIntake.set(true);//open
+			} else {
+				activeIntake.set(false);//close
+			}
 
 			if(intakeIt == intake.IDLE) {
 				holdDown = intakeDown.IDLE;
