@@ -109,9 +109,9 @@ public class TorBantorShooarm {
 	private double scaleMaxSpeed = 1;
 	private double scaleCushion = -0.02;
 	private double scaleShootPower = 1.0;
-	private final double scaleHighShootPower = 0.85;//0.95
-	private final double scaleMediumShootPower = 0.65;//0.75
-	private final double scaleLowShootPower = 0.5;//0.6
+	private final double scaleHighShootPower = 0.95;//0.95
+	private final double scaleMediumShootPower = 0.75;//0.75
+	private final double scaleLowShootPower = 0.6;//0.6
 
 	// Shooter & Intake Variables
 	private double shootPower = 0.2;//the power it shoots out at

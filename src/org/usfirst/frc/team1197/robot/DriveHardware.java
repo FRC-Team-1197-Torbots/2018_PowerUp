@@ -22,7 +22,7 @@ public class DriveHardware {
 //	the values of the encoder
 	
 	private final Solenoid solenoid;
-	private final double encoderTicksPerMeter = 1000.9; // (units: ticks per meter)1035.6
+	private final double encoderTicksPerMeter = 1009.5; // (units: ticks per meter)1035.6
 	private final double approximateSensorSpeed = 924; // measured maximum (units: RPM)
 	private final double quadEncNativeUnits = 512.0; // (units: ticks per revolution)
 	

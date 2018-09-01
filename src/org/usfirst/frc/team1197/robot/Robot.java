@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
@@ -26,8 +27,11 @@ public class Robot extends SampleRobot {
 	private Joystick autoBox;
 	private Solenoid Pusher;			
 	private Solenoid activeIntake;
+	private Solenoid climber;
 	private VictorSPX shootakeTalon1;   
 	private VictorSPX shootakeTalon2;   
+	private TalonSRX climberTalon1;
+	private TalonSRX climberTalon2;
 	private TalonSRX armTalon1; 
 	private TalonSRX armTalon2; 
 	private TorDrive drive;
@@ -123,7 +127,10 @@ public class Robot extends SampleRobot {
 		shootakeTalon1 = new VictorSPX(9);   // Intake/Shooter VictorSPX on the arm
 		shootakeTalon2 = new VictorSPX(10);  // Intake/Shooter VictorSPX on the arm
 		Pusher = new Solenoid(5);         // Solenoid to shoot out the cube
-		activeIntake = new Solenoid(4);
+		activeIntake = new Solenoid(4); //solenoid for the active intake
+		climber = new Solenoid(3); //solenoid for climber
+		climberTalon1 = new TalonSRX(11);
+		climberTalon2 = new TalonSRX(12);
 		
 		drive = new TorDrive(player1, autoBox, hardware); // TorDrive object used to enable the drive of the robot
 
@@ -143,6 +150,14 @@ public class Robot extends SampleRobot {
 	}
 
 	public void autonomous() {	
+		//if we just want to go straight
+//		autoLeftRun = autoLeft.IDLE;
+//		hardware.setMotorSpeeds(0.75, 0.75);
+//		Timer.delay(2);
+//		hardware.setMotorSpeeds(0, 0);
+		
+		
+		
 		startAngle = hardware.getHeading();
 		shooArm.shootIdle();
 		gameData = DriverStation.getInstance().getGameSpecificMessage(); // Obtaining the switch & scale colors from the FMS
@@ -195,7 +210,7 @@ public class Robot extends SampleRobot {
 							omega = omegaP + omegaD;
 							omega *= -1;
 							hardware.setMotorSpeeds((0.5 - omega), (0.5 + omega));
-							if(currentPosition - lastPosition > (8 - 0.3)) {
+							if(currentPosition - lastPosition > (8 - 0.8)) {
 								shooArm.pressLeftTrigger();
 								hardware.setMotorSpeeds(0.4, -0.4);
 								lastAngle = currentAngle;
@@ -204,8 +219,8 @@ public class Robot extends SampleRobot {
 							break;
 						case FIRE:
 							if(Math.abs((currentAngle - lastAngle) * (180 / Math.PI)) > (90 - 5)) {
-								hardware.setMotorSpeeds(-0.4, -0.4);
-								Timer.delay(3);
+								hardware.setMotorSpeeds(-0.3, -0.3);
+								Timer.delay(0.75);
 								hardware.setMotorSpeeds(0, 0);
 								Timer.delay(0.3);
 								shooArm.autoFire();
@@ -258,7 +273,7 @@ public class Robot extends SampleRobot {
 							if(currentPosition - lastPosition > (3.78 - 0.3)) {
 								hardware.setMotorSpeeds(0, 0);
 								Timer.delay(0.3);
-								hardware.setMotorSpeeds(0.35, -0.35);
+								hardware.setMotorSpeeds(0.38, -0.38);
 								lastAngle = currentAngle;
 								autoRightSwitchRun = autoRightSwitch.MOVE3;
 							}
@@ -267,14 +282,14 @@ public class Robot extends SampleRobot {
 							if(Math.abs((currentAngle - lastAngle) * (180 / Math.PI)) > (90 - 5)) {
 								hardware.setMotorSpeeds(0, 0);
 								Timer.delay(0.3);
-								hardware.setMotorSpeeds(0.3, 0.3);
+								hardware.setMotorSpeeds(0.7, 0.7);
 								lastPosition = currentPosition;
 								shooArm.pressLeftTrigger();
 								autoRightSwitchRun = autoRightSwitch.FIRE;
 							}
 							break;
 						case FIRE:
-							if(currentPosition - lastPosition > (0.64 - 0.2)) {//NEED TO GET THIS VALUE
+							if(currentPosition - lastPosition > (0.2)) {//NEED TO GET THIS VALUE
 								hardware.setMotorSpeeds(0, 0);
 								shooArm.autoFire();
 								endTime = currentTime + shootTime;
@@ -331,7 +346,7 @@ public class Robot extends SampleRobot {
 							omega = omegaP + omegaD;
 							omega *= -1;
 							hardware.setMotorSpeeds((0.5 - omega), (0.5 + omega));
-							if(currentPosition - lastPosition > (8 - 0.3)) {
+							if(currentPosition - lastPosition > (8 - 0.8)) {
 								shooArm.pressLeftTrigger();
 								hardware.setMotorSpeeds(-0.4, 0.4);
 								lastAngle = currentAngle;
@@ -340,8 +355,8 @@ public class Robot extends SampleRobot {
 							break;
 						case FIRE:
 							if(Math.abs((currentAngle - lastAngle) * (180 / Math.PI)) > (90 - 5)) {
-								hardware.setMotorSpeeds(-0.4, -0.4);
-								Timer.delay(3);
+								hardware.setMotorSpeeds(-0.3, -0.3);
+								Timer.delay(0.75);
 								hardware.setMotorSpeeds(0, 0);
 								shooArm.autoFire();
 								lastTime = currentTime;
@@ -395,7 +410,7 @@ public class Robot extends SampleRobot {
 							if(currentPosition - lastPosition > (3.78 - 0.3)) {
 								hardware.setMotorSpeeds(0, 0);
 								Timer.delay(0.3);
-								hardware.setMotorSpeeds(-0.35, 0.35);
+								hardware.setMotorSpeeds(-0.38, 0.38);
 								lastAngle = currentAngle;
 								autoLeftSwitchRun = autoLeftSwitch.MOVE3;
 							}
@@ -404,14 +419,14 @@ public class Robot extends SampleRobot {
 							if(Math.abs((currentAngle - lastAngle) * (180 / Math.PI)) > (90 - 5)) {
 								hardware.setMotorSpeeds(0, 0);
 								Timer.delay(0.3);
-								hardware.setMotorSpeeds(0.3, 0.3);
+								hardware.setMotorSpeeds(0.7, 0.7);
 								lastPosition = currentPosition;
 								shooArm.pressLeftTrigger();
 								autoLeftSwitchRun = autoLeftSwitch.FIRE;
 							}
 							break;
 						case FIRE:
-							if(currentPosition - lastPosition > (0.64 - 0.2)) {//NEED TO GET THIS VALUE
+							if(currentPosition - lastPosition > (0.2)) {//NEED TO GET THIS VALUE
 								hardware.setMotorSpeeds(0, 0);
 								shooArm.autoFire();
 								endTime = currentTime + shootTime;
@@ -451,6 +466,27 @@ public class Robot extends SampleRobot {
 				SmartDashboard.putNumber("GET POSITION", hardware.getPosition());
 
 			} else {
+				//climber talon srx (winch puller) code
+				if(getButtonX()) {
+					climberTalon1.set(ControlMode.PercentOutput, 1);
+					climberTalon2.set(ControlMode.PercentOutput, 1);
+				} else {
+					if(getButtonB()) {
+						climberTalon1.set(ControlMode.PercentOutput, -1);
+						climberTalon2.set(ControlMode.PercentOutput, -1);
+					} else {
+						climberTalon1.set(ControlMode.PercentOutput, 0);
+						climberTalon2.set(ControlMode.PercentOutput, 0);
+					}
+				}
+				
+				//climber piston code
+				if(getButtonY()) {
+					climber.set(true);
+				} else {
+					climber.set(false);
+				}
+				
 				drive.driving(getLeftY(), getLeftX(), getRightX(), getShiftButton(), getRightBumper(), 
 						getButtonA(), getButtonB(), getButtonX(), getButtonY()); // Enabling the drive ofthe robot
 				shooArm.TorBantorArmAndShooterUpdate(); // Enabling arm control
@@ -545,7 +581,7 @@ public class Robot extends SampleRobot {
 				if((currentPosition - lastPosition) > 1.2) {
 					hardware.setMotorSpeeds(0, 0);
 					Timer.delay(0.3);
-					hardware.setMotorSpeeds(0.35, -0.35);//rightSpeed, leftSpeed
+					hardware.setMotorSpeeds(0.4, -0.4);//rightSpeed, leftSpeed
 					lastAngle = currentAngle;
 					autoRun = auto.FORWARDL2;
 				}
@@ -560,21 +596,21 @@ public class Robot extends SampleRobot {
 				}
 				break;
 			case TURNL2:
-				if((currentPosition - lastPosition) > 1.2) {
+				if((currentPosition - lastPosition) > 1.1) {//was 1.2
 					hardware.setMotorSpeeds(0, 0);
 					Timer.delay(0.3);
 					lastAngle = currentAngle;
-					hardware.setMotorSpeeds(-0.35, 0.35);
+					hardware.setMotorSpeeds(-0.4, 0.4);
 					autoRun = auto.FORWARDL3;
 				}
 				break;
 			case FORWARDL3:
-				if(Math.abs((currentAngle - lastAngle) * (180 / Math.PI)) > 85) {
+				if(Math.abs((currentAngle) * (180 / Math.PI)) < 4) {
 					hardware.setMotorSpeeds(0, 0);
 					Timer.delay(0.3);
 					shooArm.pressLeftTrigger();
 					lastPosition = currentPosition;
-					hardware.setMotorSpeeds(0.3, 0.3);
+					hardware.setMotorSpeeds(0.8, 0.8);
 					lastTimeDouble = currentTimeDouble;
 					autoRun = auto.FIRE;
 				}
@@ -589,7 +625,7 @@ public class Robot extends SampleRobot {
 				if((currentPosition - lastPosition) > 1.2) {
 					hardware.setMotorSpeeds(0, 0);
 					Timer.delay(0.3);
-					hardware.setMotorSpeeds(-0.35, 0.35);//rightSpeed, leftSpeed
+					hardware.setMotorSpeeds(-0.4, 0.4);//rightSpeed, leftSpeed
 					lastAngle = currentAngle;
 					autoRun = auto.FORWARDR2;
 				}
@@ -604,27 +640,28 @@ public class Robot extends SampleRobot {
 				}
 				break;
 			case TURNR2:
-				if(currentPosition - lastPosition > 1.2) {
+				if(currentPosition - lastPosition > 1.1) {//was 1.2
 					hardware.setMotorSpeeds(0, 0);
 					Timer.delay(0.3);
 					lastAngle = currentAngle;
-					hardware.setMotorSpeeds(0.35, -0.35);
+					hardware.setMotorSpeeds(0.4, -0.4);
 					autoRun = auto.FORWARDR3;
 				}
 				break;
 			case FORWARDR3:
-				if(Math.abs((currentAngle - lastAngle) * (180 / Math.PI)) > 85) {
+				if(Math.abs((currentAngle) * (180 / Math.PI)) < 4) {
 					hardware.setMotorSpeeds(0, 0);
 					Timer.delay(0.3);
 					shooArm.pressLeftTrigger();
 					lastPosition = currentPosition;
-					hardware.setMotorSpeeds(0.3, 0.3);
+					hardware.setMotorSpeeds(0.8, 0.8);
 					lastTimeDouble = currentTimeDouble;
 					autoRun = auto.FIRE;
 				}
 				break;
 			case FIRE:
-				if((currentPosition - lastPosition) > 1.5 || (currentTimeDouble - lastTimeDouble > 6)) {
+				if((currentPosition - lastPosition) > 1 || (currentTimeDouble - lastTimeDouble > 6)) {
+					//was 1.5
 					hardware.setMotorSpeeds(0.0, 0.0);
 					shooArm.autoFire();
 					lastTime = currentTime;
