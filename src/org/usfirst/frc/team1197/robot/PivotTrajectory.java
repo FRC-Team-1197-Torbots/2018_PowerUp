@@ -27,6 +27,8 @@ public class PivotTrajectory {
 	
 	private double currentVelocity;
 	
+	private double timeOutTime;
+	
 	private TorBantorShooarm shooArm;
 	
 	private TorDerivative derivative;
@@ -38,11 +40,12 @@ public class PivotTrajectory {
 	
 	public run runIt = run.IDLE;
 	
-	public PivotTrajectory(DriveHardware drive, double angle, TorBantorShooarm shooArm) {
+	public PivotTrajectory(DriveHardware drive, double angle, TorBantorShooarm shooArm, double timeOutTime) {
 		this.drive = drive;
 		this.thisAngle = angle;
 		thisAngle *= (Math.PI / 180.0);//degrees to radians
 		this.shooArm = shooArm;
+		this.timeOutTime = timeOutTime;
 		derivative = new TorDerivative(kF);
 	}
 

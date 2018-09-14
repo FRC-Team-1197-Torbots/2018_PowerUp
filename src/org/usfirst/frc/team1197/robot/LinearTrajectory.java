@@ -39,6 +39,8 @@ public class LinearTrajectory {
 	private TorDerivative derivative;
 	private TorDerivative angleDerivative;
 	
+	private double timeOutTime;
+	
 	
 	public static enum run {
 		IDLE, GO;
@@ -47,10 +49,11 @@ public class LinearTrajectory {
 	
 	public run runIt = run.IDLE;
 	
-	public LinearTrajectory(DriveHardware drive, double distance, TorBantorShooarm shooArm) {
+	public LinearTrajectory(DriveHardware drive, double distance, TorBantorShooarm shooArm, double timeOutTime) {
 		this.drive = drive;
 		this.thisdistance = distance;
 		this.shooArm = shooArm;
+		this.timeOutTime = timeOutTime;
 		derivative = new TorDerivative(kF);
 		angleDerivative = new TorDerivative(kF);
 	}
@@ -125,7 +128,7 @@ public class LinearTrajectory {
 				if((Math.abs(error) <= 0.0015//1.5 cm
 						&& Math.abs(angleError) <= 1 * (Math.PI / 180.0)//0.5 degrees
 						&& Math.abs(currentVelocity) < .0015)
-						|| (currentTime - lastTime > 4))//1.5 cm per second
+						|| (currentTime - lastTime > timeOutTime))//1.5 cm per second
 			//time out) {
 				{
 					drive.setMotorSpeeds(0, 0);

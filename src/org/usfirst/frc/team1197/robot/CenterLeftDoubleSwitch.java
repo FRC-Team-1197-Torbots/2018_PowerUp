@@ -49,17 +49,17 @@ public class CenterLeftDoubleSwitch {
 	public CenterLeftDoubleSwitch(DriveHardware drive, TorBantorShooarm shooArm) {
 		this.drive = drive;
 		this.shooArm = shooArm;
-		Move1 = new LinearTrajectory(drive, 0.30470, shooArm);
-		Move2 = new PivotTrajectory(drive, -30.15250, shooArm);
-		Move3 = new LinearTrajectory(drive, 2.44113, shooArm);
-		Move4 = new PivotTrajectory(drive, 21.02266, shooArm);
-		Move5 = new PivotTrajectory(drive, -21.02266, shooArm);
-		Move6 = new LinearTrajectory(drive, -2.18829, shooArm);
-		Move7 = new PivotTrajectory(drive, 30.1520, shooArm);
+		Move1 = new LinearTrajectory(drive, 0.30470, shooArm, 3);
+		Move2 = new PivotTrajectory(drive, -30.15250, shooArm, 3);
+		Move3 = new LinearTrajectory(drive, 2.44113, shooArm, 3);
+		Move4 = new PivotTrajectory(drive, 21.02266, shooArm, 3);
+		Move5 = new PivotTrajectory(drive, -21.02266, shooArm, 3);
+		Move6 = new LinearTrajectory(drive, -2.18829, shooArm, 3);
+		Move7 = new PivotTrajectory(drive, 30.1520, shooArm, 3);
 		//goes forward to intake and goes back for the same time with a PID here
-		Move8 = new PivotTrajectory(drive, -30.1520, shooArm);
-		Move9 = new LinearTrajectory(drive, 2.18829, shooArm);
-		Move10 = new PivotTrajectory(drive, 21.02266, shooArm);
+		Move8 = new PivotTrajectory(drive, -30.1520, shooArm, 3);
+		Move9 = new LinearTrajectory(drive, 2.18829, shooArm, 3);
+		Move10 = new PivotTrajectory(drive, 21.02266, shooArm, 3);
 		angleDerivative = new TorDerivative(kF);
 	}
 	public void run() {

@@ -24,8 +24,9 @@ public class Robot extends SampleRobot {
 	private Joystick player1; 
 	private Joystick player2;
 	private Joystick autoBox;
-	private Solenoid Pusher;			
-	private TalonSRX shootakeTalon1;   
+	private Solenoid Pusher;		
+	private Solenoid activeIntake;
+	private VictorSPX shootakeTalon1;   
 	private VictorSPX shootakeTalon2;   
 	private TalonSRX armTalon1; 
 	private TalonSRX armTalon2; 
@@ -37,24 +38,8 @@ public class Robot extends SampleRobot {
 	private LinearTrajectory LinearTest;
 	private PivotTrajectory PivotTest;
 	private boolean test;
-	private double currentPosition;
-	private double lastPosition;
-	private double lastAngle;
-	private double currentAngle;
-	private long currentTime;
-	private long lastTime;
-	private long revTime = 1400;
 	private String gameData;
-	private double angleError;
-	private double angleLastError;
-	private double startAngle;
-	private double omegaP;//turning proportional
-	private double omegaD;//turning derivative
-	private double omega;
-	private final double rkP = 0.4;//PD For rotation
-	private final double rkD = 0.0002;
-	private double endTime;
-	private final double shootTime = 2000;
+	
 	private CenterLeftDoubleSwitch CenterLeftDoubleSwitch;
 
 	public static enum auto {
@@ -71,29 +56,26 @@ public class Robot extends SampleRobot {
 	private double scalekI = .00005;
 	private double scaleAngle = 76;
 	private double switchAngle = 50;
-	private double humanAngle = 33;
 	private double degreeTolerance = 8;//the tolerance for the normal x + sin x up to get within the switch/scale angle before PID controls it
 	private double holdAngle = 10;
 	/*----------------------------------------------------------------------
 	 */
 
 	public Robot() {
-//		UsbCamera intakeCam = CameraServer.getInstance().startAutomaticCapture(0);
-//		intakeCam.setBrightness(50);
-//		intakeCam.setFPS(15);
-//		CvSink cvsink1 = new CvSink("Intake Cam");
-//		cvsink1.setSource(intakeCam);
-//		cvsink1.setEnabled(true);
-//
-//
-//		UsbCamera shootCam = CameraServer.getInstance().startAutomaticCapture(1);
-//		shootCam.setBrightness(0);
-//		shootCam.setFPS(15);
-//		CvSink cvsink2 = new CvSink("Shoot Cam");
-//		cvsink2.setSource(shootCam);
-//		cvsink2.setEnabled(true);
-//
-//
+		UsbCamera intakeCam = CameraServer.getInstance().startAutomaticCapture(0);
+		intakeCam.setBrightness(50);
+		CvSink cvsink1 = new CvSink("Intake Cam");
+		cvsink1.setSource(intakeCam);
+		cvsink1.setEnabled(true);
+
+
+		UsbCamera shootCam = CameraServer.getInstance().startAutomaticCapture(1);
+		shootCam.setBrightness(0);																																																																																
+		CvSink cvsink2 = new CvSink("Shoot Cam");
+		cvsink2.setSource(shootCam);
+		cvsink2.setEnabled(true);
+
+
 
 		hardware = new DriveHardware();
 
@@ -104,22 +86,22 @@ public class Robot extends SampleRobot {
 		armTalon1 = new TalonSRX(7); 		 // TalonSRX to move the arm
 		armTalon2 = new TalonSRX(8); 		 // TalonSRX to move the arm
 		breakBeam = new DigitalInput(0);     // Breakbeam to stop the intake when the cube is sucked in
-//		shootakeTalon1 = new VictorSPX(9);   // Intake/Shooter VictorSPX on the arm
-		shootakeTalon1 = new TalonSRX(9);
+		shootakeTalon1 = new VictorSPX(9);   // Intake/Shooter VictorSPX on the arm
 		shootakeTalon2 = new VictorSPX(10);  // Intake/Shooter VictorSPX on the arm
-		Pusher = new Solenoid(0, 0);         // Solenoid to shoot out the cube
-
+		Pusher = new Solenoid(5);         // Solenoid to shoot out the cube
+		activeIntake = new Solenoid(4); //solenoid for the active intake
+		
 		drive = new TorDrive(player1, autoBox, hardware); // TorDrive object used to enable the drive of the robot
 
 		fourtwenty = new AnalogPotentiometer(0, 360, 0); // Analog Potentiometer to control the position of the arm
-//		// Analog number, how much the value changes as it goes over the 0 to 5 voltage range, the initial value of the degree of the potentiometer
-//
-		shooArm = new TorBantorShooarm(player1, player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, 
-				breakBeam, fourtwenty, scaleAngle, switchAngle, humanAngle, degreeTolerance, kF, kP, kD, 
-				holdAngle, Pusher, scalekI); // TorBantorShooarm object used to enable the arm control + intake/shoot control of the robot
+		// Analog number, how much the value changes as it goes over the 0 to 5 voltage range, the initial value of the degree of the potentiometer
 
-		LinearTest = new LinearTrajectory(hardware, -1, shooArm);
-		PivotTest = new PivotTrajectory(hardware, 90, shooArm);
+		shooArm = new TorBantorShooarm(player1, player2, armTalon1, armTalon2, shootakeTalon1, shootakeTalon2, 
+				breakBeam, fourtwenty, scaleAngle, switchAngle, degreeTolerance, kF, kP, kD, 
+				holdAngle, Pusher, activeIntake, scalekI); // TorBantorShooarm object used to enable the arm control + intake/shoot control of the robot
+
+		LinearTest = new LinearTrajectory(hardware, -90, shooArm, 500);
+		PivotTest = new PivotTrajectory(hardware, 1, shooArm, 500);
 		CenterLeftDoubleSwitch = new CenterLeftDoubleSwitch(hardware, shooArm);
 	}
 
@@ -202,6 +184,7 @@ public class Robot extends SampleRobot {
 				SmartDashboard.putNumber("LEFT ENCODER:", hardware.getLeftEncoder());
 				SmartDashboard.putBoolean("Linear Finished?:", LinearTest.isDone());
 				SmartDashboard.putBoolean("Pivot Test Finished?:", PivotTest.isDone());
+				shooArm.TorBantorArmAndShooterUpdate();
 				LinearTest.run();
 			}
 			SmartDashboard.putBoolean("Linear Finished?:", LinearTest.isDone());
@@ -214,10 +197,11 @@ public class Robot extends SampleRobot {
 				SmartDashboard.putNumber("Get Heading", hardware.getHeading());
 				SmartDashboard.putNumber("RIGHT ENCODER:", hardware.getRightEncoder());
 				SmartDashboard.putNumber("LEFT ENCODER:", hardware.getLeftEncoder());
+				shooArm.TorBantorArmAndShooterUpdate();
 				PivotTest.run();
 			}
-			SmartDashboard.putBoolean("Linear Finished?:", LinearTest.isDone());
-			SmartDashboard.putBoolean("Pivot Test Finished?:", PivotTest.isDone());
+			SmartDashboard.putBoolean("Linear Finished?:", true);
+			SmartDashboard.putBoolean("Pivot Test Finished?:", true);
 			shooArm.pressX();
 			while(isEnabled()) {
 				shooArm.TorBantorArmAndShooterUpdate();
