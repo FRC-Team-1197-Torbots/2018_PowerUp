@@ -15,6 +15,12 @@ public class LinearTrajectory {
 	private final double rkI = 0.01;
 	private final double kF = 0.005;
 	private final int lor = 1;
+	
+	//tolerances
+	private final double positionTolerance = 0.015;//units: meters
+	private final double velocityTolerance = 0.015;//units: meters per second
+	private final double headingTolerance = 1 * (Math.PI / 180.0);//units: radians
+	
 	private double currentVelocity;
 	
 	private double omegaP;//turning proportional
@@ -66,7 +72,18 @@ public class LinearTrajectory {
 		runIt = run.GO;
 		startDistance = drive.getPosition();
 		firstAngle = drive.getHeading();
-		angleDerivative.resetValue(drive.getHeading());
+		currentAngle = drive.getHeading();
+		angleError = currentAngle - firstAngle;
+		//is in radians so we have to make sure that it goes from -pi to pi and does not have 
+		//an absolute value greater than pi in order to be an efficient control system
+		if(angleError > Math.PI) {
+			angleError -= (2 * Math.PI);
+		} else {
+			if(angleError < -Math.PI) {
+				angleError += (2 * Math.PI);
+			}
+		}
+		angleDerivative.resetValue(angleError);
 		derivative.resetValue(drive.getPosition());
 		lastTime = Timer.getFPGATimestamp();
 	}
@@ -97,8 +114,7 @@ public class LinearTrajectory {
 			//since this distance is always positive, we have to multiply by fob for if it is negative
 			error = (thisdistance) - (currentDistance - startDistance);//error always positive if approaching
 			vI += error;
-			if(Math.abs(error) <= 0.00075
-					&& Math.abs(currentVelocity) < .0015) {//1.5 cm
+			if(Math.abs(error) <= positionTolerance) {
 				vI = 0;
 			}
 			if(vI > (0.7 / (tkI * kF))) {
@@ -123,7 +139,7 @@ public class LinearTrajectory {
 			//velocity is good
 			omegaP = angleError * rkP;
 			omegaI += angleError;
-			if(Math.abs(angleError) < 0.5) {
+			if(Math.abs(angleError) < headingTolerance) {
 				omegaI = 0;
 			}
 			if(omegaI > ((0.5) / (rkI * kF))) {
@@ -138,9 +154,9 @@ public class LinearTrajectory {
 			omega *= lor;
 			
 			drive.setMotorSpeeds(velocity + omega, velocity - omega);//right, left	
-				if((Math.abs(error) <= 0.0015//1.5 cm
-						&& Math.abs(angleError) <= 1 * (Math.PI / 180.0)//1 degrees
-						&& Math.abs(currentVelocity) < .0015)//1.5 cm per second
+				if((Math.abs(error) <= positionTolerance
+						&& Math.abs(angleError) <= headingTolerance
+						&& Math.abs(currentVelocity) < velocityTolerance)
 						|| (currentTime - lastTime > timeOutTime))
 				{
 					drive.setMotorSpeeds(0, 0);

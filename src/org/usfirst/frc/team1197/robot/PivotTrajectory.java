@@ -18,6 +18,10 @@ public class PivotTrajectory {
 	private final double rkD = 0.05;//0.000005
 	private final double rkI = 0.01;
 	
+	//tolerances
+	private final double angleTolerance = 1.0 * (Math.PI / 180.0);//radians
+	private final double omegaTolerance = 1.0 * (Math.PI / 180.0);//radians per second
+	
 	private double omegaP;//turning proportional
 	private double omegaD;//turning derivative
 	private double omegaI;
@@ -56,8 +60,18 @@ public class PivotTrajectory {
 	public void init() {
 		isFinished = false;
 		runIt = run.GO;
+		currentAngle = drive.getHeading();
 		startAngle = drive.getHeading();
-		derivative.resetValue(drive.getHeading());
+		angleError = (thisAngle) - ((currentAngle - startAngle));
+		//we need to make sure control system is efficient so the angle error ranges from -pi to pi
+		if(angleError > Math.PI) {
+			angleError -= (2 * Math.PI);
+		} else {
+			if(angleError < -Math.PI) {
+				angleError += (2 * Math.PI);
+			}
+		}
+		derivative.resetValue(angleError);
 		lasttime = Timer.getFPGATimestamp();
 	}
 	
@@ -70,9 +84,18 @@ public class PivotTrajectory {
 			break;
 		case GO:
 			angleError = (thisAngle) - ((currentAngle - startAngle));
+			//we need to make sure control system is efficient so the angle error ranges from -pi to pi
+			if(angleError > Math.PI) {
+				angleError -= (2 * Math.PI);
+			} else {
+				if(angleError < -Math.PI) {
+					angleError += (2 * Math.PI);
+				}
+			}
+			
 			omegaI += angleError;
 			omegaP = angleError * rkP;
-			if(Math.abs(angleError) < 0.5) {
+			if(Math.abs(angleError) < angleTolerance) {
 				omegaI = 0;
 			}
 			if(omegaI > (0.7 / (rkI * kF))) {
@@ -87,18 +110,19 @@ public class PivotTrajectory {
 			if(omegaD < -0.7) {
 				omegaD = -0.7;
 			}
-			currentVelocity = derivative.estimate(drive.getHeading());//radians per second
+			currentVelocity = derivative.estimate(angleError);//radians per second
 			omegaD = (currentVelocity * rkD);
-			currentVelocity *= (180 / Math.PI);//degrees per second
 			
 			speed = omegaP + omegaD + (omegaI * rkI * kF);
 			speed *= lor;
 			
 			drive.setMotorSpeeds(speed, -speed);
 				
-			if((Math.abs(angleError) <= (1 * (Math.PI / 180.0))
-					&& Math.abs(currentVelocity) < 0.125) || 
-					(currentTime - lasttime > 2)) {
+			if(((Math.abs(angleError) <= angleTolerance)
+					&& (Math.abs(currentVelocity) < omegaTolerance))
+					
+					|| 
+					(currentTime - lasttime > timeOutTime)) {//timeout
 				drive.setMotorSpeeds(0, 0);
 				isFinished = true;
 				runIt = run.IDLE;
