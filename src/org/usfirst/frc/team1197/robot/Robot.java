@@ -41,6 +41,7 @@ public class Robot extends SampleRobot {
 	private String gameData;
 	
 	private CenterLeftDoubleSwitch CenterLeftDoubleSwitch;
+	private CenterRightDoubleSwitch CenterRightDoubleSwitch;
 
 	public static enum auto {
 		IDLE, FORWARDL, TURNL, FORWARDL2, TURNL2, FORWARDL3, FORWARDR, TURNR, FORWARDR2, TURNR2, FORWARDR3, FIRE, REVDOWN;
@@ -62,18 +63,18 @@ public class Robot extends SampleRobot {
 	 */
 
 	public Robot() {
-		UsbCamera intakeCam = CameraServer.getInstance().startAutomaticCapture(0);
-		intakeCam.setBrightness(50);
-		CvSink cvsink1 = new CvSink("Intake Cam");
-		cvsink1.setSource(intakeCam);
-		cvsink1.setEnabled(true);
-
-
-		UsbCamera shootCam = CameraServer.getInstance().startAutomaticCapture(1);
-		shootCam.setBrightness(0);																																																																																
-		CvSink cvsink2 = new CvSink("Shoot Cam");
-		cvsink2.setSource(shootCam);
-		cvsink2.setEnabled(true);
+//		UsbCamera intakeCam = CameraServer.getInstance().startAutomaticCapture(0);
+//		intakeCam.setBrightness(50);
+//		CvSink cvsink1 = new CvSink("Intake Cam");
+//		cvsink1.setSource(intakeCam);
+//		cvsink1.setEnabled(true);
+//
+//
+//		UsbCamera shootCam = CameraServer.getInstance().startAutomaticCapture(1);
+//		shootCam.setBrightness(0);																																																																																
+//		CvSink cvsink2 = new CvSink("Shoot Cam");
+//		cvsink2.setSource(shootCam);
+//		cvsink2.setEnabled(true);
 
 
 
@@ -103,6 +104,7 @@ public class Robot extends SampleRobot {
 		LinearTest = new LinearTrajectory(hardware, -90, shooArm, 500);
 		PivotTest = new PivotTrajectory(hardware, 1, shooArm, 500);
 		CenterLeftDoubleSwitch = new CenterLeftDoubleSwitch(hardware, shooArm);
+		CenterRightDoubleSwitch = new CenterRightDoubleSwitch(hardware, shooArm);
 	}
 
 	public void robotInit() {
@@ -110,8 +112,6 @@ public class Robot extends SampleRobot {
 	}
 
 	public void autonomous() {	
-		//startAngle = hardware.getHeading();
-		//shooArm.shootIdle();
 		gameData = DriverStation.getInstance().getGameSpecificMessage(); // Obtaining the switch & scale colors from the FMS
 		SmartDashboard.putString("Game Data", gameData);
 		if(autoBox != null) { // Checking if the hardware required for auto is connected 
@@ -127,25 +127,51 @@ public class Robot extends SampleRobot {
 					}
 				} else {
 					//center right
-					
-					
-					
-					
-					
-					
+					while(isAutonomous()) {
+						CenterRightDoubleSwitch.run();
+					}
 				}
-				
 			} else if(autoBox.getRawButton(2)) {
-				//right
+				//right - line up in front of switch
+				Timer.delay(4);//we wait time to let another robot pass in front of us first
+				
+				if(gameData.charAt(0) == 'R') {
+					shooArm.pressXStart();
+					shooArm.switchShoot();
+					shooArm.shootIdle();
+					shooArm.pressLeftTrigger();
+					hardware.setMotorSpeeds(0.75, 0.75);
+					Timer.delay(2);
+					hardware.setMotorSpeeds(0, 0);
+					shooArm.autoFire();
+				} else {
+					hardware.setMotorSpeeds(0.75, 0.75);
+					Timer.delay(2);
+					hardware.setMotorSpeeds(0, 0);
+				}
 			} else {
-				//left
+				//left - line up in front of switch
+				Timer.delay(4);//we wait time to let another robot pass in front of us first
+				
+				if(gameData.charAt(0) == 'L') {
+					shooArm.pressXStart();
+					shooArm.switchShoot();
+					shooArm.shootIdle();
+					shooArm.pressLeftTrigger();
+					hardware.setMotorSpeeds(0.75, 0.75);
+					Timer.delay(2);
+					hardware.setMotorSpeeds(0, 0);
+					shooArm.autoFire();
+					while(isAutonomous()) {
+						shooArm.TorBantorArmAndShooterUpdate();
+					}
+				} else {
+					//just drive forward
+					hardware.setMotorSpeeds(0.75, 0.75);
+					Timer.delay(2);
+					hardware.setMotorSpeeds(0, 0);
+				}
 			}
-			
-			
-			
-			
-			
-			
 		}
 	}
 

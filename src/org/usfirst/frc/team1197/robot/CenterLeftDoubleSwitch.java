@@ -3,6 +3,10 @@ package org.usfirst.frc.team1197.robot;
 import edu.wpi.first.wpilibj.Timer;
 
 public class CenterLeftDoubleSwitch {
+	//boolean for whether it just stops after the first cube in the switch
+	private final boolean oneSwitchDone = true;
+	
+	
 	private DriveHardware drive;
 	private TorBantorShooarm shooArm;
 	private LinearTrajectory Move1;
@@ -16,10 +20,10 @@ public class CenterLeftDoubleSwitch {
 	private PivotTrajectory Move8;
 	private LinearTrajectory Move9;
 	private PivotTrajectory Move10;
-	private long starttime;
-	private long currentTime;
-	private long forwardTime;
-	private long lastTime;
+	private double starttime;
+	private double currentTime;
+	private double forwardTime;
+	private double lastTime;
 	private final double rkP = 10;//PD For rotation
 	private final double rkD = .05;//.05
 	private final double rkI = 0.002;
@@ -64,7 +68,7 @@ public class CenterLeftDoubleSwitch {
 	}
 	public void run() {
 		currentAngle = drive.getHeading();
-		currentTime = System.currentTimeMillis();
+		currentTime = Timer.getFPGATimestamp();
 		shooArm.TorBantorArmAndShooterUpdate();
 		switch(run1) {
 		case IDLE:
@@ -104,7 +108,7 @@ public class CenterLeftDoubleSwitch {
 			Move4.run();
 			if(Move4.isDone()) {
 				shooArm.autoFire();
-				Timer.delay(0.2);
+				Timer.delay(0.4);
 				//I KNOW I AM NOT SUPPOSED TO DO THIS
 				//but, 0.2 seconds of not updating the arm
 				//and it will not mess up the timing of everything else
@@ -117,9 +121,13 @@ public class CenterLeftDoubleSwitch {
 			Move5.run();
 			if(Move5.isDone()) {
 				shooArm.releaseLeftTrigger();
-				Move6.init();
-				Move6.run();
-				run1 = runIt.MOVE6;
+				if(oneSwitchDone) {
+					run1 = runIt.IDLE;
+				} else {
+					Move6.init();
+					Move6.run();
+					run1 = runIt.MOVE6;
+				}
 			}
 			break;
 		case MOVE6:
@@ -144,6 +152,15 @@ public class CenterLeftDoubleSwitch {
 			break;
 		case GOFORWARD:
 			angleError = currentAngle - firstAngle;
+			//is in radians so we have to make sure that it goes from -pi to pi and does not have 
+			//an absolute value greater than pi in order to be an efficient control system
+			if(angleError > Math.PI) {
+				angleError -= (2 * Math.PI);
+			} else {
+				if(angleError < -Math.PI) {
+					angleError += (2 * Math.PI);
+				}
+			}
 			
 			omegaP = angleError * rkP;
 			omegaD = (angleDerivative.estimate(drive.getHeading())) * rkD;
@@ -156,11 +173,21 @@ public class CenterLeftDoubleSwitch {
 				drive.setMotorSpeeds(0, 0);
 				omegaI = 0;
 				forwardTime = currentTime - starttime;
+				starttime = currentTime;
 				run1 = runIt.GOBACK;
 			}
 			break;
 		case GOBACK:
 			angleError = currentAngle - firstAngle;
+			//is in radians so we have to make sure that it goes from -pi to pi and does not have 
+			//an absolute value greater than pi in order to be an efficient control system
+			if(angleError > Math.PI) {
+				angleError -= (2 * Math.PI);
+			} else {
+				if(angleError < -Math.PI) {
+					angleError += (2 * Math.PI);
+				}
+			}
 			
 			omegaP = angleError * rkP;
 			omegaD = (angleDerivative.estimate(drive.getHeading())) * rkD;
@@ -170,7 +197,7 @@ public class CenterLeftDoubleSwitch {
 			
 			drive.setMotorSpeeds(-0.4 + omega, -0.4 - omega);
 			
-			if(currentTime > (starttime + (2 * forwardTime))) {
+			if(currentTime > (starttime + (forwardTime))) {
 				drive.setMotorSpeeds(0, 0);
 				Move8.init();
 				Move8.run();
@@ -204,7 +231,7 @@ public class CenterLeftDoubleSwitch {
 			}
 			break;
 		case RELEASE:
-			if(currentTime > lastTime + 500) {
+			if(currentTime > lastTime + 0.5) {
 				shooArm.releaseLeftTrigger();
 			}
 			break;
