@@ -73,8 +73,10 @@ public class LinearTrajectory {
 		
 	
 	public void run() {
-		shooArm.TorBantorArmAndShooterUpdate();
+		shooArm.TorBantorArmAndShooterUpdate();	
 		currentAngle = drive.getHeading();
+		//we can't fix current angle right now so that it can't be 359 degrees since we need it in this raw value first for the angleError
+		//since it is never used other than for finding angleError, there is no need to make sure that it reads -1 degrees rather than 359 degrees
 		currentDistance = drive.getPosition();
 		currentTime = Timer.getFPGATimestamp();
 		switch(runIt) {
@@ -82,6 +84,16 @@ public class LinearTrajectory {
 			break;
 		case GO:
 			angleError = currentAngle - firstAngle;
+			//is in radians so we have to make sure that it goes from -pi to pi and does not have 
+			//an absolute value greater than pi in order to be an efficient control system
+			if(angleError > Math.PI) {
+				angleError -= (2 * Math.PI);
+			} else {
+				if(angleError < -Math.PI) {
+					angleError += (2 * Math.PI);
+				}
+			}
+			
 			//since this distance is always positive, we have to multiply by fob for if it is negative
 			error = (thisdistance) - (currentDistance - startDistance);//error always positive if approaching
 			vI += error;
@@ -120,16 +132,16 @@ public class LinearTrajectory {
 			if(omegaI < -((0.5) / (rkI * kF))) {
 				omegaI = -((0.5) / (rkI * kF));
 			}
-			omegaD = (angleDerivative.estimate(drive.getHeading())) * rkD;
+			
+			omegaD = (angleDerivative.estimate(angleError)) * rkD;
 			omega = omegaP + omegaD + (omegaI * rkI * kF);
 			omega *= lor;
 			
 			drive.setMotorSpeeds(velocity + omega, velocity - omega);//right, left	
 				if((Math.abs(error) <= 0.0015//1.5 cm
-						&& Math.abs(angleError) <= 1 * (Math.PI / 180.0)//0.5 degrees
-						&& Math.abs(currentVelocity) < .0015)
-						|| (currentTime - lastTime > timeOutTime))//1.5 cm per second
-			//time out) {
+						&& Math.abs(angleError) <= 1 * (Math.PI / 180.0)//1 degrees
+						&& Math.abs(currentVelocity) < .0015)//1.5 cm per second
+						|| (currentTime - lastTime > timeOutTime))
 				{
 					drive.setMotorSpeeds(0, 0);
 					isFinished = true;
