@@ -53,9 +53,9 @@ public class CenterLeftDoubleSwitch {
 	public CenterLeftDoubleSwitch(DriveHardware drive, TorBantorShooarm shooArm) {
 		this.drive = drive;
 		this.shooArm = shooArm;
-		Move1 = new LinearTrajectory(drive, 0.30470, shooArm, 3);
-		Move2 = new PivotTrajectory(drive, -30.15250, shooArm, 3);
-		Move3 = new LinearTrajectory(drive, 2.44113, shooArm, 3);
+		Move1 = new LinearTrajectory(drive, 0.6, shooArm, 1.0);//0.30470
+		Move2 = new PivotTrajectory(drive, -38, shooArm, 3);//-30.15250
+		Move3 = new LinearTrajectory(drive, 2.675, shooArm, 2.25);//2.44113
 		Move4 = new PivotTrajectory(drive, 21.02266, shooArm, 3);
 		Move5 = new PivotTrajectory(drive, -21.02266, shooArm, 3);
 		Move6 = new LinearTrajectory(drive, -2.18829, shooArm, 3);
@@ -72,6 +72,7 @@ public class CenterLeftDoubleSwitch {
 		shooArm.TorBantorArmAndShooterUpdate();
 		switch(run1) {
 		case IDLE:
+			shooArm.switchShoot();
 			break;
 		case START:
 			shooArm.pressXStart();
@@ -84,24 +85,36 @@ public class CenterLeftDoubleSwitch {
 			if(Move1.isDone()) {
 				Move2.init();
 				Move2.run();
-				run1 = runIt .MOVE2;
+				run1 = runIt.MOVE2;
 			}
 			break;
 		case MOVE2:
 			Move2.run();
+			shooArm.switchShoot();
+			shooArm.pressLeftTrigger();
 			if(Move2.isDone()) {
+				shooArm.switchShoot();
+				shooArm.pressLeftTrigger();
 				Move3.init();
 				Move3.run();
+				shooArm.switchShoot();
 				run1 = runIt.MOVE3;
 			}
 			break;
 		case MOVE3:
 			Move3.run();
 			if(Move3.isDone()) {
+				shooArm.switchShoot();
 				shooArm.pressLeftTrigger();
-				Move4.init();
-				Move4.run();
-				run1 = runIt.MOVE2;
+				shooArm.autoFire();
+				if(oneSwitchDone) {
+					shooArm.autoFire();
+					run1 = runIt.IDLE;
+				} else {
+					Move4.init();
+					Move4.run();
+					run1 = runIt.MOVE4;
+				}
 			}
 			break;
 		case MOVE4:
@@ -120,7 +133,7 @@ public class CenterLeftDoubleSwitch {
 		case MOVE5:
 			Move5.run();
 			if(Move5.isDone()) {
-				shooArm.releaseLeftTrigger();
+//				shooArm.releaseLeftTrigger();
 				if(oneSwitchDone) {
 					run1 = runIt.IDLE;
 				} else {

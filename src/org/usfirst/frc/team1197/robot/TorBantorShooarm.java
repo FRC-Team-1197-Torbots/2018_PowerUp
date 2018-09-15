@@ -1020,8 +1020,8 @@ public class TorBantorShooarm {
 		}
 	}
 
-	public void switchShoot() {
-		shootPower = switchShootPower;
+	public void switchShoot() {//for auto switch shoot is going to be 0.6
+		shootPower = 0.30;
 	}
 
 	public void scaleShoot() {

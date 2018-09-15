@@ -53,9 +53,9 @@ public class CenterRightDoubleSwitch {
 	public CenterRightDoubleSwitch(DriveHardware drive, TorBantorShooarm shooArm) {
 		this.drive = drive;
 		this.shooArm = shooArm;
-		Move1 = new LinearTrajectory(drive, 0.30470, shooArm, 3);
-		Move2 = new PivotTrajectory(drive, 26.62816, shooArm, 3);
-		Move3 = new LinearTrajectory(drive, 2.37121, shooArm, 3);
+		Move1 = new LinearTrajectory(drive, 0.6, shooArm, 1.0);//.30470
+		Move2 = new PivotTrajectory(drive, 8, shooArm, 3);//26.62816
+		Move3 = new LinearTrajectory(drive, 2.7, shooArm, 2.25);//2.37121
 		Move4 = new PivotTrajectory(drive, -20.77697, shooArm, 3);
 		Move5 = new PivotTrajectory(drive, 20.77697, shooArm, 3);
 		Move6 = new LinearTrajectory(drive, -2.37121, shooArm, 3);
@@ -72,6 +72,7 @@ public class CenterRightDoubleSwitch {
 		shooArm.TorBantorArmAndShooterUpdate();
 		switch(run1) {
 		case IDLE:
+			shooArm.switchShoot();
 			break;
 		case START:
 			shooArm.pressXStart();
@@ -89,7 +90,11 @@ public class CenterRightDoubleSwitch {
 			break;
 		case MOVE2:
 			Move2.run();
+			shooArm.switchShoot();
+			shooArm.pressLeftTrigger();
 			if(Move2.isDone()) {
+				shooArm.switchShoot();
+				shooArm.pressLeftTrigger();
 				Move3.init();
 				Move3.run();
 				run1 = runIt.MOVE3;
@@ -98,10 +103,17 @@ public class CenterRightDoubleSwitch {
 		case MOVE3:
 			Move3.run();
 			if(Move3.isDone()) {
+				shooArm.switchShoot();
 				shooArm.pressLeftTrigger();
-				Move4.init();
-				Move4.run();
-				run1 = runIt.MOVE2;
+				shooArm.autoFire();
+				if(oneSwitchDone) {
+					shooArm.autoFire();
+					run1 = runIt.IDLE;
+				} else {
+					Move4.init();
+					Move4.run();
+					run1 = runIt.MOVE4;
+				}
 			}
 			break;
 		case MOVE4:

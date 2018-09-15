@@ -7,19 +7,20 @@ public class LinearTrajectory {
 	private double thisdistance;
 	private double currentDistance;
 	private boolean isFinished = false;
-	private final double tkP = 10;//PID for translation
-	private final double tkD = 0.01;
-	private final double tkI = 0.03;//.0003
-	private final double rkP = 5;//PD For rotation
-	private final double rkD = .05;//.05
-	private final double rkI = 0.01;
+	private final double tkP = 0.5;//PID for translation
+	private final double tkD = 0.001;
+	private final double tkI = 0.0003;//.0003
+	private final double rkP = 0.05;//PD For rotation 5
+	private final double rkD = 0;//.05
+	private final double rkI = 0;//.01
 	private final double kF = 0.005;
 	private final int lor = 1;
+	private final int errorFob = 1;//forwards or backwards
 	
 	//tolerances
 	private final double positionTolerance = 0.015;//units: meters
 	private final double velocityTolerance = 0.015;//units: meters per second
-	private final double headingTolerance = 1 * (Math.PI / 180.0);//units: radians
+	private final double headingTolerance = 2.5 * (Math.PI / 180.0);//units: radians
 	
 	private double currentVelocity;
 	
@@ -113,6 +114,7 @@ public class LinearTrajectory {
 			
 			//since this distance is always positive, we have to multiply by fob for if it is negative
 			error = (thisdistance) - (currentDistance - startDistance);//error always positive if approaching
+			error *= errorFob;
 			vI += error;
 			if(Math.abs(error) <= positionTolerance) {
 				vI = 0;
@@ -124,12 +126,7 @@ public class LinearTrajectory {
 				vI = -(0.7 / (tkI * kF));
 			}
 			vP = error * tkP;
-			if(vP > 0.7) {
-				vP = 0.7;
-			}
-			if(vP < -0.7) {
-				vP = -0.7;
-			}
+			
 			currentVelocity = derivative.estimate(drive.getPosition());//almost always positive
 			//has to be multiplied by -1 so that if it is approaching the target to fast
 			//it does not act as a positive. Because, if it was approaching fast, the

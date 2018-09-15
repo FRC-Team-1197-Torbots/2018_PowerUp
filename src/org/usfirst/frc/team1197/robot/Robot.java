@@ -101,8 +101,8 @@ public class Robot extends SampleRobot {
 				breakBeam, fourtwenty, scaleAngle, switchAngle, degreeTolerance, kF, kP, kD, 
 				holdAngle, Pusher, activeIntake, scalekI); // TorBantorShooarm object used to enable the arm control + intake/shoot control of the robot
 
-		LinearTest = new LinearTrajectory(hardware, -90, shooArm, 500);
-		PivotTest = new PivotTrajectory(hardware, 1, shooArm, 500);
+		LinearTest = new LinearTrajectory(hardware, 1, shooArm, 500);
+		PivotTest = new PivotTrajectory(hardware, 90, shooArm, 500);
 		CenterLeftDoubleSwitch = new CenterLeftDoubleSwitch(hardware, shooArm);
 		CenterRightDoubleSwitch = new CenterRightDoubleSwitch(hardware, shooArm);
 	}
@@ -140,12 +140,15 @@ public class Robot extends SampleRobot {
 					shooArm.switchShoot();
 					shooArm.shootIdle();
 					shooArm.pressLeftTrigger();
-					hardware.setMotorSpeeds(0.75, 0.75);
+					hardware.setMotorSpeeds(0.5, 0.5);
 					Timer.delay(2);
 					hardware.setMotorSpeeds(0, 0);
 					shooArm.autoFire();
+					while(isAutonomous()) {
+						shooArm.TorBantorArmAndShooterUpdate();
+					}
 				} else {
-					hardware.setMotorSpeeds(0.75, 0.75);
+					hardware.setMotorSpeeds(0.5, 0.5);
 					Timer.delay(2);
 					hardware.setMotorSpeeds(0, 0);
 				}
@@ -158,7 +161,7 @@ public class Robot extends SampleRobot {
 					shooArm.switchShoot();
 					shooArm.shootIdle();
 					shooArm.pressLeftTrigger();
-					hardware.setMotorSpeeds(0.75, 0.75);
+					hardware.setMotorSpeeds(0.5, 0.5);
 					Timer.delay(2);
 					hardware.setMotorSpeeds(0, 0);
 					shooArm.autoFire();
@@ -167,7 +170,7 @@ public class Robot extends SampleRobot {
 					}
 				} else {
 					//just drive forward
-					hardware.setMotorSpeeds(0.75, 0.75);
+					hardware.setMotorSpeeds(0.5, 0.5);
 					Timer.delay(2);
 					hardware.setMotorSpeeds(0, 0);
 				}
@@ -178,7 +181,7 @@ public class Robot extends SampleRobot {
 	public void operatorControl() {
 		hardware.shiftToLowGear();
 		boolean linearTest = true;
-		test = false;
+		test = true;
 		if(!linearTest) {
 			while(isEnabled()){
 				if(test) {
@@ -202,19 +205,19 @@ public class Robot extends SampleRobot {
 				}
 			}
 		} else {
-			LinearTest.init();
-			while(!LinearTest.isDone()) {
-				SmartDashboard.putNumber("GET POSITION", hardware.getPosition());
-				SmartDashboard.putNumber("Get Heading", hardware.getHeading());
-				SmartDashboard.putNumber("RIGHT ENCODER:", hardware.getRightEncoder());
-				SmartDashboard.putNumber("LEFT ENCODER:", hardware.getLeftEncoder());
-				SmartDashboard.putBoolean("Linear Finished?:", LinearTest.isDone());
-				SmartDashboard.putBoolean("Pivot Test Finished?:", PivotTest.isDone());
-				shooArm.TorBantorArmAndShooterUpdate();
-				LinearTest.run();
-			}
-			SmartDashboard.putBoolean("Linear Finished?:", LinearTest.isDone());
-			SmartDashboard.putBoolean("Pivot Test Finished?:", PivotTest.isDone());
+//			LinearTest.init();
+//			while(!LinearTest.isDone()) {
+//				SmartDashboard.putNumber("GET POSITION", hardware.getPosition());
+//				SmartDashboard.putNumber("Get Heading", hardware.getHeading());
+//				SmartDashboard.putNumber("RIGHT ENCODER:", hardware.getRightEncoder());
+//				SmartDashboard.putNumber("LEFT ENCODER:", hardware.getLeftEncoder());
+//				SmartDashboard.putBoolean("Linear Finished?:", LinearTest.isDone());
+//				SmartDashboard.putBoolean("Pivot Test Finished?:", PivotTest.isDone());
+//				shooArm.TorBantorArmAndShooterUpdate();
+//				LinearTest.run();
+//			}
+//			SmartDashboard.putBoolean("Linear Finished?:", LinearTest.isDone());
+//			SmartDashboard.putBoolean("Pivot Test Finished?:", PivotTest.isDone());
 			PivotTest.init();
 			while(!PivotTest.isDone()) {
 				SmartDashboard.putBoolean("Linear Finished?:", LinearTest.isDone());

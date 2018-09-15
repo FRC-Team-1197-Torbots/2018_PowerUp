@@ -14,13 +14,13 @@ public class PivotTrajectory {
 	
 	private double startAngle;
 	
-	private final double rkP = 5;//PD For rotation
-	private final double rkD = 0.05;//0.000005
-	private final double rkI = 0.01;
+	private final double rkP = 2;//PD For rotation
+	private final double rkD = -0.05;//0.000005
+	private final double rkI = 0.5;
 	
 	//tolerances
-	private final double angleTolerance = 1.0 * (Math.PI / 180.0);//radians
-	private final double omegaTolerance = 1.0 * (Math.PI / 180.0);//radians per second
+	private final double angleTolerance = 2.75 * (Math.PI / 180.0);//radians
+	private final double omegaTolerance = 1.5 * (Math.PI / 180.0);//radians per second
 	
 	private double omegaP;//turning proportional
 	private double omegaD;//turning derivative
