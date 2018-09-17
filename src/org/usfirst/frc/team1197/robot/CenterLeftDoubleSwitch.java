@@ -12,21 +12,18 @@ public class CenterLeftDoubleSwitch {
 	private LinearTrajectory Move1;
 	private PivotTrajectory Move2;
 	private LinearTrajectory Move3;
-	private PivotTrajectory Move4;
+	private LinearTrajectory Move4;
 	private PivotTrajectory Move5;
-	private LinearTrajectory Move6;
-	private PivotTrajectory Move7;
 	//goes forward to intake and goes back for the same time with a PID here
-	private PivotTrajectory Move8;
-	private LinearTrajectory Move9;
-	private PivotTrajectory Move10;
+	private PivotTrajectory Move6;
+	private LinearTrajectory Move7;
 	private double starttime;
 	private double currentTime;
 	private double forwardTime;
 	private double lastTime;
-	private final double rkP = 10;//PD For rotation
-	private final double rkD = .05;//.05
-	private final double rkI = 0.002;
+	private final double rkP = 0.05;//PD For rotation 5
+	private final double rkD = 0;//.05
+	private final double rkI = 0;//.01
 	private final double kF = 0.005;
 
 	private double omegaP;//turning proportional
@@ -42,8 +39,8 @@ public class CenterLeftDoubleSwitch {
 	private TorDerivative angleDerivative;
 	
 	public static enum runIt {
-		IDLE, START, MOVE1, MOVE2, MOVE3, MOVE4, MOVE5, 
-		MOVE6, MOVE7, GOFORWARD, GOBACK, MOVE8, MOVE9, MOVE10, RELEASE;
+		IDLE, START, MOVE1, MOVE2, MOVE3, 
+		MOVE4, MOVE5, GOFORWARD, GOBACK, MOVE6, MOVE7, RELEASE;
 		private runIt() {}
 	}
 	private runIt run1 = runIt.START;
@@ -56,14 +53,11 @@ public class CenterLeftDoubleSwitch {
 		Move1 = new LinearTrajectory(drive, 0.6, shooArm, 1.0);//0.30470
 		Move2 = new PivotTrajectory(drive, -38, shooArm, 3);//-30.15250
 		Move3 = new LinearTrajectory(drive, 2.675, shooArm, 2.25);//2.44113
-		Move4 = new PivotTrajectory(drive, 21.02266, shooArm, 3);
-		Move5 = new PivotTrajectory(drive, -21.02266, shooArm, 3);
-		Move6 = new LinearTrajectory(drive, -2.18829, shooArm, 3);
-		Move7 = new PivotTrajectory(drive, 30.1520, shooArm, 3);
+		Move4 = new LinearTrajectory(drive, -2.3, shooArm, 3);//-2.18829
+		Move5 = new PivotTrajectory(drive, 38, shooArm, 3);//30.1520
 		//goes forward to intake and goes back for the same time with a PID here
-		Move8 = new PivotTrajectory(drive, -30.1520, shooArm, 3);
-		Move9 = new LinearTrajectory(drive, 2.18829, shooArm, 3);
-		Move10 = new PivotTrajectory(drive, 21.02266, shooArm, 3);
+		Move6 = new PivotTrajectory(drive, -38, shooArm, 3);//-30.1520
+		Move7 = new LinearTrajectory(drive, 2.3, shooArm, 3);//2.18829
 		angleDerivative = new TorDerivative(kF);
 	}
 	public void run() {
@@ -108,7 +102,6 @@ public class CenterLeftDoubleSwitch {
 				shooArm.pressLeftTrigger();
 				shooArm.autoFire();
 				if(oneSwitchDone) {
-					shooArm.autoFire();
 					run1 = runIt.IDLE;
 				} else {
 					Move4.init();
@@ -120,11 +113,8 @@ public class CenterLeftDoubleSwitch {
 		case MOVE4:
 			Move4.run();
 			if(Move4.isDone()) {
-				shooArm.autoFire();
-				Timer.delay(0.4);
-				//I KNOW I AM NOT SUPPOSED TO DO THIS
-				//but, 0.2 seconds of not updating the arm
-				//and it will not mess up the timing of everything else
+				shooArm.releaseLeftTrigger();
+				shooArm.pressX();
 				Move5.init();
 				Move5.run();
 				run1 = runIt.MOVE5;
@@ -133,28 +123,6 @@ public class CenterLeftDoubleSwitch {
 		case MOVE5:
 			Move5.run();
 			if(Move5.isDone()) {
-//				shooArm.releaseLeftTrigger();
-				if(oneSwitchDone) {
-					run1 = runIt.IDLE;
-				} else {
-					Move6.init();
-					Move6.run();
-					run1 = runIt.MOVE6;
-				}
-			}
-			break;
-		case MOVE6:
-			Move6.run();
-			if(Move6.isDone()) {
-				shooArm.pressX();
-				Move7.init();
-				Move7.run();
-				run1 = runIt.MOVE7;
-			}
-			break;
-		case MOVE7:
-			Move7.run();
-			if(Move7.isDone()) {
 				shooArm.pressA();
 				firstAngle = drive.getHeading();
 				starttime = currentTime;
@@ -182,7 +150,7 @@ public class CenterLeftDoubleSwitch {
 			omega = omegaP + omegaD + (omegaI * kF * rkI);
 			
 			drive.setMotorSpeeds(0.4 + omega, 0.4 - omega);
-			if(shooArm.inHold()) {
+			if(shooArm.isInside()) {
 				drive.setMotorSpeeds(0, 0);
 				omegaI = 0;
 				forwardTime = currentTime - starttime;
@@ -212,40 +180,34 @@ public class CenterLeftDoubleSwitch {
 			
 			if(currentTime > (starttime + (forwardTime))) {
 				drive.setMotorSpeeds(0, 0);
-				Move8.init();
-				Move8.run();
-				run1 = runIt.MOVE8;
+				Move6.init();
+				Move6.run();
+				run1 = runIt.MOVE6;
 			}
 			break;
-		case MOVE8:
-			Move8.run();
-			if(Move8.isDone()) {
+		case MOVE6:
+			Move6.run();
+			if(Move6.isDone()) {
 				shooArm.pressX();
-				Move9.init();
-				Move9.run();
-				run1 = runIt.MOVE9;
+				Move7.init();
+				Move7.run();
+				run1 = runIt.MOVE7;
 			}
 			break;
-		case MOVE9:
-			Move9.run();
-			if(Move9.isDone()) {
+		case MOVE7:
+			Move7.run();
+			if(Move7.isDone()) {
+				shooArm.switchShoot();
 				shooArm.pressLeftTrigger();
-				Move10.init();
-				Move10.run();
-				run1 = runIt.MOVE10;
-			}
-			break;
-		case MOVE10:
-			Move10.run();
-			if(Move10.isDone()) {
 				shooArm.autoFire();
 				lastTime = currentTime;
 				run1 = runIt.RELEASE;
 			}
 			break;
 		case RELEASE:
-			if(currentTime > lastTime + 0.5) {
+			if(currentTime > lastTime + 1.5) {
 				shooArm.releaseLeftTrigger();
+				run1 = runIt.IDLE;
 			}
 			break;
 		}
