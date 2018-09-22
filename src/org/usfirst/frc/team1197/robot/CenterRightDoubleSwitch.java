@@ -47,11 +47,11 @@ public class CenterRightDoubleSwitch {
 		this.drive = drive;
 		this.shooArm = shooArm;
 		Move1 = new LinearTrajectory(drive, 0.6, shooArm, 1.0);
-		Move2 = new PivotTrajectory(drive, 10, shooArm, 3);
-		Move3 = new PivotTrajectory(drive, -15, shooArm, 3);
+		Move2 = new PivotTrajectory(drive, 18, shooArm, 3);
+		Move3 = new PivotTrajectory(drive, -24, shooArm, 3);
 		//goes forward to intake and goes back for the same time with a PID here
 		Move4 = new LinearTrajectory(drive, -0.6, shooArm, 1);
-		Move5 = new PivotTrajectory(drive, 20, shooArm, 3);
+		Move5 = new PivotTrajectory(drive, 28, shooArm, 1.5);
 		angleDerivative = new TorDerivative(kF);
 	}
 	public void run() {
