@@ -56,7 +56,7 @@ public class Robot extends SampleRobot {
 	private double kD = 0.0004;
 	private double scalekI = .00005;
 	private double scaleAngle = 76;
-	private double switchAngle = 50;
+	private double switchAngle = 55;
 	private double degreeTolerance = 8;//the tolerance for the normal x + sin x up to get within the switch/scale angle before PID controls it
 	private double holdAngle = 10;
 	/*----------------------------------------------------------------------
@@ -180,8 +180,8 @@ public class Robot extends SampleRobot {
 
 	public void operatorControl() {
 		hardware.shiftToLowGear();
-		boolean linearTest = true;
-		test = true;
+		boolean linearTest = false;
+		test = false;
 		if(!linearTest) {
 			while(isEnabled()){
 				if(test) {

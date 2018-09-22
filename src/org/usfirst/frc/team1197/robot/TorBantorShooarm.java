@@ -101,7 +101,7 @@ public class TorBantorShooarm {
 	private long switchPos2Time = 100; // this is the time it is at the max speed
 	private double switchMaxSpeed = 0.9; // the acceleration increment for the switch
 	private double switchCushion = 0; // NEGATIVE the extra cushion from a proportional down 
-	private double switchShootPower = 0.25;
+	private double switchShootPower = 0.25;//0.25
 
 	// Scale Variables
 	private long scalePos1Time = 350;
@@ -1002,6 +1002,11 @@ public class TorBantorShooarm {
 		shootakeTalon1.set(ControlMode.PercentOutput, shootPower * ioo);
 		shootakeTalon2.set(ControlMode.PercentOutput, -shootPower * ioo);
 	}
+	
+	public void pressLeftTriggerControl(double power) {
+		shootakeTalon1.set(ControlMode.PercentOutput, power * ioo);
+		shootakeTalon2.set(ControlMode.PercentOutput, -power * ioo);
+	}
 
 	public void releaseLeftTrigger() {
 		shootakeTalon1.set(ControlMode.PercentOutput, 0);
@@ -1055,6 +1060,13 @@ public class TorBantorShooarm {
 	}
 
 	public void pressA() {
+		shootakeTalon1.set(ControlMode.PercentOutput, -intakePower * ioo);
+		shootakeTalon2.set(ControlMode.PercentOutput, intakePower * ioo);
+		scaleEnable = false;
+		switchDo1 = switchDo.IDLE;
+		scaleDo1 = scaleDo.IDLE;
+		intakeIt = intake.IDLE;
+		shootIt = shoot.IDLE;
 		intakeIt = intake.POS0;
 	}
 
