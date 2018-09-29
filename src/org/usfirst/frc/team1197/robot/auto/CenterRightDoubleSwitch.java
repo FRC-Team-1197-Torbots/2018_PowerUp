@@ -1,4 +1,10 @@
-package org.usfirst.frc.team1197.robot;
+package org.usfirst.frc.team1197.robot.auto;
+
+import org.usfirst.frc.team1197.robot.DriveHardware;
+import org.usfirst.frc.team1197.robot.LinearTrajectory;
+import org.usfirst.frc.team1197.robot.PivotTrajectory;
+import org.usfirst.frc.team1197.robot.TorBantorShooarm;
+import org.usfirst.frc.team1197.robot.TorDerivative;
 
 import edu.wpi.first.wpilibj.Timer;
 
