@@ -38,15 +38,27 @@ public class Robot extends SampleRobot {
 	private LinearTrajectory LinearTest;
 	private PivotTrajectory PivotTest;
 	private boolean test;
+	private boolean lineUpInFrontOfSwitch;
 	private String gameData;
 	
 	private CenterLeftDoubleSwitch CenterLeftDoubleSwitch;
 	private CenterRightDoubleSwitch CenterRightDoubleSwitch;
 
-	public static enum auto {
-		IDLE, FORWARDL, TURNL, FORWARDL2, TURNL2, FORWARDL3, FORWARDR, TURNR, FORWARDR2, TURNR2, FORWARDR3, FIRE, REVDOWN;
-		private auto() {}
+	public static enum LeftAuto {
+		Nothing, LeftLeftOppositeSwitch, LeftLeftDoubleScale, LeftRightSingleScale;
+		private LeftAuto() {}
 	}
+	
+	public static enum RightAuto {
+		Nothing, RightRightOppositeSwitch, RightRightDoubleScale, RightLeftSingleScale;
+		private RightAuto() {}
+	}
+	
+	LeftAuto CoolLeftAuto = LeftAuto.Nothing;//we assign it to nothing to mean that it is not assigned yet
+	//it is called cool since it is not just a same side one switch drive forward auto
+	RightAuto CoolRightAuto = RightAuto.Nothing;//we assign it to nothing to mean that it is not assigned yet
+	//it is called cool since it is not just a same side one switch drive forward auto
+	
 
 	/*----------------------------------------------------------------------
 	 *  Tunable variables for the hold position of the arm
@@ -111,7 +123,8 @@ public class Robot extends SampleRobot {
 		hardware.init();
 	}
 
-	public void autonomous() {	
+	public void autonomous() {
+		lineUpInFrontOfSwitch = false;
 		gameData = DriverStation.getInstance().getGameSpecificMessage(); // Obtaining the switch & scale colors from the FMS
 		SmartDashboard.putString("Game Data", gameData);
 		if(autoBox != null) { // Checking if the hardware required for auto is connected 
@@ -120,6 +133,13 @@ public class Robot extends SampleRobot {
 			}
 			if(!autoBox.getRawButton(2) && !autoBox.getRawButton(3)) {
 				//center
+				
+				//we are setting the center classes up with the scale value
+				CenterLeftDoubleSwitch.setScaleSide(gameData.charAt(1) == 'L');
+				CenterRightDoubleSwitch.setScaleSide(gameData.charAt(1) == 'L');
+				//end of it
+				
+				
 				if(gameData.charAt(0) == 'L') {
 					//center left
 					while(isAutonomous()) {
@@ -131,48 +151,111 @@ public class Robot extends SampleRobot {
 						CenterRightDoubleSwitch.run();
 					}
 				}
-			} else if(autoBox.getRawButton(2)) {
-				//right - line up in front of switch
-				Timer.delay(4);//we wait time to let another robot pass in front of us first
-				
-				if(gameData.charAt(0) == 'R') {
-					shooArm.pressXStart();
-					shooArm.switchShoot();
-					shooArm.shootIdle();
-					shooArm.pressLeftTrigger();
-					hardware.setMotorSpeeds(0.5, 0.5);
-					Timer.delay(2);
-					hardware.setMotorSpeeds(0, 0);
-					shooArm.autoFire();
-					while(isAutonomous()) {
-						shooArm.TorBantorArmAndShooterUpdate();
-					}
-				} else {
-					hardware.setMotorSpeeds(0.5, 0.5);
-					Timer.delay(2);
-					hardware.setMotorSpeeds(0, 0);
-				}
 			} else {
-				//left - line up in front of switch
-				Timer.delay(4);//we wait time to let another robot pass in front of us first
-				
-				if(gameData.charAt(0) == 'L') {
-					shooArm.pressXStart();
-					shooArm.switchShoot();
-					shooArm.shootIdle();
-					shooArm.pressLeftTrigger();
-					hardware.setMotorSpeeds(0.5, 0.5);
-					Timer.delay(2);
-					hardware.setMotorSpeeds(0, 0);
-					shooArm.autoFire();
-					while(isAutonomous()) {
-						shooArm.TorBantorArmAndShooterUpdate();
+				//this is to do a non center auto
+				if(lineUpInFrontOfSwitch) {
+					if(autoBox.getRawButton(2)) {
+						//right - line up in front of switch
+						Timer.delay(4);//we wait time to let another robot pass in front of us first
+						
+						if(gameData.charAt(0) == 'R') {
+							shooArm.pressXStart();
+							shooArm.switchShoot();
+							shooArm.shootIdle();
+							shooArm.pressLeftTrigger();
+							hardware.setMotorSpeeds(0.5, 0.5);
+							Timer.delay(2);
+							hardware.setMotorSpeeds(0, 0);
+							shooArm.autoFire();
+							while(isAutonomous()) {
+								shooArm.TorBantorArmAndShooterUpdate();
+							}
+						} else {
+							hardware.setMotorSpeeds(0.5, 0.5);
+							Timer.delay(2);
+							hardware.setMotorSpeeds(0, 0);
+						}
+					} else {
+						//left - line up in front of switch
+						Timer.delay(4);//we wait time to let another robot pass in front of us first
+						
+						if(gameData.charAt(0) == 'L') {
+							shooArm.pressXStart();
+							shooArm.switchShoot();
+							shooArm.shootIdle();
+							shooArm.pressLeftTrigger();
+							hardware.setMotorSpeeds(0.5, 0.5);
+							Timer.delay(2);
+							hardware.setMotorSpeeds(0, 0);
+							shooArm.autoFire();
+							while(isAutonomous()) {
+								shooArm.TorBantorArmAndShooterUpdate();
+							}
+						} else {
+							//just drive forward
+							hardware.setMotorSpeeds(0.5, 0.5);
+							Timer.delay(2);
+							hardware.setMotorSpeeds(0, 0);
+						}
 					}
 				} else {
-					//just drive forward
-					hardware.setMotorSpeeds(0.5, 0.5);
-					Timer.delay(2);
-					hardware.setMotorSpeeds(0, 0);
+					//here are our real side autos that aren't just one same side switch auto's
+					if(autoBox.getRawButton(2)) {
+						//right auto that is not a line up in front of the switch
+						
+						//we will set up the state machine first
+						if(gameData.charAt(2) == 'R' && gameData.charAt(1) == 'R') {
+							CoolRightAuto = RightAuto.RightRightOppositeSwitch;
+						} else if(gameData.charAt(1) == 'R') {
+							CoolRightAuto = RightAuto.RightRightDoubleScale;
+						} else {
+							CoolRightAuto = RightAuto.RightLeftSingleScale;
+						}
+						
+						while(isAutonomous()) {
+							switch(CoolRightAuto) {
+							case Nothing:
+								break;
+							case RightRightOppositeSwitch:
+								break;
+							case RightRightDoubleScale:
+								break;
+							case RightLeftSingleScale:
+								break;
+							}
+						}
+						
+						
+						
+					} else {
+						//left auto that is not a line up in front of the switch
+						
+						//we will set up the state machine first
+						if(gameData.charAt(2) == 'L' && gameData.charAt(1) == 'L') {
+							CoolLeftAuto = LeftAuto.LeftLeftOppositeSwitch;
+						} else if(gameData.charAt(1) == 'L') {
+							CoolLeftAuto = LeftAuto.LeftLeftDoubleScale;
+						} else {
+							CoolLeftAuto = LeftAuto.LeftRightSingleScale;
+						}
+						
+						while(isAutonomous()) {
+							switch(CoolLeftAuto) {
+							case Nothing:
+								break;
+							case LeftLeftOppositeSwitch:
+								break;
+							case LeftLeftDoubleScale:
+								break;
+							case LeftRightSingleScale:
+								break;
+							}
+						}
+						
+						
+						
+						
+					}
 				}
 			}
 		}
