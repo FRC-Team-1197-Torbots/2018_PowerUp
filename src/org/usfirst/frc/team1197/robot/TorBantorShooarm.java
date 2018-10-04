@@ -40,6 +40,7 @@ public class TorBantorShooarm {
 	private long burnEndTime;
 	private TorDerivative scaleDerivative;
 	private TorDerivative switchDerivative;
+	private boolean auto = true;
 
 	public static enum switchDo {
 		IDLE, POS0, POS1, POS2, PID, POS4, POS5;
@@ -557,7 +558,7 @@ public class TorBantorShooarm {
 		case POS0:
 			currentTime = System.currentTimeMillis();
 			endTime = currentTime + 1;
-			if(currentTime - lastTime >= 400) {
+			if(((currentTime - lastTime) >= 400) || auto) {
 				holdIt = holder.STOP;
 				holdDown = intakeDown.START;
 				intakeIt = intake.START;	
@@ -1087,5 +1088,8 @@ public class TorBantorShooarm {
 	}
 	public void shootIdle() {
 		shootIt = shoot.IDLE;
+	}
+	public void autoSet(boolean set) {
+		auto = set;
 	}
 }

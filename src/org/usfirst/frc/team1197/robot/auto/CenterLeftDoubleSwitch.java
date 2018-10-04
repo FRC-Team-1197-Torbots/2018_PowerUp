@@ -11,8 +11,6 @@ import edu.wpi.first.wpilibj.Timer;
 public class CenterLeftDoubleSwitch {
 	//boolean for whether it just stops after the first cube in the switch
 	private final boolean oneSwitchDone = false;
-	private boolean scaleSideLeft;
-	
 	
 	private DriveHardware drive;
 	private TorBantorShooarm shooArm;
@@ -23,9 +21,12 @@ public class CenterLeftDoubleSwitch {
 	private LinearTrajectory Move4;
 	private PivotTrajectory Move5;
 	private PivotTrajectory Move6;
-	private PivotTrajectory Move7L;
-	private PivotTrajectory Move7R;
-	private LinearTrajectory Move8;
+	private LinearTrajectory Move7;
+	private PivotTrajectory Move8;
+	private LinearTrajectory Move9;
+	private LinearTrajectory Move10;
+	private PivotTrajectory Move11;
+	private LinearTrajectory Move12;
 	private final double rkP = 0.05;//PD For rotation 5
 	private final double rkD = 0;//.05
 	private final double rkI = 0;//.01
@@ -45,7 +46,7 @@ public class CenterLeftDoubleSwitch {
 	
 	public static enum runIt {
 		IDLE, START, MOVE1, MOVE2, MOVE3, GOFORWARD,
-		MOVE4, MOVE5, MOVE6, MOVE7L, MOVE7R, MOVE8;
+		MOVE4, MOVE5, MOVE6, MOVE7, MOVE8, MOVE9, MOVE10, MOVE11, MOVE12;
 		private runIt() {}
 	}
 	private runIt run1 = runIt.START;
@@ -61,21 +62,22 @@ public class CenterLeftDoubleSwitch {
 		//goes forward to intake and goes back for the same time with a PID here
 		Move4 = new LinearTrajectory(drive, -0.6, shooArm, 1);
 		Move5 = new PivotTrajectory(drive, -23, shooArm, 1.5);
-		Move6 = new PivotTrajectory(drive, 25, shooArm, 1.5);
-		Move7L = new PivotTrajectory(drive, -60, shooArm, 1.0);
-		Move7R = new PivotTrajectory(drive, 55, shooArm, 1.0);
+		Move6 = new PivotTrajectory(drive, -38, shooArm, 1.5);//positive
+		Move7 = new LinearTrajectory(drive, 1.0, shooArm, 1.5);//positive
+		Move8 = new PivotTrajectory(drive, 92, shooArm, 2.0);//negative
+		//Move 9 is go forwward to intake
+		Move9  = new LinearTrajectory(drive, 0.6, shooArm, 1.0);//positive that was 1.2
+		Move10 = new LinearTrajectory(drive, -0.6, shooArm, 0.5);//negative
+		Move11 = new PivotTrajectory(drive, -37, shooArm, 0.5);//positive
+		Move12 = new LinearTrajectory(drive, 1.3, shooArm, 0.75);//positive
 		//drives forward, crosses auto line, and is now close to the scale
-		Move8 = new LinearTrajectory(drive, 2.0, shooArm, 1.5);
 		angleDerivative = new TorDerivative(kF);
-	}
-	
-	public void setScaleSide(boolean isLeft) {
-		scaleSideLeft = isLeft;
 	}
 	
 	public void run() {
 		currentAngle = drive.getHeading();
 		shooArm.TorBantorArmAndShooterUpdate();
+		shooArm.autoSet(true);
 		switch(run1) {
 		case IDLE:
 			break;
@@ -123,7 +125,6 @@ public class CenterLeftDoubleSwitch {
 				} else {
 					shooArm.pressA();
 					firstAngle = drive.getHeading();
-					Timer.delay(1);
 					drive.setMotorSpeeds(0.35, 0.35);
 					angleDerivative.resetValue(drive.getHeading());
 					run1 = runIt.GOFORWARD;
@@ -178,6 +179,7 @@ public class CenterLeftDoubleSwitch {
 				shooArm.TorBantorArmAndShooterUpdate();
 				shooArm.pressLeftTriggerControl(0.7);
 				Timer.delay(0.5);
+				shooArm.pressX();
 				Move6.init();
 				Move6.run();
 				run1 = runIt.MOVE6;
@@ -186,28 +188,14 @@ public class CenterLeftDoubleSwitch {
 		case MOVE6:
 			Move6.run();
 			if(Move6.isDone()) {
-				if(scaleSideLeft) {
-					Move7L.init();
-					Move7L.run();
-					run1 = runIt.MOVE7L;
-				} else {
-					Move7R.init();
-					Move7R.run();
-					run1 = runIt.MOVE7R;
-				}
+				Move7.init();
+				Move7.run();
+				run1 = runIt.MOVE7;
 			}
 			break;
-		case MOVE7L:
-			Move7L.run();
-			if(Move7L.isDone()) {
-				Move8.init();
-				Move8.run();
-				run1 = runIt.MOVE8;
-			}
-			break;
-		case MOVE7R:
-			Move7R.run();
-			if(Move7R.isDone()) {
+		case MOVE7:
+			Move7.run();
+			if(Move7.isDone()) {
 				Move8.init();
 				Move8.run();
 				run1 = runIt.MOVE8;
@@ -216,6 +204,50 @@ public class CenterLeftDoubleSwitch {
 		case MOVE8:
 			Move8.run();
 			if(Move8.isDone()) {
+				shooArm.pressA();
+				Move9.init();
+				Move9.run();
+				run1 = runIt.MOVE9;
+			}
+			break;
+		case MOVE9:
+			Move9.run();
+			if(Move9.isDone() || shooArm.isInside()) {
+				Move10.init();
+				Move10.run();
+				run1 = runIt.MOVE10;
+			}
+			break;
+		case MOVE10:
+			Move10.run();
+			if(Move10.isDone()) {
+				Move11.init();
+				Move11.run();
+				run1 = runIt.MOVE11;
+			}
+			break;
+		case MOVE11:
+			Move11.run();
+			if(Move11.isDone()) {
+				shooArm.pressLeftTriggerControl(0.27);
+				shooArm.pressX();
+				Move12.init();
+				Move12.run();
+				run1 = runIt.MOVE12;
+			}
+			break;
+		case MOVE12:
+			Move12.run();
+			shooArm.pressLeftTriggerControl(0.27);
+			if(Move12.isDone()) {
+				shooArm.autoFire();
+				shooArm.TorBantorArmAndShooterUpdate();
+				shooArm.pressLeftTriggerControl(0.27);
+				shooArm.TorBantorArmAndShooterUpdate();
+				shooArm.pressLeftTriggerControl(0.27);
+				shooArm.TorBantorArmAndShooterUpdate();
+				shooArm.pressLeftTriggerControl(0.27);
+				Timer.delay(0.5);
 				run1 = runIt.IDLE;
 			}
 			break;

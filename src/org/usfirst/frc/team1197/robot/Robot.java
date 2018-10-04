@@ -136,11 +136,6 @@ public class Robot extends SampleRobot {
 			if(!autoBox.getRawButton(2) && !autoBox.getRawButton(3)) {
 				//center
 				
-				//we are setting the center classes up with the scale value
-				CenterLeftDoubleSwitch.setScaleSide(gameData.charAt(1) == 'L');
-				CenterRightDoubleSwitch.setScaleSide(gameData.charAt(1) == 'L');
-				//end of it
-				
 				
 				if(gameData.charAt(0) == 'L') {
 					//center left
@@ -264,6 +259,7 @@ public class Robot extends SampleRobot {
 	}
 
 	public void operatorControl() {
+		shooArm.autoSet(false);
 		hardware.shiftToLowGear();
 		boolean linearTest = false;
 		test = false;
