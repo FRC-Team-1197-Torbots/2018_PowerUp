@@ -35,7 +35,7 @@ public class TorBantorShooarm {
 	private double currentAngle;
 	private boolean switchEnable;
 	private boolean scaleEnable;
-	private final double threshold = 25.0;
+	private final double threshold = 50.0;
 	private boolean alreadyHot = false;
 	private long burnEndTime;
 	private TorDerivative scaleDerivative;
@@ -217,7 +217,7 @@ public class TorBantorShooarm {
 			manualoverride(); // Update for the manual override
 			holdDownUpdate(); // Update for the hold down
 			shootTake();
-			burnUpdate();
+//			burnUpdate();
 			
 			//for the active intake
 			if((switchDo1 == switchDo.IDLE && scaleDo1 == scaleDo.IDLE && !(holdIt == holder.PD) && !breakbeam.get()) && !player2.getRawButton(2)) {
@@ -1022,7 +1022,7 @@ public class TorBantorShooarm {
 		};
 		if(alreadyHot && (Math.abs(armTalon1.getOutputCurrent()) > threshold) ||
 				(Math.abs(armTalon2.getOutputCurrent()) > threshold) && (System.currentTimeMillis() > burnEndTime)) {
-			STOPPROCESS();
+//			STOPPROCESS();
 		}
 	}
 

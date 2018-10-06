@@ -45,6 +45,12 @@ public class Robot extends SampleRobot {
 	
 	private CenterLeftDoubleSwitch CenterLeftDoubleSwitch;
 	private CenterRightDoubleSwitch CenterRightDoubleSwitch;
+	private LeftLeftDoubleScale LeftLeftDoubleScale;
+	private LeftLeftOppositeSwitch LeftLeftOppositeSwitch;
+	private LeftRightSingleScale LeftRightSingleScale;
+	private RightLeftSingleScale RightLeftSingleScale;
+	private RightRightDoubleScale RightRightDoubleScale;
+	private RightRightOppositeSwitch RightRightOppositeSwitch;
 
 	public static enum LeftAuto {
 		Nothing, LeftLeftOppositeSwitch, LeftLeftDoubleScale, LeftRightSingleScale;
@@ -77,18 +83,18 @@ public class Robot extends SampleRobot {
 	 */
 
 	public Robot() {
-//		UsbCamera intakeCam = CameraServer.getInstance().startAutomaticCapture(0);
-//		intakeCam.setBrightness(50);
-//		CvSink cvsink1 = new CvSink("Intake Cam");
-//		cvsink1.setSource(intakeCam);
-//		cvsink1.setEnabled(true);
-//
-//
-//		UsbCamera shootCam = CameraServer.getInstance().startAutomaticCapture(1);
-//		shootCam.setBrightness(0);																																																																																
-//		CvSink cvsink2 = new CvSink("Shoot Cam");
-//		cvsink2.setSource(shootCam);
-//		cvsink2.setEnabled(true);
+		UsbCamera intakeCam = CameraServer.getInstance().startAutomaticCapture(0);
+		intakeCam.setBrightness(50);
+		CvSink cvsink1 = new CvSink("Intake Cam");
+		cvsink1.setSource(intakeCam);
+		cvsink1.setEnabled(true);
+
+
+		UsbCamera shootCam = CameraServer.getInstance().startAutomaticCapture(1);
+		shootCam.setBrightness(0);																																																																																
+		CvSink cvsink2 = new CvSink("Shoot Cam");
+		cvsink2.setSource(shootCam);
+		cvsink2.setEnabled(true);
 
 
 
@@ -119,6 +125,12 @@ public class Robot extends SampleRobot {
 		PivotTest = new PivotTrajectory(hardware, 90, shooArm, 500);
 		CenterLeftDoubleSwitch = new CenterLeftDoubleSwitch(hardware, shooArm);
 		CenterRightDoubleSwitch = new CenterRightDoubleSwitch(hardware, shooArm);
+		LeftLeftDoubleScale = new LeftLeftDoubleScale(hardware, shooArm);
+		LeftLeftOppositeSwitch = new LeftLeftOppositeSwitch(hardware, shooArm);
+//		LeftRightSingleScale = new LeftRightSingleScale(hardware, shooArm);
+//		RightLeftSingleScale = new RightLeftSingleScale(hardware, shooArm);
+//		RightRightDoubleScale = new RightRightDoubleScale(hardware, shooArm);
+//		RightRightOppositeSwitch = new RightRightOppositeSwitch(hardware, shooArm);
 	}
 
 	public void robotInit() {
@@ -241,8 +253,10 @@ public class Robot extends SampleRobot {
 							case Nothing:
 								break;
 							case LeftLeftOppositeSwitch:
+								LeftLeftOppositeSwitch.run();
 								break;
 							case LeftLeftDoubleScale:
+								LeftLeftDoubleScale.run();
 								break;
 							case LeftRightSingleScale:
 								break;

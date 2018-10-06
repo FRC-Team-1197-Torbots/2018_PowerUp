@@ -10,9 +10,9 @@ public class LinearTrajectory {
 	private final double tkP = 0.5;//PID for translation
 	private final double tkD = 0.001;
 	private final double tkI = 0.0003;//.0003
-	private final double rkP = 0.05;//PD For rotation 5
-	private final double rkD = 0;//.05
-	private final double rkI = 0;//.01
+	private final double rkP = 0.5;//PD For rotation 5
+	private final double rkD = 0.0;//.05
+	private final double rkI = 0.01;//.01
 	private final double kF = 0.005;
 	private final int lor = 1;
 	private final int errorFob = 1;//forwards or backwards
@@ -139,10 +139,10 @@ public class LinearTrajectory {
 			if(Math.abs(angleError) < headingTolerance) {
 				omegaI = 0;
 			}
-			if(omegaI > ((0.5) / (rkI * kF))) {
+			if(omegaI > ((0.25) / (rkI * kF))) {
 				omegaI = ((0.5) / (rkI * kF));
 			}
-			if(omegaI < -((0.5) / (rkI * kF))) {
+			if(omegaI < -((0.25) / (rkI * kF))) {
 				omegaI = -((0.5) / (rkI * kF));
 			}
 			
