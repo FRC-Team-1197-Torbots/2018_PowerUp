@@ -18,8 +18,7 @@ public class LeftLeftDoubleScale {
 	private LinearTrajectory Move5;
 	private LinearTrajectory Move6;
 	private PivotTrajectory Move7;
-	
-	private boolean pressedA = false;
+
 	private double currentTime;
 	private double endTime;
 	
@@ -55,7 +54,6 @@ public class LeftLeftDoubleScale {
 			shooArm.pressYStart();
 			Move1.init();
 			Move1.run();
-			pressedA = false;
 			run1 = runIt.MOVE1;
 			break;
 		case MOVE1:
@@ -114,7 +112,6 @@ public class LeftLeftDoubleScale {
 			Move5.run();
 			shooArm.pressA();
 			if(Move5.isDone()) {
-				pressedA = false;
 				drive.setMotorSpeeds(0.3, 0.3);
 				endTime = currentTime + 2.5;
 				run1 = runIt.INTAKE1;

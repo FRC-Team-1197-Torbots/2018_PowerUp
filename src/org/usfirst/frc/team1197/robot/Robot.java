@@ -127,10 +127,10 @@ public class Robot extends SampleRobot {
 		CenterRightDoubleSwitch = new CenterRightDoubleSwitch(hardware, shooArm);
 		LeftLeftDoubleScale = new LeftLeftDoubleScale(hardware, shooArm);
 		LeftLeftOppositeSwitch = new LeftLeftOppositeSwitch(hardware, shooArm);
-//		LeftRightSingleScale = new LeftRightSingleScale(hardware, shooArm);
-//		RightLeftSingleScale = new RightLeftSingleScale(hardware, shooArm);
-//		RightRightDoubleScale = new RightRightDoubleScale(hardware, shooArm);
-//		RightRightOppositeSwitch = new RightRightOppositeSwitch(hardware, shooArm);
+		LeftRightSingleScale = new LeftRightSingleScale(hardware, shooArm);
+		RightLeftSingleScale = new RightLeftSingleScale(hardware, shooArm);
+		RightRightDoubleScale = new RightRightDoubleScale(hardware, shooArm);
+		RightRightOppositeSwitch = new RightRightOppositeSwitch(hardware, shooArm);
 	}
 
 	public void robotInit() {
@@ -226,10 +226,13 @@ public class Robot extends SampleRobot {
 							case Nothing:
 								break;
 							case RightRightOppositeSwitch:
+								RightRightOppositeSwitch.run();
 								break;
 							case RightRightDoubleScale:
+								RightRightDoubleScale.run();
 								break;
 							case RightLeftSingleScale:
+								RightLeftSingleScale.run();
 								break;
 							}
 						}
@@ -259,6 +262,7 @@ public class Robot extends SampleRobot {
 								LeftLeftDoubleScale.run();
 								break;
 							case LeftRightSingleScale:
+								LeftRightSingleScale.run();
 								break;
 							}
 						}

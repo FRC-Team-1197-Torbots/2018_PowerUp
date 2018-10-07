@@ -8,7 +8,6 @@ import org.usfirst.frc.team1197.robot.TorBantorShooarm;
 import edu.wpi.first.wpilibj.Timer;
 
 public class LeftLeftOppositeSwitch {
-	private DriveHardware drive;
 	private TorBantorShooarm shooArm;
 	
 	private LinearTrajectory Move1;
@@ -23,7 +22,6 @@ public class LeftLeftOppositeSwitch {
 	//until the void run is called
 	
 	public LeftLeftOppositeSwitch(DriveHardware drive, TorBantorShooarm shooArm) {
-		this.drive = drive;
 		this.shooArm = shooArm;
 		
 		Move1 = new LinearTrajectory(drive, 7.9, shooArm, 4.0);
