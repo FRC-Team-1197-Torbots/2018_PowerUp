@@ -6,7 +6,13 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import org.usfirst.frc.team1197.robot.auto.*;
+import org.usfirst.frc.team1197.robot.centerAuto.*;
+import org.usfirst.frc.team1197.robot.leftAuto.LeftLeftDoubleScale;
+import org.usfirst.frc.team1197.robot.leftAuto.LeftLeftOppositeSwitch;
+import org.usfirst.frc.team1197.robot.leftAuto.LeftRightDoubleScale;
+import org.usfirst.frc.team1197.robot.rightAuto.RightLeftDoubleScale;
+import org.usfirst.frc.team1197.robot.rightAuto.RightRightDoubleScale;
+import org.usfirst.frc.team1197.robot.rightAuto.RightRightOppositeSwitch;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
@@ -43,11 +49,16 @@ public class Robot extends SampleRobot {
 	private boolean lineUpInFrontOfSwitch;
 	private String gameData;
 	
-	private CenterLeftDoubleSwitch CenterLeftDoubleSwitch;
-	private CenterRightDoubleSwitch CenterRightDoubleSwitch;
+	//center
+	private CenterLeftTripleSwitch CenterLeftTripleSwitch;
+	private CenterRightTripleSwitch CenterRightTripleSwitch;
+	
+	//left
 	private LeftLeftDoubleScale LeftLeftDoubleScale;
 	private LeftLeftOppositeSwitch LeftLeftOppositeSwitch;
 	private LeftRightDoubleScale LeftRightDoubleScale;
+	
+	//right
 	private RightLeftDoubleScale RightLeftDoubleScale;
 	private RightRightDoubleScale RightRightDoubleScale;
 	private RightRightOppositeSwitch RightRightOppositeSwitch;
@@ -123,8 +134,8 @@ public class Robot extends SampleRobot {
 
 		LinearTest = new LinearTrajectory(hardware, 1, shooArm, 500);
 		PivotTest = new PivotTrajectory(hardware, 90, shooArm, 500);
-		CenterLeftDoubleSwitch = new CenterLeftDoubleSwitch(hardware, shooArm);
-		CenterRightDoubleSwitch = new CenterRightDoubleSwitch(hardware, shooArm);
+		CenterLeftTripleSwitch = new CenterLeftTripleSwitch(hardware, shooArm);
+		CenterRightTripleSwitch = new CenterRightTripleSwitch(hardware, shooArm);
 		LeftLeftDoubleScale = new LeftLeftDoubleScale(hardware, shooArm);
 		LeftLeftOppositeSwitch = new LeftLeftOppositeSwitch(hardware, shooArm);
 		LeftRightDoubleScale = new LeftRightDoubleScale(hardware, shooArm);
@@ -152,12 +163,12 @@ public class Robot extends SampleRobot {
 				if(gameData.charAt(0) == 'L') {
 					//center left
 					while(isAutonomous()) {
-						CenterLeftDoubleSwitch.run();
+						CenterLeftTripleSwitch.run();
 					}
 				} else {
 					//center right
 					while(isAutonomous()) {
-						CenterRightDoubleSwitch.run();
+						CenterRightTripleSwitch.run();
 					}
 				}
 			} else {

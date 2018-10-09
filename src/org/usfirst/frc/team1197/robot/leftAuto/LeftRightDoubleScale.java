@@ -1,4 +1,4 @@
-package org.usfirst.frc.team1197.robot.auto;
+package org.usfirst.frc.team1197.robot.leftAuto;
 
 import org.usfirst.frc.team1197.robot.DriveHardware;
 import org.usfirst.frc.team1197.robot.LinearTrajectory;

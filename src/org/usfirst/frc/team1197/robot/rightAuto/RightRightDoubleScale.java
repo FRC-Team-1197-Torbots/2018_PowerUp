@@ -1,4 +1,4 @@
-package org.usfirst.frc.team1197.robot.auto;
+package org.usfirst.frc.team1197.robot.rightAuto;
 
 import org.usfirst.frc.team1197.robot.DriveHardware;
 import org.usfirst.frc.team1197.robot.LinearTrajectory;
@@ -7,7 +7,7 @@ import org.usfirst.frc.team1197.robot.TorBantorShooarm;
 
 import edu.wpi.first.wpilibj.Timer;
 
-public class LeftLeftDoubleScale {
+public class RightRightDoubleScale {
 	private DriveHardware drive;
 	private TorBantorShooarm shooArm;
 	
@@ -18,7 +18,7 @@ public class LeftLeftDoubleScale {
 	private LinearTrajectory Move5;
 	private LinearTrajectory Move6;
 	private PivotTrajectory Move7;
-
+	
 	private double currentTime;
 	private double endTime;
 	
@@ -30,17 +30,17 @@ public class LeftLeftDoubleScale {
 	//can just start it since that it won't run
 	//until the void run is called
 	
-	public LeftLeftDoubleScale(DriveHardware drive, TorBantorShooarm shooArm) {
+	public RightRightDoubleScale(DriveHardware drive, TorBantorShooarm shooArm) {
 		this.drive = drive;
 		this.shooArm = shooArm;
 		
 		Move1 = new LinearTrajectory(drive, 8.0, shooArm, 3.25);
-		Move2 = new PivotTrajectory(drive, 71, shooArm, 1.25);
+		Move2 = new PivotTrajectory(drive, -71, shooArm, 1.25);
 		Move3 = new LinearTrajectory(drive, -0.3, shooArm, 0.75);
-		Move4 = new PivotTrajectory(drive, 80, shooArm, 1.25);
+		Move4 = new PivotTrajectory(drive, -80, shooArm, 1.25);
 		Move5 = new LinearTrajectory(drive, 1.7, shooArm, 1.0);
 		Move6 = new LinearTrajectory(drive, -2.0, shooArm, 1.5);
-		Move7 = new PivotTrajectory(drive, -95, shooArm, 1.5);
+		Move7 = new PivotTrajectory(drive, 95, shooArm, 1.5);
 	}
 	
 	public void run() {

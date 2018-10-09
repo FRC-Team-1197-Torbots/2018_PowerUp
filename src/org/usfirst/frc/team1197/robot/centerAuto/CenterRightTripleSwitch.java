@@ -1,4 +1,4 @@
-package org.usfirst.frc.team1197.robot.auto;
+package org.usfirst.frc.team1197.robot.centerAuto;
 
 import org.usfirst.frc.team1197.robot.DriveHardware;
 import org.usfirst.frc.team1197.robot.LinearTrajectory;
@@ -8,7 +8,7 @@ import org.usfirst.frc.team1197.robot.TorDerivative;
 
 import edu.wpi.first.wpilibj.Timer;
 
-public class CenterRightDoubleSwitch {
+public class CenterRightTripleSwitch {
 	//boolean for whether it just stops after the first cube in the switch
 	private final boolean oneSwitchDone = false;
 	
@@ -53,7 +53,7 @@ public class CenterRightDoubleSwitch {
 	//can just start it since that it won't run
 	//until the void run is called
 	
-	public CenterRightDoubleSwitch(DriveHardware drive, TorBantorShooarm shooArm) {
+	public CenterRightTripleSwitch(DriveHardware drive, TorBantorShooarm shooArm) {
 		this.drive = drive;
 		this.shooArm = shooArm;
 		Move1 = new LinearTrajectory(drive, 0.6, shooArm, 1.0);

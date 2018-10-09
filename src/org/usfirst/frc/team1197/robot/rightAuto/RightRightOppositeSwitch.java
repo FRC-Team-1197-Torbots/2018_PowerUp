@@ -1,4 +1,4 @@
-package org.usfirst.frc.team1197.robot.auto;
+package org.usfirst.frc.team1197.robot.rightAuto;
 
 import org.usfirst.frc.team1197.robot.DriveHardware;
 import org.usfirst.frc.team1197.robot.LinearTrajectory;
@@ -7,7 +7,7 @@ import org.usfirst.frc.team1197.robot.TorBantorShooarm;
 
 import edu.wpi.first.wpilibj.Timer;
 
-public class LeftLeftOppositeSwitch {
+public class RightRightOppositeSwitch {
 	private TorBantorShooarm shooArm;
 	
 	private LinearTrajectory Move1;
@@ -21,11 +21,11 @@ public class LeftLeftOppositeSwitch {
 	//can just start it since that it won't run
 	//until the void run is called
 	
-	public LeftLeftOppositeSwitch(DriveHardware drive, TorBantorShooarm shooArm) {
+	public RightRightOppositeSwitch(DriveHardware drive, TorBantorShooarm shooArm) {
 		this.shooArm = shooArm;
 		
 		Move1 = new LinearTrajectory(drive, 7.9, shooArm, 4.0);
-		Move2 = new PivotTrajectory(drive, 30, shooArm, 1.5);
+		Move2 = new PivotTrajectory(drive, -30, shooArm, 1.5);
 	}
 	
 	public void run() {
