@@ -57,19 +57,19 @@ public class CenterRightDoubleSwitch {
 		this.drive = drive;
 		this.shooArm = shooArm;
 		Move1 = new LinearTrajectory(drive, 0.6, shooArm, 1.0);
-		Move2 = new PivotTrajectory(drive, 18, shooArm, 2.0);
-		Move3 = new PivotTrajectory(drive, -23.5, shooArm, 2.5);
+		Move2 = new PivotTrajectory(drive, 20, shooArm, 1.5);
+		Move3 = new PivotTrajectory(drive, -29, shooArm, 1.5);
 		//goes forward to intake and goes back for the same time with a PID here
 		Move4 = new LinearTrajectory(drive, -0.6, shooArm, 1);
-		Move5 = new PivotTrajectory(drive, 28, shooArm, 1.5);
+		Move5 = new PivotTrajectory(drive, 30, shooArm, 1.5);
 		Move6 = new PivotTrajectory(drive, 38, shooArm, 1.5);//positive
 		Move7 = new LinearTrajectory(drive, 1.0, shooArm, 1.5);//positive
-		Move8 = new PivotTrajectory(drive, -92, shooArm, 2.0);//negative
+		Move8 = new PivotTrajectory(drive, -89, shooArm, 2.0);//negative
 		//Move 9 is go forwward to intake
-		Move9  = new LinearTrajectory(drive, 0.6, shooArm, 1.0);//positive that was 1.2
+		Move9  = new LinearTrajectory(drive, 0.8, shooArm, 1.3);//positive that was 1.2
 		Move10 = new LinearTrajectory(drive, -0.6, shooArm, 0.5);//negative
-		Move11 = new PivotTrajectory(drive, 30, shooArm, 0.5);//positive
-		Move12 = new LinearTrajectory(drive, 1.3, shooArm, 0.75);//positive
+		Move11 = new PivotTrajectory(drive, 42, shooArm, 0.5);//positive
+		Move12 = new LinearTrajectory(drive, 1.3, shooArm, 0.6);//positive
 		//drives forward, crosses auto line, and is now close to the scale
 		angleDerivative = new TorDerivative(kF);
 	}
@@ -111,15 +111,13 @@ public class CenterRightDoubleSwitch {
 				Timer.delay(0.5);
 				Move3.init();
 				Move3.run();
-				shooArm.pressLeftTriggerControl(1.0);
+				shooArm.pressX();
 				run1 = runIt.MOVE3;
 			}
 			break;
 		case MOVE3:
 			Move3.run();
-			shooArm.pressLeftTriggerControl(1.0);
 			if(Move3.isDone()) {
-				shooArm.pressLeftTriggerControl(1.0);
 				if(oneSwitchDone) {
 					run1 = runIt.IDLE;
 				} else {
