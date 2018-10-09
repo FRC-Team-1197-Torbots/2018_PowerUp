@@ -47,18 +47,18 @@ public class Robot extends SampleRobot {
 	private CenterRightDoubleSwitch CenterRightDoubleSwitch;
 	private LeftLeftDoubleScale LeftLeftDoubleScale;
 	private LeftLeftOppositeSwitch LeftLeftOppositeSwitch;
-	private LeftRightSingleScale LeftRightSingleScale;
-	private RightLeftSingleScale RightLeftSingleScale;
+	private LeftRightDoubleScale LeftRightDoubleScale;
+	private RightLeftDoubleScale RightLeftDoubleScale;
 	private RightRightDoubleScale RightRightDoubleScale;
 	private RightRightOppositeSwitch RightRightOppositeSwitch;
 
 	public static enum LeftAuto {
-		Nothing, LeftLeftOppositeSwitch, LeftLeftDoubleScale, LeftRightSingleScale;
+		Nothing, LeftLeftOppositeSwitch, LeftLeftDoubleScale, LeftRightDoubleScale;
 		private LeftAuto() {}
 	}
 	
 	public static enum RightAuto {
-		Nothing, RightRightOppositeSwitch, RightRightDoubleScale, RightLeftSingleScale;
+		Nothing, RightRightOppositeSwitch, RightRightDoubleScale, RightLeftDoubleScale;
 		private RightAuto() {}
 	}
 	
@@ -127,8 +127,8 @@ public class Robot extends SampleRobot {
 		CenterRightDoubleSwitch = new CenterRightDoubleSwitch(hardware, shooArm);
 		LeftLeftDoubleScale = new LeftLeftDoubleScale(hardware, shooArm);
 		LeftLeftOppositeSwitch = new LeftLeftOppositeSwitch(hardware, shooArm);
-		LeftRightSingleScale = new LeftRightSingleScale(hardware, shooArm);
-		RightLeftSingleScale = new RightLeftSingleScale(hardware, shooArm);
+		LeftRightDoubleScale = new LeftRightDoubleScale(hardware, shooArm);
+		RightLeftDoubleScale = new RightLeftDoubleScale(hardware, shooArm);
 		RightRightDoubleScale = new RightRightDoubleScale(hardware, shooArm);
 		RightRightOppositeSwitch = new RightRightOppositeSwitch(hardware, shooArm);
 	}
@@ -218,7 +218,7 @@ public class Robot extends SampleRobot {
 						} else if(gameData.charAt(1) == 'R') {
 							CoolRightAuto = RightAuto.RightRightDoubleScale;
 						} else {
-							CoolRightAuto = RightAuto.RightLeftSingleScale;
+							CoolRightAuto = RightAuto.RightLeftDoubleScale;
 						}
 						
 						while(isAutonomous()) {
@@ -231,8 +231,8 @@ public class Robot extends SampleRobot {
 							case RightRightDoubleScale:
 								RightRightDoubleScale.run();
 								break;
-							case RightLeftSingleScale:
-								RightLeftSingleScale.run();
+							case RightLeftDoubleScale:
+								RightLeftDoubleScale.run();
 								break;
 							}
 						}
@@ -248,7 +248,7 @@ public class Robot extends SampleRobot {
 						} else if(gameData.charAt(1) == 'L') {
 							CoolLeftAuto = LeftAuto.LeftLeftDoubleScale;
 						} else {
-							CoolLeftAuto = LeftAuto.LeftRightSingleScale;
+							CoolLeftAuto = LeftAuto.LeftRightDoubleScale;
 						}
 						
 						while(isAutonomous()) {
@@ -261,8 +261,8 @@ public class Robot extends SampleRobot {
 							case LeftLeftDoubleScale:
 								LeftLeftDoubleScale.run();
 								break;
-							case LeftRightSingleScale:
-								LeftRightSingleScale.run();
+							case LeftRightDoubleScale:
+								LeftRightDoubleScale.run();
 								break;
 							}
 						}
