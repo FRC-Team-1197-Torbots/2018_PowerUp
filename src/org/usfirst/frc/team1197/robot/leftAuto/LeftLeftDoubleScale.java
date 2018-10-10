@@ -35,12 +35,19 @@ public class LeftLeftDoubleScale {
 		this.shooArm = shooArm;
 		
 		Move1 = new LinearTrajectory(drive, 8.0, shooArm, 3.25);
+		//goes forward
 		Move2 = new PivotTrajectory(drive, 71, shooArm, 1.25);
+		//turns right
 		Move3 = new LinearTrajectory(drive, -0.3, shooArm, 0.75);
+		//backs up then fires
 		Move4 = new PivotTrajectory(drive, 80, shooArm, 1.25);
+		//turns to intake one
 		Move5 = new LinearTrajectory(drive, 1.7, shooArm, 1.0);
+		//linear to intake
 		Move6 = new LinearTrajectory(drive, -2.0, shooArm, 1.5);
+		//goes back after intaking
 		Move7 = new PivotTrajectory(drive, -95, shooArm, 1.5);
+		//shoots
 	}
 	
 	public void run() {

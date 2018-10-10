@@ -35,12 +35,19 @@ public class RightRightDoubleScale {
 		this.shooArm = shooArm;
 		
 		Move1 = new LinearTrajectory(drive, 8.0, shooArm, 3.25);
+		//goes forward
 		Move2 = new PivotTrajectory(drive, -71, shooArm, 1.25);
+		//turns left
 		Move3 = new LinearTrajectory(drive, -0.3, shooArm, 0.75);
+		//backs up then shoots
 		Move4 = new PivotTrajectory(drive, -80, shooArm, 1.25);
+		//turns left to get in position to intake
 		Move5 = new LinearTrajectory(drive, 1.7, shooArm, 1.0);
+		//goes forward to intake
 		Move6 = new LinearTrajectory(drive, -2.0, shooArm, 1.5);
+		//goes backward after intaking
 		Move7 = new PivotTrajectory(drive, 95, shooArm, 1.5);
+		//turns around then fires
 	}
 	
 	public void run() {

@@ -25,7 +25,9 @@ public class LeftLeftOppositeSwitch {
 		this.shooArm = shooArm;
 		
 		Move1 = new LinearTrajectory(drive, 7.9, shooArm, 4.0);
+		//go forwards
 		Move2 = new PivotTrajectory(drive, 30, shooArm, 1.5);
+		//turns and shoots
 	}
 	
 	public void run() {
