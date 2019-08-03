@@ -111,7 +111,7 @@ public class TorBantorShooarm {
 	private double scaleCushion = -0.02;
 	private double scaleShootPower = 1.0;
 	private final double scaleHighShootPower = 0.95;//0.95
-	private final double scaleMediumShootPower = 0.75;//0.75
+	private final double scaleMediumShootPower = 0.25;//0.75
 	private final double scaleLowShootPower = 0.6;//0.6
 
 	// Shooter & Intake Variables
@@ -926,7 +926,7 @@ public class TorBantorShooarm {
 				pressingRightTrigger = true;
 
 				shootakeTalon1.set(ControlMode.PercentOutput, scaleMediumShootPower * ioo);
-				shootakeTalon2.set(ControlMode.PercentOutput, -scaleMediumShootPower * ioo);
+				shootakeTalon2.set(ControlMode.PercentOutput, scaleMediumShootPower * ioo);
 			} else if(pressingRightTrigger) {
 				shootakeTalon1.set(ControlMode.PercentOutput, 0);
 				shootakeTalon2.set(ControlMode.PercentOutput, 0);
@@ -979,6 +979,7 @@ public class TorBantorShooarm {
 		scaleEnable = true;
 		scaleDo1 = 	scaleDo.POS0;
 	}
+
 
 	public void pressYStart() {
 		scaleIntegral = 0;
